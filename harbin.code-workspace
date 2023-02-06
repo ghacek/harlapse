@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "./chrome-extension"
+		},
+		{
+			"path": "./server"
+		}
+	],
+    "settings": {}
+}
