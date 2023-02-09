@@ -1,11 +1,14 @@
 {
 	"folders": [
-		{
-			"path": "./chrome-extension"
-		},
-		{
-			"path": "./server"
-		}
-	],
+        {
+            "path": "./chrome-extension"
+        },
+        {
+            "path": "./server"
+        },
+        {
+            "path": "frontend"
+        }
+    ],
     "settings": {}
 }

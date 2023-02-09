@@ -37,6 +37,7 @@ func setupRouter() *gin.Engine {
 	})
 
 	r.GET("/api/har", GetHar)
+	r.GET("/api/screenshot", GetScreenshot)
 
 	// Get user value
 	r.POST("/api/new-har", UploadHar)
@@ -60,7 +61,9 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-const storageDir = "./public/"
+const storageDir = "./uploads/"
+const harSuffix = "-har.json"
+const screenshotSuffix = "-ss.png"
 
 func UploadHar(c *gin.Context) {
 	harId := strings.Replace(uuid.New().String(), "-", "", -1)
@@ -73,13 +76,13 @@ func UploadHar(c *gin.Context) {
 		return
 	}
 
-	err = StoreUploadFile(c, form, "har", filePrefix+"-har.json")
+	err = StoreUploadFile(c, form, "har", filePrefix+harSuffix)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	err = StoreUploadFile(c, form, "ss", filePrefix+"-ss.png")
+	err = StoreUploadFile(c, form, "ss", filePrefix+screenshotSuffix)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -105,9 +108,13 @@ func StoreUploadFile(c *gin.Context, form *multipart.Form, name string, destFile
 func GetHar(c *gin.Context) {
 	id := c.Query("id")
 
-	c.HTML(200, "view.html", gin.H{
-		"id": id,
-	})
+	c.File(storageDir + id + harSuffix)
+}
+
+func GetScreenshot(c *gin.Context) {
+	id := c.Query("id")
+
+	c.File(storageDir + id + screenshotSuffix)
 }
 
 func ErrorHandler(c *gin.Context) {
