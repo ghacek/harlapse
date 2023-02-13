@@ -9,7 +9,5 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'harbin';
 
-  constructor(private http: HttpClient) {
-    http.get("http://localhost:8080/api/har?id=093ffcb3f1004ec2a51931afd03c695b").subscribe(x => console.log(x))
-  }
+
 }

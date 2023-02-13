@@ -4,10 +4,12 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { HarViewPageComponent } from './components/har-view-page/har-view-page.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HarViewPageComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,24 @@
+
+
+
+<table *ngIf="har">
+    <tr>
+        <th>#</th>
+        <th>Time</th>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Req. Size</th>
+        <th>Resp. Size</th>
+        <th>Time</th>
+    </tr>
+    <tr *ngFor="let entity of har.entries; let i = index">
+        <td>{{i + 1}}</td>
+        <td>{{entity.startedDateTime | date: 'HH:mm:ss.SSS' }}</td>
+        <td>{{ fileNameFromURL(entity.request.url) }}</td>
+        <td>{{entity.response.status }}</td>
+        <td>{{entity.request.bodySize }}</td>
+        <td>{{entity.response.bodySize }}</td>
+        <td>{{entity.time | number: "1.0-0" }}ms</td>
+    </tr>
+
+</table>
