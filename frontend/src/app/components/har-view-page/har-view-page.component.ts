@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   templateUrl: './har-view-page.component.html',
@@ -9,10 +10,17 @@ export class HarViewPageComponent {
 
     har?: any;
 
-    constructor(private http: HttpClient) {
-        //http.get("http://localhost:8080/api/har?id=093ffcb3f1004ec2a51931afd03c695b")
-        http.get("http://localhost:8080/api/har?id=7f96d22dcb214b429ab543e3c498413e")
-            .subscribe(x => this.har = x);
+    constructor(private http: HttpClient, private route: ActivatedRoute) {
+    }
+
+    ngOnInit() {
+        this.route.queryParamMap.subscribe(params => {
+          const id = params.get('id');
+
+          if (id) {
+            this.loadHar(id);
+          }
+        });
     }
 
     fileNameFromURL(url: string) {
@@ -27,5 +35,10 @@ export class HarViewPageComponent {
             return url.slice(url.lastIndexOf('/') + 1, index);
         }
         */
+    }
+
+    private loadHar(id: string) {
+        this.http.get("http://localhost:8080/api/har?id=" + id)
+            .subscribe(x => this.har = x);
     }
 }

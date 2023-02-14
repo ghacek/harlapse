@@ -1,7 +1,9 @@
 
+<button routerLink="/">⇦</button>
 
+<div *ngIf="!har">Loading...</div>
 
-<table *ngIf="har">
+<table *ngIf="har" border=1>
     <tr>
         <th>#</th>
         <th>Time</th>
@@ -14,7 +16,7 @@
     <tr *ngFor="let entity of har.entries; let i = index">
         <td>{{i + 1}}</td>
         <td>{{entity.startedDateTime | date: 'HH:mm:ss.SSS' }}</td>
-        <td>{{ fileNameFromURL(entity.request.url) }}</td>
+        <td class="name">{{ fileNameFromURL(entity.request.url) }}</td>
         <td>{{entity.response.status }}</td>
         <td>{{entity.request.bodySize }}</td>
         <td>{{entity.response.bodySize }}</td>

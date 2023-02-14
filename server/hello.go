@@ -2,9 +2,14 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"mime/multipart"
 	"net/http"
+	"sort"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -38,6 +43,7 @@ func setupRouter() *gin.Engine {
 
 	r.GET("/api/har", GetHar)
 	r.GET("/api/screenshot", GetScreenshot)
+	r.GET("/api/list", ListAvailableHars)
 
 	// Get user value
 	r.POST("/api/new-har", UploadHar)
@@ -124,5 +130,53 @@ func ErrorHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
+}
 
+type HarInfo struct {
+	Id      string    `json:"id"`
+	Created time.Time `json:"created"`
+}
+
+func ListAvailableHars(c *gin.Context) {
+	files, err := ioutil.ReadDir(storageDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	hars := make(map[string]*HarInfo)
+
+	for _, file := range files {
+		id := removeFileSuffix(file.Name())
+
+		har := hars[id]
+		if har == nil {
+			har = &HarInfo{
+				Id:      id,
+				Created: file.ModTime(),
+			}
+			hars[id] = har
+		}
+
+		fmt.Println(file.Name(), file.IsDir())
+	}
+
+	harList := make([]*HarInfo, 0, len(hars))
+	for _, v := range hars {
+		harList = append(harList, v)
+	}
+
+	// sort by Created in descending order
+	sort.Slice(harList, func(i, j int) bool {
+		return harList[i].Created.After(harList[j].Created)
+	})
+
+	c.JSON(200, harList)
+}
+
+func removeFileSuffix(fileName string) string {
+	lastDot := strings.LastIndex(fileName, "-")
+	if lastDot == -1 {
+		return fileName
+	}
+	return fileName[:lastDot]
 }
