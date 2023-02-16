@@ -10,7 +10,9 @@ import './panel.css';
 
 const ApiRoot = "http://localhost:8080/api/";
 const ApiHarUpload = ApiRoot + "new-har";
-const ApiHarView = ApiRoot + "har";
+const ApiHarView = "http://localhost:4000/view"; //= ApiRoot + "har";
+
+
 
 // chrome.devtools.inspectedWindow.eval(
 //   'window.React.version',

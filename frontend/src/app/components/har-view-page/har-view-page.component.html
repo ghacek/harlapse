@@ -3,24 +3,71 @@
 
 <div *ngIf="!har">Loading...</div>
 
-<table *ngIf="har" border=1>
-    <tr>
-        <th>#</th>
-        <th>Time</th>
-        <th>Name</th>
-        <th>Status</th>
-        <th>Req. Size</th>
-        <th>Resp. Size</th>
-        <th>Time</th>
-    </tr>
-    <tr *ngFor="let entity of har.entries; let i = index">
-        <td>{{i + 1}}</td>
-        <td>{{entity.startedDateTime | date: 'HH:mm:ss.SSS' }}</td>
-        <td class="name">{{ fileNameFromURL(entity.request.url) }}</td>
-        <td>{{entity.response.status }}</td>
-        <td>{{entity.request.bodySize }}</td>
-        <td>{{entity.response.bodySize }}</td>
-        <td>{{entity.time | number: "1.0-0" }}ms</td>
-    </tr>
+<div class="top-blocks">
+    <div class="block">
+        <img class="screenshot" src="http://localhost:8080/api/screenshot?id={{id}}">
+    </div>
+    <div class="block">b</div>
+    <div class="block">c</div>
+</div>
+
+<table *ngIf="har" class="requests">
+    <thead>
+        <tr>
+            <td style="width:30px">#</td>
+            <td style="width:100px">Time</td>
+            <td>Name</td>
+            <td style="width:60px">Status</td>
+            <td style="width:100px">Type</td>
+            <td style="width:80px">Req. Size</td>
+            <td style="width:80px">Resp. Size</td>
+            <td style="width:80px">Time</td>
+            <td>Waterfall</td>
+            <td style="width:70px"></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let entity of har.entries; let i = index">
+            <td>{{i + 1}}</td>
+            <td>{{entity.startedDateTime | date: 'HH:mm:ss.SSS' }}</td>
+            <td class="name">{{ fileNameFromURL(entity.request.url) }}</td>
+            <td>{{entity.response.status }}</td>
+            <td>{{entity['_resourceType'] }}</td>
+            <td>{{entity.request.bodySize | fileSize }}</td>
+            <td>{{entity.response.bodySize | fileSize }}</td>
+            <td>{{entity.time | number: "1.0-0" }}ms</td>
+            <td>
+                <div class="waterfall">
+                    <div class="blocked" [style.width.px]="timingWidth(entity.timings.blocked)"></div>
+                    <div class="dns"     [style.width.px]="timingWidth(entity.timings.dns    )"></div>
+                    <div class="connect" [style.width.px]="timingWidth(entity.timings.connect)"></div>
+                    <div class="send"    [style.width.px]="timingWidth(entity.timings.send   )"></div>
+                    <div class="wait"    [style.width.px]="timingWidth(entity.timings.wait   )"></div>
+                    <div class="receive" [style.width.px]="timingWidth(entity.timings.receive)"></div>
+                </div> 
+                <div class="waterfall">
+                    <div class="total" [style.width.px]="timingWidth(entity.time)"></div>
+                </div>
+                <div class="timming" *ngIf="false">
+                    <!-- Queued at = start - _blocked_queueing -->
+                    <!-- Started at = page start - entity start  -->
+                    <div class="queueing">_blocked_queueing</div>
+                    <div class="stalled">blocked - _blocked_queueing</div>
+                    <div class="sent">dns</div>
+                    <!-- initial connection = connect - dns -->
+                    <div class="initial_connection">
+                        <div class="ssl">ssl - at the end of initial connect</div>
+                        <!-- proxy nagotiation?? -->
+                    </div>
+                    <div class="send">Request sent ??</div>
+                    <div class="wait">Waiting for server response - wait</div>
+                    <div class="sent">Content download - receive</div>
+                    <div class="sent"></div>
+                </div>
+            </td>
+            <td><button (click)="log(entity)">Log</button></td>
+        </tr>
+    </tbody>
+
 
 </table>
