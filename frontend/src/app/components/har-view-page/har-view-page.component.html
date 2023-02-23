@@ -7,15 +7,45 @@
     <div class="block">
         <img class="screenshot" src="http://localhost:8080/api/screenshot?id={{id}}">
     </div>
-    <div class="block">b</div>
+    <div class="block">
+        <div><b>Start time:</b> {{startTime | date: 'dd.MM.yyyy HH:mm:ss.SSS'}}</div>
+    </div>
     <div class="block">c</div>
 </div>
 
-<table *ngIf="har" class="requests">
+<ng-container  *ngIf="multiplePages">
+
+    <h2>Pages</h2>
+    <table class="gtable">
+        <thead>
+            <tr>
+                <td style="width:30px">#</td>
+                <td style="width:100px">ID</td>
+                <td style="width:180px">Start time</td>
+                <td>Title</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let page of har!.pages; let i = index">
+                <td>{{i + 1}}</td>
+                <td>{{page.id}}</td>
+                <td>{{page.startedDateTime | date: 'dd.MM.yyyy HH:mm:ss.SSS' }}</td>
+                <td>{{page.title}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Requests</h2>
+
+</ng-container>
+
+
+<table *ngIf="har" class="gtable">
     <thead>
         <tr>
             <td style="width:30px">#</td>
             <td style="width:100px">Time</td>
+            <td style="width:100px">Page</td>
             <td>Name</td>
             <td style="width:60px">Status</td>
             <td style="width:100px">Type</td>
@@ -29,7 +59,8 @@
     <tbody>
         <tr *ngFor="let entity of har.entries; let i = index">
             <td>{{i + 1}}</td>
-            <td>{{entity.startedDateTime | date: 'HH:mm:ss.SSS' }}</td>
+            <td>+{{entity['_offsetTime']}}ms</td>
+            <td>{{entity.pageref}}</td>
             <td class="name">{{ fileNameFromURL(entity.request.url) }}</td>
             <td>{{entity.response.status }}</td>
             <td>{{entity['_resourceType'] }}</td>
@@ -38,14 +69,16 @@
             <td>{{entity.time | number: "1.0-0" }}ms</td>
             <td>
                 <div class="waterfall">
-                    <div class="blocked" [style.width.px]="timingWidth(entity.timings.blocked)"></div>
-                    <div class="dns"     [style.width.px]="timingWidth(entity.timings.dns    )"></div>
-                    <div class="connect" [style.width.px]="timingWidth(entity.timings.connect)"></div>
-                    <div class="send"    [style.width.px]="timingWidth(entity.timings.send   )"></div>
-                    <div class="wait"    [style.width.px]="timingWidth(entity.timings.wait   )"></div>
-                    <div class="receive" [style.width.px]="timingWidth(entity.timings.receive)"></div>
+                    <div class="offset" [style.width.%]="timingWidth($any(entity['_offsetTime']))"></div>
+                    <div class="blocked" [style.width.%]="timingWidth(entity.timings.blocked)"></div>
+                    <div class="dns"     [style.width.%]="timingWidth(entity.timings.dns    )"></div>
+                    <div class="connect" [style.width.%]="timingWidth(entity.timings.connect)"></div>
+                    <div class="send"    [style.width.%]="timingWidth(entity.timings.send   )"></div>
+                    <div class="wait"    [style.width.%]="timingWidth(entity.timings.wait   )"></div>
+                    <div class="receive" [style.width.%]="timingWidth(entity.timings.receive)"></div>
                 </div> 
-                <div class="waterfall">
+                <div class="waterfall" *ngIf="false">
+                    <div class="offset" [style.width.%]="timingWidth($any(entity['_offsetTime']))"></div>
                     <div class="total" [style.width.px]="timingWidth(entity.time)"></div>
                 </div>
                 <div class="timming" *ngIf="false">
