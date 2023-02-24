@@ -13,7 +13,7 @@
     <div class="block">c</div>
 </div>
 
-<ng-container  *ngIf="multiplePages">
+<ng-container *ngIf="multiplePages">
 
     <h2>Pages</h2>
     <table class="gtable">
@@ -45,7 +45,7 @@
         <tr>
             <td style="width:30px">#</td>
             <td style="width:100px">Time</td>
-            <td style="width:100px">Page</td>
+            <td style="width:100px" *ngIf="multiplePages">Page</td>
             <td>Name</td>
             <td style="width:60px">Status</td>
             <td style="width:100px">Type</td>
@@ -63,7 +63,7 @@
         <tr *ngFor="let entity of entryViews; let i = index">
             <td>{{i + 1}}</td>
             <td>+{{entity.offsetTime}}ms</td>
-            <td>{{entity.pageref}}</td>
+            <td *ngIf="multiplePages">{{entity.pageref}}</td>
             <td class="name">{{ fileNameFromURL(entity.request.url) }}</td>
             <td>{{entity.response.status }}</td>
             <td>{{entity['_resourceType'] }}</td>
