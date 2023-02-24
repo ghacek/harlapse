@@ -52,14 +52,17 @@
             <td style="width:80px">Req. Size</td>
             <td style="width:80px">Resp. Size</td>
             <td style="width:80px">Time</td>
-            <td>Waterfall</td>
+            <td style="min-width:200px">Waterfall</td>
             <td style="width:70px"></td>
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let entity of har.entries; let i = index">
+        <tr *ngIf="!entryViews || entryViews.length === 0">
+            <td colspan="10" class="no-requests">No requests captured.</td>
+        </tr>
+        <tr *ngFor="let entity of entryViews; let i = index">
             <td>{{i + 1}}</td>
-            <td>+{{entity['_offsetTime']}}ms</td>
+            <td>+{{entity.offsetTime}}ms</td>
             <td>{{entity.pageref}}</td>
             <td class="name">{{ fileNameFromURL(entity.request.url) }}</td>
             <td>{{entity.response.status }}</td>
@@ -69,7 +72,7 @@
             <td>{{entity.time | number: "1.0-0" }}ms</td>
             <td>
                 <div class="waterfall">
-                    <div class="offset" [style.width.%]="timingWidth($any(entity['_offsetTime']))"></div>
+                    <div class="offset"  [style.width.%]="timingWidth(entity.offsetTime     )"></div>
                     <div class="blocked" [style.width.%]="timingWidth(entity.timings.blocked)"></div>
                     <div class="dns"     [style.width.%]="timingWidth(entity.timings.dns    )"></div>
                     <div class="connect" [style.width.%]="timingWidth(entity.timings.connect)"></div>
@@ -78,7 +81,7 @@
                     <div class="receive" [style.width.%]="timingWidth(entity.timings.receive)"></div>
                 </div> 
                 <div class="waterfall" *ngIf="false">
-                    <div class="offset" [style.width.%]="timingWidth($any(entity['_offsetTime']))"></div>
+                    <div class="offset" [style.width.%]="timingWidth(entity.offsetTime)"></div>
                     <div class="total" [style.width.px]="timingWidth(entity.time)"></div>
                 </div>
                 <div class="timming" *ngIf="false">
@@ -100,6 +103,7 @@
             </td>
             <td><button (click)="log(entity)">Log</button></td>
         </tr>
+
     </tbody>
 
 

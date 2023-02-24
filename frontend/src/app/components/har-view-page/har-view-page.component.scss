@@ -60,20 +60,26 @@ td.name {
         }
 
     }
+
+        
+    .no-requests {
+        padding: 5px 10px;
+    }
 }
 
 .waterfall {
     display: flex;
+    align-items: center;
 
     div {
         height: 10px;
     }
 
-    .blocked { background: #5f6368; }
-    .dns     { background: #009688; }
-    .connect { background: #d68100; }
+    .blocked { background: #5f6368; height: 6px; }
+    .dns     { background: #009688; height: 6px; }
+    .connect { background: #d68100; height: 6px; }
     .send    { background: #74979a; }
-    .wait    { background: #00a846; }
+    .wait    { background: #00a846; min-width: 1px; } /* maiking sure we see at least one item for the request with this min-width */
     .receive { background: #0299de; }
 
     .total {

@@ -2,6 +2,19 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Log as HarLog } from 'har-format';
+import { Entry } from 'har-format';
+
+
+interface EntryView extends Entry {
+    /** Date object created from startedDateTime */
+    startDate: Date,
+
+    /** Unix timestamp of startDate */
+    startMilis: number,
+
+    /** startDate offset from first request start  */
+    offsetTime: number,
+}
 
 @Component({
   templateUrl: './har-view-page.component.html',
@@ -12,6 +25,8 @@ export class HarViewPageComponent {
     id?: string;
 
     har?: HarLog;
+
+    entryViews?: EntryView[];
 
     /** Defines if loaded HAR file contains requests from multiple pages. */
     multiplePages = false;
@@ -84,10 +99,17 @@ export class HarViewPageComponent {
     }
 
     private setEntryOffsetTimes(har: HarLog) {
+        if (!har.entries || har.entries.length === 0) {
+            return true;
+        }
+
+        const entryViews = [];
+        let harEndMilis = 0;
+        let harStartMilis = Number.MAX_VALUE;
+
         for (const entry of har.entries) {
             const startDate = new Date(entry.startedDateTime);
             const startMilis = startDate.getTime();
-
             const endMilis = startMilis + entry.time;
 
             if (isNaN(startMilis)) {
@@ -95,24 +117,31 @@ export class HarViewPageComponent {
                 return false;
             }
 
-            entry['_startDate'] = startDate;
+            const entryView: EntryView = Object.assign(
+                { startMilis, startDate, offsetTime: 0 }, entry
+            );
+            entryViews.push(entryView);
 
-            if (!this.startTime || startMilis < this.startTime.getTime()) {
-                this.startTime = startDate;
-            }
-            if (!this.endTimeMilis  || endMilis > this.endTimeMilis) {
-                this.endTimeMilis = endMilis;
-            }
+
+            harStartMilis = Math.min(harStartMilis, startMilis);
+            harEndMilis   = Math.max(harEndMilis  , endMilis  );
         }
 
-        this.duration = this.endTimeMilis! - this.startTime!.getTime();
+        
 
-        for (const entry of har.entries) { 
-            entry['_offsetTime'] = (<Date>entry['_startDate']).getTime() - this.startTime!.getTime();
+        for (const entry of entryViews) { 
+            entry.offsetTime = (entry.startMilis - harStartMilis);
         }
 
         // sort pages by startedDateTime
-        har.entries.sort((a, b) => (<Date>a['_startDate']).getTime() - (<Date>b['_startDate']).getTime());
+        entryViews.sort((a, b) => a.startMilis - b.startMilis);
+
+        this.entryViews = entryViews;
+        this.endTimeMilis = harEndMilis;
+        this.startTime = new Date(harStartMilis);
+        this.duration = harEndMilis - harStartMilis;
+        
+        
 
         return true;
     }
