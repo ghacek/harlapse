@@ -8,7 +8,7 @@
         <img class="screenshot" src="http://localhost:8080/api/screenshot?id={{id}}">
     </div>
     <div class="block">
-        <div><b>Start time:</b> {{startTime | date: 'dd.MM.yyyy HH:mm:ss.SSS'}}</div>
+        <div><b>Start time:</b> {{harStart | date: 'dd.MM.yyyy HH:mm:ss.SSS'}}</div>
     </div>
     <div class="block">c</div>
 </div>
@@ -60,49 +60,56 @@
         <tr *ngIf="!entryViews || entryViews.length === 0">
             <td colspan="10" class="no-requests">No requests captured.</td>
         </tr>
-        <tr *ngFor="let entity of entryViews; let i = index">
-            <td>{{i + 1}}</td>
-            <td>+{{entity.offsetTime}}ms</td>
-            <td *ngIf="multiplePages">{{entity.pageref}}</td>
-            <td class="name">{{ fileNameFromURL(entity.request.url) }}</td>
-            <td>{{entity.response.status }}</td>
-            <td>{{entity['_resourceType'] }}</td>
-            <td>{{entity.request.bodySize | fileSize }}</td>
-            <td>{{entity.response.bodySize | fileSize }}</td>
-            <td>{{entity.time | number: "1.0-0" }}ms</td>
-            <td>
-                <div class="waterfall">
-                    <div class="offset"  [style.width.%]="timingWidth(entity.offsetTime     )"></div>
-                    <div class="blocked" [style.width.%]="timingWidth(entity.timings.blocked)"></div>
-                    <div class="dns"     [style.width.%]="timingWidth(entity.timings.dns    )"></div>
-                    <div class="connect" [style.width.%]="timingWidth(entity.timings.connect)"></div>
-                    <div class="send"    [style.width.%]="timingWidth(entity.timings.send   )"></div>
-                    <div class="wait"    [style.width.%]="timingWidth(entity.timings.wait   )"></div>
-                    <div class="receive" [style.width.%]="timingWidth(entity.timings.receive)"></div>
-                </div> 
-                <div class="waterfall" *ngIf="false">
-                    <div class="offset" [style.width.%]="timingWidth(entity.offsetTime)"></div>
-                    <div class="total" [style.width.px]="timingWidth(entity.time)"></div>
-                </div>
-                <div class="timming" *ngIf="false">
-                    <!-- Queued at = start - _blocked_queueing -->
-                    <!-- Started at = page start - entity start  -->
-                    <div class="queueing">_blocked_queueing</div>
-                    <div class="stalled">blocked - _blocked_queueing</div>
-                    <div class="sent">dns</div>
-                    <!-- initial connection = connect - dns -->
-                    <div class="initial_connection">
-                        <div class="ssl">ssl - at the end of initial connect</div>
-                        <!-- proxy nagotiation?? -->
+        <ng-container *ngFor="let entry of entryViews; let i = index">
+            <tr (click)="entry.detailsOpened = !entry.detailsOpened">
+                <td>{{i + 1}}</td>
+                <td>+{{entry.offsetTime}}ms</td>
+                <td *ngIf="multiplePages">{{entry.pageref}}</td>
+                <td class="name" [title]="entry.request.url">{{ fileNameFromURL(entry.request.url) }}</td>
+                <td>{{entry.response.status }}</td>
+                <td>{{entry['_resourceType'] }}</td>
+                <td>{{entry.request.bodySize | fileSize }}</td>
+                <td>{{entry.response.bodySize | fileSize }}</td>
+                <td>{{entry.time | number: "1.0-0" }}ms</td>
+                <td>
+                    <div class="waterfall">
+                        <div class="offset"  [style.width.%]="timingWidth(entry.offsetTime     )"></div>
+                        <div class="blocked" [style.width.%]="timingWidth(entry.timings.blocked)"></div>
+                        <div class="dns"     [style.width.%]="timingWidth(entry.timings.dns    )"></div>
+                        <div class="connect" [style.width.%]="timingWidth(entry.timings.connect)"></div>
+                        <div class="send"    [style.width.%]="timingWidth(entry.timings.send   )"></div>
+                        <div class="wait"    [style.width.%]="timingWidth(entry.timings.wait   )"></div>
+                        <div class="receive" [style.width.%]="timingWidth(entry.timings.receive)"></div>
+                    </div> 
+                    <div class="waterfall" *ngIf="false">
+                        <div class="offset" [style.width.%]="timingWidth(entry.offsetTime)"></div>
+                        <div class="total" [style.width.px]="timingWidth(entry.time)"></div>
                     </div>
-                    <div class="send">Request sent ??</div>
-                    <div class="wait">Waiting for server response - wait</div>
-                    <div class="sent">Content download - receive</div>
-                    <div class="sent"></div>
-                </div>
-            </td>
-            <td><button (click)="log(entity)">Log</button></td>
-        </tr>
+                    <div class="timming" *ngIf="false">
+                        <!-- Queued at = start - _blocked_queueing -->
+                        <!-- Started at = page start - entity start  -->
+                        <div class="queueing">_blocked_queueing</div>
+                        <div class="stalled">blocked - _blocked_queueing</div>
+                        <div class="sent">dns</div>
+                        <!-- initial connection = connect - dns -->
+                        <div class="initial_connection">
+                            <div class="ssl">ssl - at the end of initial connect</div>
+                            <!-- proxy nagotiation?? -->
+                        </div>
+                        <div class="send">Request sent ??</div>
+                        <div class="wait">Waiting for server response - wait</div>
+                        <div class="sent">Content download - receive</div>
+                        <div class="sent"></div>
+                    </div>
+                </td>
+                <td><button (click)="log(entry)">Log</button></td>
+            </tr>
+            <tr *ngIf="entry.detailsOpened">
+                <td colspan="11" class="entry-view">
+                    <app-har-entry-view [entry]="entry"></app-har-entry-view>
+                </td>
+            </tr>
+        </ng-container>
 
     </tbody>
 

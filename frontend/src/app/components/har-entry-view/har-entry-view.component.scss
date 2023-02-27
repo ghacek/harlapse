@@ -1,0 +1,35 @@
+:host {
+    display: block;
+    border-top: 1px solid #cacdd1;
+    border-bottom: 1px solid #cacdd1;
+    padding: 10px;
+}
+
+.section {
+    
+
+    &:not(.first) {
+        margin-top: 20px;
+    }
+    .title {
+        font-weight: bold;
+    }
+
+
+}
+
+.labeled-value {
+    padding-left: 15px;
+    margin: 5px 0;
+    .label {
+        display: inline-block;
+        color: #5f6368;
+        font-weight: bold;
+        
+        margin-right: 5px;
+    }
+    .value {
+        font-family: 'Courier New', Courier, monospace;
+        word-break: break-all;
+    }
+}

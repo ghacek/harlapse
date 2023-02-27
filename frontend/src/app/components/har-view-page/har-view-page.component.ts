@@ -5,7 +5,7 @@ import { Log as HarLog } from 'har-format';
 import { Entry } from 'har-format';
 
 
-interface EntryView extends Entry {
+export interface EntryView extends Entry {
     /** Date object created from startedDateTime */
     startDate: Date,
 
@@ -14,6 +14,9 @@ interface EntryView extends Entry {
 
     /** startDate offset from first request start  */
     offsetTime: number,
+
+    /** If true, details will be displayed in the UI.  */
+    detailsOpened?: boolean
 }
 
 @Component({
@@ -32,13 +35,13 @@ export class HarViewPageComponent {
     multiplePages = false;
 
     /** Start time of the first page in loaded HAR file */
-    startTime?: Date;
+    harStart?: Date;
 
     /** Time of last request + its execution time. */
-    endTimeMilis: number = 0;
+    harEndMilis: number = 0;
 
     /** Difference between startTime and endTimeMilis in milliseconds. */
-    duration: number = 0;
+    harDuration: number = 0;
 
     constructor(private http: HttpClient, private route: ActivatedRoute) {
     }
@@ -118,7 +121,7 @@ export class HarViewPageComponent {
             }
 
             const entryView: EntryView = Object.assign(
-                { startMilis, startDate, offsetTime: 0 }, entry
+                { startMilis, startDate, offsetTime: 0, detailsOpened: true }, entry
             );
             entryViews.push(entryView);
 
@@ -137,9 +140,9 @@ export class HarViewPageComponent {
         entryViews.sort((a, b) => a.startMilis - b.startMilis);
 
         this.entryViews = entryViews;
-        this.endTimeMilis = harEndMilis;
-        this.startTime = new Date(harStartMilis);
-        this.duration = harEndMilis - harStartMilis;
+        this.harEndMilis = harEndMilis;
+        this.harStart = new Date(harStartMilis);
+        this.harDuration = harEndMilis - harStartMilis;
         
         
 
@@ -155,7 +158,7 @@ export class HarViewPageComponent {
             return 0;
         }
 
-        return (value / this.duration! * 100).toFixed(2);
+        return (value / this.harDuration! * 100).toFixed(2);
     }
 
 }

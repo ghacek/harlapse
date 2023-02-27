@@ -1,0 +1,37 @@
+
+<div class="section first">
+    <div class="title">General</div>
+
+    <div class="labeled-value">
+        <span class="label">Request URL:</span>
+        <span class="value">{{entry.request.url}}</span>
+    </div>
+
+    <div class="labeled-value">
+        <span class="label">Request Method:</span>
+        <span class="value">{{entry.request.method}}</span>
+    </div>
+
+    <div class="labeled-value">
+        <span class="label">Status code:</span>
+        <span class="value">{{entry.response.status}} {{entry.response.statusText}}</span>
+    </div>
+</div>
+
+<div class="section">
+    <div class="title">Response Headers</div>
+
+    <div *ngFor="let header of entry.response.headers" class="labeled-value">
+        <span class="label">{{header.name}}:</span>
+        <span class="value">{{header.value}}</span>
+    </div>
+</div>
+
+<div class="section">
+    <div class="title">Request Headers</div>
+
+    <div *ngFor="let header of entry.request.headers" class="labeled-value">
+        <span class="label">{{header.name}}:</span>
+        <span class="value">{{header.value}}</span>
+    </div>
+</div>
