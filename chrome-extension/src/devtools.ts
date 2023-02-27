@@ -4,7 +4,133 @@
 // For more information on DevTools,
 // See https://developer.chrome.com/extensions/devtools
 
-// Create a panel named `My Panel`
+type HarRequest = chrome.devtools.network.Request;
+
+const ApiRoot = "http://localhost:8080/api/";
+const ApiHarUpload = ApiRoot + "new-har";
+const ApiHarView = "http://localhost:4000/view"; //= ApiRoot + "har";
+
+let panelWindow: Window;
+
+/**
+ * Requests that were logged by chrome.devtools.network.onRequestFinished 
+ * handler, and that have content fetched.
+ */
+const requests: chrome.devtools.network.Request[] = [];
+
 chrome.devtools.panels.create('HarBin', '', 'panel.html', (panel) => {
-  console.log('Panel was successfully created!');
+    panel.onShown.addListener(window => {
+        panelWindow = window;
+        (<any>panelWindow)['har_share'] = shareState;
+    });
 });
+
+chrome.devtools.network.onRequestFinished.addListener(request => {
+    request.getContent(function(content: string, encoding: string) {
+
+        request.response.content.text = content;
+        if (encoding) {
+            request.response.content.encoding = encoding;
+        }
+
+        requests.push(request);
+    })
+});
+
+
+function shareState() {
+    Promise.all([captureHar(), takeScreenshot()])
+        .then((args) => {
+            const har = args[0];
+            //(<any>har).entries_orig = har.entries;
+            //har.entries = requests;
+
+            mergeEntryContent(har.entries, requests);
+
+            uploadHar(har, args[1])
+                .then((resp) => resp.json())
+                .then((resp) => {
+                    chrome.tabs.create({ url: ApiHarView + "?id=" + resp.id });
+                })
+                .catch(() => alert('HAR upload failed'));
+        })
+}
+
+function uploadHar(har: any, screenshot: Blob) {
+    const data = new FormData();
+
+    const harBlob = new Blob([JSON.stringify(har)], { type: 'text/plain' });
+
+    data.append("har", harBlob);
+    data.append("ss", screenshot);
+
+    return fetch(ApiHarUpload, {
+        method: 'POST',
+        body: data
+    });
+}
+
+
+function captureHar() {
+    return new Promise<HARFormatLog>((resolve) => {
+        chrome.devtools.network.getHAR((har) => {
+            resolve(har);
+        });
+    });
+}
+
+
+function takeScreenshot() {
+
+    chrome.windows.getLastFocused()
+        .then(focusedWin => chrome.tabs.get(chrome.devtools.inspectedWindow.tabId).then(tab => ({focusedWin, tab})))
+        .then(x => {
+            if (!x.tab.active || x.tab.windowId != x.focusedWin.id) {
+                alert("Tab needs to be active to take a screenshot.");
+            }
+        })
+
+    return chrome.tabs.captureVisibleTab()
+        .then(dataUrl => dataURItoBlob(dataUrl));
+}
+
+function dataURItoBlob(dataURI: string) {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+    var byteString;
+    if (dataURI.split(',')[0].indexOf('base64') >= 0)
+        byteString = atob(dataURI.split(',')[1]);
+    else
+        byteString = unescape(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to a typed array
+    var ia = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([ia], {type:mimeString});
+}
+
+
+function mergeEntryContent(entries: HARFormatEntry[], requests: HarRequest[]) {
+    for (const entry of entries) {
+
+        const match = requests.find(request => 
+                // Match couple fields to find exact entry match
+                   request.startedDateTime === entry.startedDateTime 
+                && request.request.url     === entry.request.url
+                && request.request.method  === entry.request.method);
+
+        if (match) {
+            entry.response.content.text = match.response.content.text;
+
+            const encoding =  match.response.content.encoding;
+            if (encoding) {
+                entry.response.content.encoding = encoding;
+            }
+        }
+    }
+}
