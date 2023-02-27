@@ -1,37 +1,53 @@
 
-<div class="section first">
-    <div class="title">General</div>
-
-    <div class="labeled-value">
-        <span class="label">Request URL:</span>
-        <span class="value">{{entry.request.url}}</span>
-    </div>
-
-    <div class="labeled-value">
-        <span class="label">Request Method:</span>
-        <span class="value">{{entry.request.method}}</span>
-    </div>
-
-    <div class="labeled-value">
-        <span class="label">Status code:</span>
-        <span class="value">{{entry.response.status}} {{entry.response.statusText}}</span>
-    </div>
+<div class="tabs">
+    <div class="tab" [class.active]="tab === 0" (click)="tab = 0">Headers</div>
+    <div class="tab" [class.active]="tab === 1" (click)="tab = 1">Response</div>
 </div>
 
-<div class="section">
-    <div class="title">Response Headers</div>
+<ng-container *ngIf="tab === 0">
 
-    <div *ngFor="let header of entry.response.headers" class="labeled-value">
-        <span class="label">{{header.name}}:</span>
-        <span class="value">{{header.value}}</span>
+
+    <div class="section first">
+        <div class="title">General</div>
+
+        <div class="labeled-value">
+            <span class="label">Request URL:</span>
+            <span class="value">{{entry.request.url}}</span>
+        </div>
+
+        <div class="labeled-value">
+            <span class="label">Request Method:</span>
+            <span class="value">{{entry.request.method}}</span>
+        </div>
+
+        <div class="labeled-value">
+            <span class="label">Status code:</span>
+            <span class="value">{{entry.response.status}} {{entry.response.statusText}}</span>
+        </div>
     </div>
-</div>
 
-<div class="section">
-    <div class="title">Request Headers</div>
+    <div class="section">
+        <div class="title">Response Headers</div>
 
-    <div *ngFor="let header of entry.request.headers" class="labeled-value">
-        <span class="label">{{header.name}}:</span>
-        <span class="value">{{header.value}}</span>
+        <div *ngFor="let header of entry.response.headers" class="labeled-value">
+            <span class="label">{{header.name}}:</span>
+            <span class="value">{{header.value}}</span>
+        </div>
     </div>
-</div>
+
+    <div class="section">
+        <div class="title">Request Headers</div>
+
+        <div *ngFor="let header of entry.request.headers" class="labeled-value">
+            <span class="label">{{header.name}}:</span>
+            <span class="value">{{header.value}}</span>
+        </div>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="tab === 1">
+    <div class="response-content">
+        {{entry.response.content.text}}
+    </div>
+    
+</ng-container>

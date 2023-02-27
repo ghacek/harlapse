@@ -5,12 +5,28 @@
     padding: 10px;
 }
 
+.tabs {
+    display: flex;
+
+    .tab {
+        border: 1px solid blue;
+        padding: 2px 5px;
+        cursor: pointer;
+
+        &:hover,
+        &.active {
+            background: blue;
+            color: white;
+        }
+    }
+}
+
 .section {
     
 
-    &:not(.first) {
+    //&:not(.first) {
         margin-top: 20px;
-    }
+    //}
     .title {
         font-weight: bold;
     }
@@ -32,4 +48,9 @@
         font-family: 'Courier New', Courier, monospace;
         word-break: break-all;
     }
+}
+
+.response-content {
+    word-break: break-all;
+    white-space: pre;
 }

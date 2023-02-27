@@ -10,4 +10,6 @@ export class HarEntryViewComponent {
 
     @Input()
     public entry!: EntryView;
+
+    tab = 0;
 }
