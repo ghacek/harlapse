@@ -50,6 +50,7 @@ td.name {
         }
         td {
             font-size: 13px;
+            cursor: pointer;
         }
     }
 
@@ -67,6 +68,43 @@ td.name {
         
     .no-requests {
         padding: 5px 10px;
+    }
+}
+
+.sc-3 {
+    color: #b2b2b3;
+}
+.sc-0, 
+.sc-4,
+.sc-5 {
+    color: #d70021;
+}
+
+.status {
+    display: inline-block;
+    border-radius: 3px;
+    padding: 1px 3px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    font-weight: bold;
+
+    .sc-0 & { /* Blocked request */
+        display: none;
+    }
+
+    .sc-4 &,
+    .sc-5 & {
+        color: white;
+        background: #d70021;
+    }
+
+    
+    
+
+    .sc-2 & {
+        color: white;
+        
+        background: #058b00;
     }
 }
 

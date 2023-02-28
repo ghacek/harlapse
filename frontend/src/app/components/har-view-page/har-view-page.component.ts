@@ -121,7 +121,7 @@ export class HarViewPageComponent {
             }
 
             const entryView: EntryView = Object.assign(
-                { startMilis, startDate, offsetTime: 0, detailsOpened: true }, entry
+                { startMilis, startDate, offsetTime: 0, detailsOpened: false }, entry
             );
             entryViews.push(entryView);
 
@@ -159,6 +159,11 @@ export class HarViewPageComponent {
         }
 
         return (value / this.harDuration! * 100).toFixed(2);
+    }
+
+        
+    statusToClass(entry: EntryView) {
+        return "sc-" + Math.floor(entry.response.status / 100);
     }
 
 }
