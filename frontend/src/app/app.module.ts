@@ -8,6 +8,8 @@ import { HarViewPageComponent } from './components/har-view-page/har-view-page.c
 import { HarListPageComponent } from './components/har-list-page/har-list-page.component';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { HarEntryViewComponent } from './components/har-entry-view/har-entry-view.component';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { HarEntryViewComponent } from './components/har-entry-view/har-entry-vie
   imports: [
     BrowserModule,
     HttpClientModule,
-    AppRoutingModule
+    FormsModule,
+    AppRoutingModule,
+    CodemirrorModule
   ],
   providers: [],
   bootstrap: [AppComponent]

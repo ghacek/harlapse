@@ -91,7 +91,15 @@ td.name {
     .sc-0 & { /* Blocked request */
         display: none;
     }
-
+    .sc-1 & {
+        color: white;
+        
+        background: #0074e8;
+    }
+    .sc-2 & {
+        color: white;
+        background: #058b00;
+    }
     .sc-4 &,
     .sc-5 & {
         color: white;
@@ -100,12 +108,7 @@ td.name {
 
     
     
-
-    .sc-2 & {
-        color: white;
-        
-        background: #058b00;
-    }
+    
 }
 
 .waterfall {

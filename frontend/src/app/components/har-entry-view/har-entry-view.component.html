@@ -46,8 +46,11 @@
 </ng-container>
 
 <ng-container *ngIf="tab === 1">
-    <div class="response-content">
-        {{entry.response.content.text}}
-    </div>
-    
+    <ngx-codemirror 
+        [(ngModel)]="entry.response.content.text"
+        [options]="{
+            lineNumbers: true,
+            mode: entry.response.content.mimeType
+        }"
+    ></ngx-codemirror>
 </ng-container>
