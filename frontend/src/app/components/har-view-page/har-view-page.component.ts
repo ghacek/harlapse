@@ -58,8 +58,12 @@ export class HarViewPageComponent {
     }
 
     fileNameFromURL(url: string) {
-        const matches = url.match(/\/([^/?]+)(\?.*)?$/);
-        return matches && matches[1];
+        const index = url.lastIndexOf('/');
+        if (index) {
+            return url.substring(index + 1);
+        }
+
+        return url;
     }
 
     private loadHar(id: string) {
