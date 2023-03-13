@@ -2,8 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Log as HarLog } from 'har-format';
-import { Entry } from 'har-format';
+import { Entry, Page } from 'har-format';
 
+
+export interface PageView extends Page {
+    /** Date object created from startedDateTime */
+    startDate: Date,
+
+    /** Unix timestamp of startDate */
+    startMilis: number,
+}
 
 export interface EntryView extends Entry {
     /** Date object created from startedDateTime */
@@ -28,6 +36,8 @@ export class HarViewPageComponent {
     id?: string;
 
     har?: HarLog;
+
+    pageViews?: PageView[];
 
     entryViews?: EntryView[];
 
@@ -85,22 +95,15 @@ export class HarViewPageComponent {
     private findFirstStartDate(har: HarLog) {
         const pages = har.pages || [];
 
-        for(const page of pages) {
-            const startDate = new Date(page.startedDateTime);
-            const startMilis = startDate.getTime();
-
-            if (isNaN(startMilis)) {
-                console.error("Page has invalid startedDateTime. Page id: " + page.id);
-                return false;
-            }
-
-            page['_startDate'] = startDate;
-
-   
+        const pageViews: PageView[] | undefined  = populateStartDateTime(pages);
+        if (!pageViews) {
+            return false;
         }
 
         // sort pages by startedDateTime
-        pages.sort((a, b) => (<Date>a['_startDate']).getTime() - (<Date>b['_startDate']).getTime());
+        pageViews.sort((a, b) => a.startMilis - b.startMilis);
+
+        this.pageViews = pageViews;
 
         return true;
     }
@@ -110,35 +113,26 @@ export class HarViewPageComponent {
             return true;
         }
 
-        const entryViews = [];
-        let harEndMilis = 0;
-        let harStartMilis = Number.MAX_VALUE;
+        const entryViews: EntryView[] | undefined  = populateStartDateTime(har.entries!, { offsetTime: 0, detailsOpened: true });
 
-        for (const entry of har.entries) {
-            const startDate = new Date(entry.startedDateTime);
-            const startMilis = startDate.getTime();
-            const endMilis = startMilis + entry.time;
-
-            if (isNaN(startMilis)) {
-                console.error("Entry has invalid startedDateTime. ", entry);
-                return false;
-            }
-
-            const entryView: EntryView = Object.assign(
-                { startMilis, startDate, offsetTime: 0, detailsOpened: false }, entry
-            );
-            entryViews.push(entryView);
-
-
-            harStartMilis = Math.min(harStartMilis, startMilis);
-            harEndMilis   = Math.max(harEndMilis  , endMilis  );
+        if (!entryViews) {
+            return false;
         }
 
-        
+        const harStartMilis = Math.min(
+            ...entryViews.map(x => x.startMilis),
+            Math.min( 
+                ...this.pageViews!.map(x => x.startMilis)
+            )
+        );
 
-        for (const entry of entryViews) { 
-            entry.offsetTime = (entry.startMilis - harStartMilis);
-        }
+        const harEndMilis = Math.max( 
+            ...entryViews.map(x => x.startMilis + x.time),
+        )
+
+        entryViews.forEach(
+            entry => entry.offsetTime = (entry.startMilis - harStartMilis)
+        );
 
         // sort pages by startedDateTime
         entryViews.sort((a, b) => a.startMilis - b.startMilis);
@@ -147,8 +141,6 @@ export class HarViewPageComponent {
         this.harEndMilis = harEndMilis;
         this.harStart = new Date(harStartMilis);
         this.harDuration = harEndMilis - harStartMilis;
-        
-        
 
         return true;
     }
@@ -170,4 +162,37 @@ export class HarViewPageComponent {
         return "sc-" + Math.floor(entry.response.status / 100);
     }
 
+}
+
+
+interface HasStartedDateTime {
+    startedDateTime: string
+}
+
+interface HasStartDate {
+    startDate: Date,
+    startMilis: number
+}
+
+function populateStartDateTime<T extends HasStartedDateTime, K extends {}>(items: T[], defaults?: K) : Array<T & HasStartDate & K> | undefined {
+    const views: Array<T & HasStartDate & K> = [];
+
+    for (const entry of items) {
+        const startDate = new Date(entry.startedDateTime);
+        const startMilis = startDate.getTime();
+
+        if (isNaN(startMilis)) {
+            console.error("Entry has invalid startedDateTime. ", entry);
+            return undefined;
+        }
+
+        const view = Object.assign(
+            { startMilis, startDate }, 
+            defaults,
+            entry
+        );
+        views.push(view);
+    }
+
+    return views;
 }

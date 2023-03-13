@@ -50,13 +50,7 @@
     }
 }
 
-.response-content {
-    word-break: break-all;
-    white-space: pre;
-}
 
-
-ngx-codemirror {
-    width: 400px;
-    height: 400px;
+:host ::ng-deep .CodeMirror  {
+    width: 1000px;
 }

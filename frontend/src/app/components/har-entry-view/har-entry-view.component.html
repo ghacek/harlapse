@@ -1,12 +1,16 @@
 
 <div class="tabs">
-    <div class="tab" [class.active]="tab === 0" (click)="tab = 0">Headers</div>
-    <div class="tab" [class.active]="tab === 1" (click)="tab = 1">Response</div>
+    <ng-container *ngFor="let tab of tabs">
+        <div *ngIf="!tab.disabled" 
+                class="tab" 
+                [class.active]="tab === selectedTabe" 
+                (click)="selectedTabe = tab">
+            {{ tab.name }}
+        </div>
+    </ng-container>
 </div>
 
-<ng-container *ngIf="tab === 0">
-
-
+<ng-container *ngIf="selectedTabe === tabHeaders">
     <div class="section first">
         <div class="title">General</div>
 
@@ -45,8 +49,21 @@
     </div>
 </ng-container>
 
-<ng-container *ngIf="tab === 1">
-    <ngx-codemirror 
+<ng-container *ngIf="selectedTabe === tabPayload">
+
+    <div class="post-params">
+        <div class="labeled-value" *ngFor="let param of entry.request.postData?.params">
+            <span class="label">{{param.name}}</span>
+            <span class="value">{{decodePostParam(param.value)}}</span>
+        </div>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="selectedTabe === tabResponse">
+    <div *ngIf="!tabResponse.available" class="not-available">
+        Response not available.
+    </div>
+    <ngx-codemirror *ngIf="tabResponse.available"
         [(ngModel)]="entry.response.content.text"
         [options]="{
             lineNumbers: true,
