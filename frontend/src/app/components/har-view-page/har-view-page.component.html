@@ -106,7 +106,7 @@
                         <div class="sent"></div>
                     </div>
                 </td>
-                <td><button (click)="log(entry)">Log</button></td>
+                <td><button (click)="log(entry);$event.stopPropagation()">Log</button></td>
             </tr>
             <tr *ngIf="entry.detailsOpened">
                 <td colspan="11" class="entry-view">

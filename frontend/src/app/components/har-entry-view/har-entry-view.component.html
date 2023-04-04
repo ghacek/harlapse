@@ -47,15 +47,40 @@
             <span class="value">{{header.value}}</span>
         </div>
     </div>
+
+
 </ng-container>
 
 <ng-container *ngIf="selectedTabe === tabPayload">
 
-    <div class="post-params">
+    <div class="section" *ngIf="tabPayload.hasQueryString">
+        <div class="title">Query String Parameters</div>
+
+        <div class="labeled-value" *ngFor="let param of entry.request.queryString">
+            <span class="label">{{param.name}}</span>
+            <span class="value">{{decodePostParam(param.value)}}</span>
+        </div>
+    </div>
+
+    <div class="section" *ngIf="tabPayload.hasFormData">
+        <div class="title">Form Data</div>
+
         <div class="labeled-value" *ngFor="let param of entry.request.postData?.params">
             <span class="label">{{param.name}}</span>
             <span class="value">{{decodePostParam(param.value)}}</span>
         </div>
+    </div>
+
+    <div class="section" *ngIf="tabPayload.showText">
+        <div class="title">Request Payload</div>
+
+        <ngx-codemirror *ngIf="entry.request.postData && entry.request.postData?.text"
+            [(ngModel)]="entry.request.postData.text"
+            [options]="{
+                lineNumbers: true,
+                mode: tabPayload.mimeType
+            }"
+        ></ngx-codemirror>
     </div>
 </ng-container>
 

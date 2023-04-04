@@ -1,6 +1,23 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { EntryView } from '../har-view-page/har-view-page.component';
 
+const EditorAllowedMimeTypes = [
+    "text/plain", 
+    "text/csv", 
+    "text/css", 
+    "text/html",
+    "text/calendar", 
+    "text/javascript",
+    "text/xml",
+    "application/javascript",
+    "application/json",
+    "application/ld+json",
+    "image/svg+xml",
+    "application/xhtml+xml",
+    "application/xml",
+    "application/atom+xml",
+];
+
 interface Tab {
     name: string,
     disabled?: boolean,
@@ -11,6 +28,14 @@ interface ResponseTab extends Tab {
 }
 
 interface PayloadTab extends Tab {
+    hasQueryString?: boolean,
+    hasFormData?: boolean,
+
+    /** Indicates if postData text will be displayed as text  */
+    showText?: boolean
+
+    /** If payload contains text, this will be bare mime type, without charset or other attributes. */
+    mimeType?: string;
 }
 
 @Component({
@@ -27,7 +52,7 @@ export class HarEntryViewComponent implements OnChanges {
         name: "Headers"
     };
 
-    tabPayload: Tab = {
+    tabPayload: PayloadTab = {
         name: "Payload"
     };
 
@@ -47,38 +72,57 @@ export class HarEntryViewComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['entry']) {
             this.tabResponse.available = this.isResponseTabAvailable(this.entry);
-            this.tabPayload.disabled = !this.isPayloadTabAvailable(this.entry);
+            this.configurePayloadTab(this.entry);
         }
     }
 
     private isResponseTabAvailable(entry: EntryView) {
-        const allowed = [
-            "text/plain", 
-            "text/csv", 
-            "text/css", 
-            "text/html",
-            "text/calendar", 
-            "text/javascript",
-            "text/xml",
-            "application/javascript",
-            "application/json",
-            "application/ld+json",
-            "image/svg+xml",
-            "application/xhtml+xml",
-            "application/xml",
-            "application/atom+xml",
-        ];
-
         const mimeType = entry.response.content.mimeType;
 
-        return allowed.includes(mimeType)
+        return EditorAllowedMimeTypes.includes(mimeType);
     }
 
-    private isPayloadTabAvailable(entry: EntryView) {
-
+    private configurePayloadTab(entry: EntryView) {
+        const postData = entry.request.postData;
         const hasPostData = !!entry.request.postData;
 
-        return hasPostData;
+        if (postData && postData.mimeType) {
+            const mimeTypeParts = postData.mimeType.split(";");
+            const mimeType = mimeTypeParts[0].trim();
+
+            const canShowMimeType = EditorAllowedMimeTypes.includes(mimeType);
+
+            this.tabPayload.mimeType = mimeType;
+        }
+        else {
+            this.tabPayload.mimeType = undefined;
+        }
+
+
+        const tabPayload = this.tabPayload;
+
+        tabPayload.hasQueryString = (entry.request.queryString && entry.request.queryString.length > 0);
+        tabPayload.hasFormData = (postData && postData.params && postData.params.length > 0);
+
+        if (postData && postData.mimeType) {
+            const mimeTypeParts = postData.mimeType.split(";");
+            const mimeType = mimeTypeParts[0].trim();
+
+            const canShowMimeType = EditorAllowedMimeTypes.includes(mimeType);
+
+            tabPayload.mimeType = mimeType;
+            tabPayload.showText = canShowMimeType && !tabPayload.hasFormData;
+        }
+        else {
+            tabPayload.mimeType = undefined;
+            tabPayload.showText = false;
+        }
+
+
+
+        const showTab = hasPostData || tabPayload.hasQueryString || tabPayload.hasFormData;
+
+        this.tabPayload.disabled = !showTab;
     }
 
 
