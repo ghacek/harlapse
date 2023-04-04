@@ -84,6 +84,14 @@
     </div>
 </ng-container>
 
+<ng-container *ngIf="selectedTabe === tabPreview">
+
+    <div *ngIf="tabPreview.showImage" class="image-preview">
+        <img [src]="'data:' + entry.response.content.mimeType + ';base64,' +  entry.response.content.text" />
+    </div>
+
+</ng-container>
+
 <ng-container *ngIf="selectedTabe === tabResponse">
     <div *ngIf="!tabResponse.available" class="not-available">
         Response not available.

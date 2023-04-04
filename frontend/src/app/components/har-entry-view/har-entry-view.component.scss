@@ -50,6 +50,21 @@
     }
 }
 
+.image-preview {
+    text-align: center;
+    padding: 20px;
+    img {
+        max-width: 300px;
+        max-height: 300px;
+        background-position: 0px 0px, 10px 10px;
+        background-size: 20px 20px;
+        background-image: 
+                linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%, #cccccc 100%),
+                linear-gradient(45deg, #cccccc 25%, white 25%, white 75%, #cccccc 75%, #cccccc 100%);
+        box-shadow: 5px 5px 15px 0px rgba(0,0,0,0.5);
+    }
+}
+
 
 :host ::ng-deep .CodeMirror  {
     width: 1000px;

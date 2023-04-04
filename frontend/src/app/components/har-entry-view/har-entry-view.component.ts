@@ -18,6 +18,16 @@ const EditorAllowedMimeTypes = [
     "application/atom+xml",
 ];
 
+const SupportedPreviewImageMimeTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/svg+xml",
+    "image/gif",
+    "image/webp",
+    "image/apng",
+    "image/avif",
+];
+
 interface Tab {
     name: string,
     disabled?: boolean,
@@ -38,6 +48,10 @@ interface PayloadTab extends Tab {
     mimeType?: string;
 }
 
+interface PreviewTab extends Tab {
+    showImage?: boolean,
+}
+
 @Component({
   selector: 'app-har-entry-view',
   templateUrl: './har-entry-view.component.html',
@@ -56,6 +70,10 @@ export class HarEntryViewComponent implements OnChanges {
         name: "Payload"
     };
 
+    tabPreview: PreviewTab = {
+        name: "Preview",
+    };
+
     tabResponse: ResponseTab = {
         name: "Response",
     };
@@ -63,16 +81,18 @@ export class HarEntryViewComponent implements OnChanges {
     tabs: Tab[] = [
         this.tabHeaders,
         this.tabPayload,
+        this.tabPreview,
         this.tabResponse
     ];
 
-    selectedTabe = this.tabPayload;
+    selectedTabe = this.tabPreview;
 
     
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['entry']) {
             this.tabResponse.available = this.isResponseTabAvailable(this.entry);
             this.configurePayloadTab(this.entry);
+            this.configurePreviewTab(this.entry);
         }
     }
 
@@ -81,23 +101,9 @@ export class HarEntryViewComponent implements OnChanges {
 
         return EditorAllowedMimeTypes.includes(mimeType);
     }
-
     private configurePayloadTab(entry: EntryView) {
         const postData = entry.request.postData;
         const hasPostData = !!entry.request.postData;
-
-        if (postData && postData.mimeType) {
-            const mimeTypeParts = postData.mimeType.split(";");
-            const mimeType = mimeTypeParts[0].trim();
-
-            const canShowMimeType = EditorAllowedMimeTypes.includes(mimeType);
-
-            this.tabPayload.mimeType = mimeType;
-        }
-        else {
-            this.tabPayload.mimeType = undefined;
-        }
-
 
         const tabPayload = this.tabPayload;
 
@@ -118,12 +124,24 @@ export class HarEntryViewComponent implements OnChanges {
             tabPayload.showText = false;
         }
 
+        const showTab = tabPayload.hasQueryString || tabPayload.hasFormData || tabPayload.showText;
 
-
-        const showTab = hasPostData || tabPayload.hasQueryString || tabPayload.hasFormData;
-
-        this.tabPayload.disabled = !showTab;
+        tabPayload.disabled = !showTab;
     }
+
+    private configurePreviewTab(entry: EntryView) { 
+        const content = entry.response.content;
+        const tabPreview = this.tabPreview;
+
+        const isBase64 = (content.encoding === "base64");
+        const isImageMime = SupportedPreviewImageMimeTypes.includes(content.mimeType);
+
+        const showImagePreview = isImageMime && isBase64;
+
+        tabPreview.showImage = showImagePreview;
+        tabPreview.disabled = !showImagePreview;
+    }
+
 
 
     decodePostParam(param?: string) {
