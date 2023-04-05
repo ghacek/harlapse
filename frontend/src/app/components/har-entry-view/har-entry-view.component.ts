@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { EntryView } from '../har-view-page/har-view-page.component';
 
 const EditorAllowedMimeTypes = [
@@ -49,7 +50,10 @@ interface PayloadTab extends Tab {
 }
 
 interface PreviewTab extends Tab {
+    /** If true - response contains  image and we will show it as <img> */
     showImage?: boolean,
+    /** If true - response contains HTML and we will show it in <iframe> */
+    showHtml?: boolean,
 }
 
 @Component({
@@ -85,7 +89,11 @@ export class HarEntryViewComponent implements OnChanges {
         this.tabResponse
     ];
 
-    selectedTabe = this.tabResponse;
+    selectedTabe = this.tabHeaders;
+
+    constructor(
+        private sanitizer: DomSanitizer,
+    ) {}
 
     
     ngOnChanges(changes: SimpleChanges): void {
@@ -103,8 +111,6 @@ export class HarEntryViewComponent implements OnChanges {
     }
     private configurePayloadTab(entry: EntryView) {
         const postData = entry.request.postData;
-        const hasPostData = !!entry.request.postData;
-
         const tabPayload = this.tabPayload;
 
         tabPayload.hasQueryString = (entry.request.queryString && entry.request.queryString.length > 0);
@@ -134,12 +140,19 @@ export class HarEntryViewComponent implements OnChanges {
         const tabPreview = this.tabPreview;
 
         const isBase64 = (content.encoding === "base64");
+
+        // -- Check if response is an image we can display
         const isImageMime = SupportedPreviewImageMimeTypes.includes(content.mimeType);
 
         const showImagePreview = isImageMime && isBase64;
 
+        // -- Check if response is HTML we can display
+        const isHtmlMime = (content.mimeType === "text/html" || content.mimeType === "application/xhtml+xml");
+
+
         tabPreview.showImage = showImagePreview;
-        tabPreview.disabled = !showImagePreview;
+        tabPreview.showHtml = isHtmlMime
+        tabPreview.disabled = !(showImagePreview || isHtmlMime);
     }
 
 
@@ -147,4 +160,15 @@ export class HarEntryViewComponent implements OnChanges {
     decodePostParam(param?: string) {
         return param ? decodeURIComponent(param) : "";
     };
+
+
+    htmlPreviewDataUrl(entry: EntryView) {
+        return this.sanitizer.bypassSecurityTrustResourceUrl(
+            'data:' + entry.response.content.mimeType + ',' +  encodeURIComponent(entry.response.content.text ?? '')
+        );
+    }
+    
+
+    // -- UI proxy
+    encodeURIComponent = encodeURIComponent;
 }

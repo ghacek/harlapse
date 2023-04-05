@@ -10,7 +10,6 @@
     </ng-container>
 </div>
 
-
 <ng-container *ngIf="selectedTabe === tabHeaders">
     <div class="headers-tab">
         <div class="section first">
@@ -87,10 +86,15 @@
 </ng-container>
 
 <ng-container *ngIf="selectedTabe === tabPreview">
-    <div class="preview-tab">
-        <div *ngIf="tabPreview.showImage" class="image-preview">
-            <img [src]="'data:' + entry.response.content.mimeType + ';base64,' +  entry.response.content.text" />
-        </div>
+    <div *ngIf="tabPreview.showImage" class="image-preview">
+        <img [src]="'data:' + entry.response.content.mimeType + ';base64,' +  entry.response.content.text" />
+    </div>
+
+    <div *ngIf="tabPreview.showHtml" class="html-preview">
+        <iframe sandbox 
+                csp="default-src 'none';style-src 'unsafe-inline'" 
+                [src]="htmlPreviewDataUrl(entry)">
+        </iframe>
     </div>
 </ng-container>
 
