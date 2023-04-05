@@ -1,8 +1,31 @@
+$block-height: #c6538c;
+
 td.name {
     max-width: 300px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.ss-block {
+    position: relative;
+
+    .expand {
+        display: none;
+        position: absolute;
+        inset: 0;
+        justify-content: center;
+        align-items: center;
+        font-size: 100px;
+        color: white;
+        cursor: pointer;
+    }
+
+    &:hover {
+        .expand {
+            display: flex;
+        }
+    }
 }
 
 .top-blocks {
@@ -14,8 +37,6 @@ td.name {
 
     .block {
         flex: 1;
-        
-
         border: 2px solid #cacdd1;
     }
 
@@ -30,7 +51,6 @@ td.name {
     width: 100%;
     max-width: 100%;
     border-collapse: collapse;
-
     border-top: 2px solid #cacdd1;
 
     thead td {
@@ -131,3 +151,32 @@ td.name {
         background: red;
     }
 }
+
+
+.full-screen-image {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #00000033;
+    animation: fade-in 250ms;
+
+
+    img {
+        max-width: 95vw;
+        max-height: 95vh;
+    }
+
+    .box {
+        border: 1px solid black;
+        background: white;
+        padding: 5px;
+    }
+}
+
+
+@keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
