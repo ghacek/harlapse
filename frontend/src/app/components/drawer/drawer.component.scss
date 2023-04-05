@@ -1,0 +1,119 @@
+
+@property --drawer-width {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 900px;
+}
+
+:host {
+    visibility: hidden;
+    position: fixed;
+    z-index: 20;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    transition: background-color 250ms, visibility 250ms;
+
+    &.left .drawer {
+        top: 0;
+        left: 0;
+        right: auto;
+        bottom: 0;
+        transform: translate(calc(-1 * var(--drawer-width, 900px)), 0);
+    }
+
+    &.visible {
+        visibility: visible;
+        background-color: #00000033;
+
+        .drawer {
+            transform: none !important;
+        }
+    }
+}
+
+.drawer {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    width: var(--drawer-width, 900px);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    transform: translate(var(--drawer-width, 900px), 0);
+    background: white;
+
+    transition: transform 250ms;
+}
+
+.header {
+    display: flex;
+    line-height: 63px;
+    padding: 0 16px 0 32px;
+    align-items: center;
+
+    background: #adc5e6;
+    border-bottom: 2px solid #1a73e8;
+
+    h2 {
+        flex: 1;
+        font-weight: 400;
+        font-size: 24px;
+        margin: 0;
+    }
+}
+
+.content {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+}
+
+.buttons,
+::ng-deep .drawer-buttons {
+    border-top: 1px solid #1D2939;
+    padding: 24px 28px 20px 28px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+
+    ::ng-deep .btn {
+        flex: 0 1 200px;
+    }
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+    animation: fade-in 250ms;
+
+    s-loader {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -40px;
+        margin-top: -40px;
+        width: 80px;
+        height: 80px;
+    }
+}
+
+
+
+
+.loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    animation: loader-spin 2s linear infinite;
+}
+@keyframes loader-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

@@ -10,6 +10,7 @@ import { FileSizePipe } from './pipes/file-size.pipe';
 import { HarEntryViewComponent } from './components/har-entry-view/har-entry-view.component';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { FormsModule } from '@angular/forms';
+import { DrawerComponent } from './components/drawer/drawer.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { FormsModule } from '@angular/forms';
     HarViewPageComponent,
     HarListPageComponent,
     FileSizePipe,
-    HarEntryViewComponent
+    HarEntryViewComponent,
+    DrawerComponent
   ],
   imports: [
     BrowserModule,

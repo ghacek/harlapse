@@ -10,97 +10,101 @@
     </ng-container>
 </div>
 
+
 <ng-container *ngIf="selectedTabe === tabHeaders">
-    <div class="section first">
-        <div class="title">General</div>
+    <div class="headers-tab">
+        <div class="section first">
+            <div class="title">General</div>
 
-        <div class="labeled-value">
-            <span class="label">Request URL:</span>
-            <span class="value">{{entry.request.url}}</span>
+            <div class="labeled-value">
+                <span class="label">Request URL:</span>
+                <span class="value">{{entry.request.url}}</span>
+            </div>
+
+            <div class="labeled-value">
+                <span class="label">Request Method:</span>
+                <span class="value">{{entry.request.method}}</span>
+            </div>
+
+            <div class="labeled-value">
+                <span class="label">Status code:</span>
+                <span class="value">{{entry.response.status}} {{entry.response.statusText}}</span>
+            </div>
         </div>
 
-        <div class="labeled-value">
-            <span class="label">Request Method:</span>
-            <span class="value">{{entry.request.method}}</span>
+        <div class="section">
+            <div class="title">Response Headers</div>
+
+            <div *ngFor="let header of entry.response.headers" class="labeled-value">
+                <span class="label">{{header.name}}:</span>
+                <span class="value">{{header.value}}</span>
+            </div>
         </div>
 
-        <div class="labeled-value">
-            <span class="label">Status code:</span>
-            <span class="value">{{entry.response.status}} {{entry.response.statusText}}</span>
+        <div class="section">
+            <div class="title">Request Headers</div>
+
+            <div *ngFor="let header of entry.request.headers" class="labeled-value">
+                <span class="label">{{header.name}}:</span>
+                <span class="value">{{header.value}}</span>
+            </div>
         </div>
     </div>
-
-    <div class="section">
-        <div class="title">Response Headers</div>
-
-        <div *ngFor="let header of entry.response.headers" class="labeled-value">
-            <span class="label">{{header.name}}:</span>
-            <span class="value">{{header.value}}</span>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="title">Request Headers</div>
-
-        <div *ngFor="let header of entry.request.headers" class="labeled-value">
-            <span class="label">{{header.name}}:</span>
-            <span class="value">{{header.value}}</span>
-        </div>
-    </div>
-
-
 </ng-container>
 
 <ng-container *ngIf="selectedTabe === tabPayload">
+    <div class="payload-tab">
+        <div class="section" *ngIf="tabPayload.hasQueryString">
+            <div class="title">Query String Parameters</div>
 
-    <div class="section" *ngIf="tabPayload.hasQueryString">
-        <div class="title">Query String Parameters</div>
-
-        <div class="labeled-value" *ngFor="let param of entry.request.queryString">
-            <span class="label">{{param.name}}</span>
-            <span class="value">{{decodePostParam(param.value)}}</span>
+            <div class="labeled-value" *ngFor="let param of entry.request.queryString">
+                <span class="label">{{param.name}}</span>
+                <span class="value">{{decodePostParam(param.value)}}</span>
+            </div>
         </div>
-    </div>
 
-    <div class="section" *ngIf="tabPayload.hasFormData">
-        <div class="title">Form Data</div>
+        <div class="section" *ngIf="tabPayload.hasFormData">
+            <div class="title">Form Data</div>
 
-        <div class="labeled-value" *ngFor="let param of entry.request.postData?.params">
-            <span class="label">{{param.name}}</span>
-            <span class="value">{{decodePostParam(param.value)}}</span>
+            <div class="labeled-value" *ngFor="let param of entry.request.postData?.params">
+                <span class="label">{{param.name}}</span>
+                <span class="value">{{decodePostParam(param.value)}}</span>
+            </div>
         </div>
-    </div>
 
-    <div class="section" *ngIf="tabPayload.showText">
-        <div class="title">Request Payload</div>
+        <div class="section" *ngIf="tabPayload.showText">
+            <div class="title">Request Payload</div>
 
-        <ngx-codemirror *ngIf="entry.request.postData && entry.request.postData?.text"
-            [(ngModel)]="entry.request.postData.text"
-            [options]="{
-                lineNumbers: true,
-                mode: tabPayload.mimeType
-            }"
-        ></ngx-codemirror>
+            <ngx-codemirror *ngIf="entry.request.postData && entry.request.postData?.text"
+                [(ngModel)]="entry.request.postData.text"
+                [options]="{
+                    lineNumbers: true,
+                    mode: tabPayload.mimeType
+                }"
+            ></ngx-codemirror>
+        </div>
     </div>
 </ng-container>
 
 <ng-container *ngIf="selectedTabe === tabPreview">
-
-    <div *ngIf="tabPreview.showImage" class="image-preview">
-        <img [src]="'data:' + entry.response.content.mimeType + ';base64,' +  entry.response.content.text" />
+    <div class="preview-tab">
+        <div *ngIf="tabPreview.showImage" class="image-preview">
+            <img [src]="'data:' + entry.response.content.mimeType + ';base64,' +  entry.response.content.text" />
+        </div>
     </div>
-
 </ng-container>
 
 <ng-container *ngIf="selectedTabe === tabResponse">
-    <div *ngIf="!tabResponse.available" class="not-available">
-        Response not available.
+    <div class="response-tab">
+        <div *ngIf="!tabResponse.available" class="not-available">
+            Response not available.
+        </div>
+        <ngx-codemirror *ngIf="tabResponse.available"
+            [(ngModel)]="entry.response.content.text"
+            [options]="{
+                lineNumbers: true,
+                mode: entry.response.content.mimeType
+            }"
+        ></ngx-codemirror>
     </div>
-    <ngx-codemirror *ngIf="tabResponse.available"
-        [(ngModel)]="entry.response.content.text"
-        [options]="{
-            lineNumbers: true,
-            mode: entry.response.content.mimeType
-        }"
-    ></ngx-codemirror>
 </ng-container>

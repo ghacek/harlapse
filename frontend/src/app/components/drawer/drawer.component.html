@@ -1,0 +1,29 @@
+<div class="drawer" (click)="$event.stopPropagation()">
+    <!-- We are keeping .drawer div even when drawer is not visible, so that transition animation can work. -->
+    <ng-container *ngIf="visible">
+        <div class="header">
+            <h2>
+                {{title}}
+                <ng-container *ngTemplateOutlet="header"></ng-container>
+            </h2>
+
+            <button class="btn-close" (click)="close()">
+                X
+            </button>
+        </div>
+
+        <div class="content to-scrollbar">
+            <div *ngIf="showOverlay || showLoadingOverlay" class="overlay">
+                <div class="loader"></div>
+            </div>
+            <ng-content></ng-content>
+            <ng-container *ngTemplateOutlet="content"></ng-container>
+        </div>
+
+        <ng-container *ngIf="footer" [ngTemplateOutlet]="footer"></ng-container>
+
+        <div class="buttons" *ngIf="buttons">
+            <ng-container [ngTemplateOutlet]="buttons"></ng-container>
+        </div>
+    </ng-container> 
+</div>

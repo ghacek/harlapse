@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Log as HarLog } from 'har-format';
 import { Entry, Page } from 'har-format';
+import { DrawerComponent } from '../drawer/drawer.component';
 
 
 export interface PageView extends Page {
@@ -32,6 +33,8 @@ export interface EntryView extends Entry {
   styleUrls: ['./har-view-page.component.scss']
 })
 export class HarViewPageComponent {
+    @ViewChild(DrawerComponent, { static: true })
+    drawer!: DrawerComponent;
 
     id?: string;
 
@@ -40,6 +43,8 @@ export class HarViewPageComponent {
     pageViews?: PageView[];
 
     entryViews?: EntryView[];
+
+    drawerEntry?: EntryView;
 
     /** Defines if loaded HAR file contains requests from multiple pages. */
     multiplePages = false;
@@ -137,6 +142,9 @@ export class HarViewPageComponent {
         // sort pages by startedDateTime
         entryViews.sort((a, b) => a.startMilis - b.startMilis);
 
+        this.drawerEntry = entryViews.length > 0 ? entryViews[0] : undefined;
+        this.drawer.visible = true;
+
         this.entryViews = entryViews;
         this.harEndMilis = harEndMilis;
         this.harStart = new Date(harStartMilis);
@@ -160,6 +168,11 @@ export class HarViewPageComponent {
         
     statusToClass(entry: EntryView) {
         return "sc-" + Math.floor(entry.response.status / 100);
+    }
+
+    showEntry(entry: EntryView) {
+        this.drawerEntry = entry;
+        this.drawer.visible = true;
     }
 
 }

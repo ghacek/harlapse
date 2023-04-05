@@ -85,7 +85,7 @@ export class HarEntryViewComponent implements OnChanges {
         this.tabResponse
     ];
 
-    selectedTabe = this.tabPreview;
+    selectedTabe = this.tabResponse;
 
     
     ngOnChanges(changes: SimpleChanges): void {

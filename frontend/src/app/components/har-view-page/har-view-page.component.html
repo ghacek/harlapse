@@ -63,7 +63,7 @@
             <td colspan="10" class="no-requests">No requests captured.</td>
         </tr>
         <ng-container *ngFor="let entry of entryViews; let i = index">
-            <tr (click)="entry.detailsOpened = !entry.detailsOpened" class="{{statusToClass(entry)}}">
+            <tr (click)="showEntry(entry)" class="{{statusToClass(entry)}}">
                 <td>{{i + 1}}</td>
                 <td>+{{entry.offsetTime}}ms</td>
                 <td><span class="status">{{entry.response.status}}</span></td>
@@ -108,14 +108,18 @@
                 </td>
                 <td><button (click)="log(entry);$event.stopPropagation()">Log</button></td>
             </tr>
-            <tr *ngIf="entry.detailsOpened">
+            <!-- <tr *ngIf="entry.detailsOpened">
                 <td colspan="11" class="entry-view">
                     <app-har-entry-view [entry]="entry"></app-har-entry-view>
                 </td>
-            </tr>
+            </tr> -->
         </ng-container>
 
     </tbody>
 
 
 </table>
+
+<app-drawer [title]="'Network request details'">
+    <app-har-entry-view *ngIf="drawerEntry" [entry]="drawerEntry"></app-har-entry-view>
+</app-drawer>
