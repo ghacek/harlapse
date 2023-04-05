@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -72,7 +71,6 @@ public class GreetingResource {
         Files.list(folder)
             .filter(Files::isRegularFile)
             .forEach(file -> {
-                System.out.println(file);
                 final String dropId = removeFileSuffix(file.getFileName().toString());
 
                 if (hashMap.get(dropId) == null) {
