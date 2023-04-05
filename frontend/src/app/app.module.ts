@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { HarViewPageComponent } from './components/har-view-page/har-view-page.component';
 import { HarListPageComponent } from './components/har-list-page/har-list-page.component';
 import { FileSizePipe } from './pipes/file-size.pipe';
+import { MillisToHrPipe } from './pipes/millis-to-hr';
 import { HarEntryViewComponent } from './components/har-entry-view/har-entry-view.component';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { FormsModule } from '@angular/forms';
@@ -17,9 +18,10 @@ import { DrawerComponent } from './components/drawer/drawer.component';
     AppComponent,
     HarViewPageComponent,
     HarListPageComponent,
-    FileSizePipe,
     HarEntryViewComponent,
-    DrawerComponent
+    DrawerComponent,
+    FileSizePipe,
+    MillisToHrPipe
   ],
   imports: [
     BrowserModule,

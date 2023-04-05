@@ -66,7 +66,6 @@ export class HarViewPageComponent {
     ngOnInit() {
         this.route.queryParamMap.subscribe(params => {
           const id = params.get('id');
-          
 
           if (id) {
             this.loadHar(id);
@@ -183,6 +182,7 @@ export class HarViewPageComponent {
     }
 
     showEntry(entry: EntryView) {
+        console.log("Show entry", entry);
         this.drawerEntry = entry;
         this.drawer.visible = true;
     }

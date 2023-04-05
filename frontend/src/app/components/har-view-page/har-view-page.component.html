@@ -44,7 +44,7 @@
     <thead>
         <tr>
             <td style="width:30px">#</td>
-            <td style="width:100px">Time</td>
+            <td style="width:120px">Time</td>
             <td style="width:60px">Status</td>
             <td style="width:60px">Method</td>
             <td style="width:100px" *ngIf="multiplePages">Page</td>
@@ -55,7 +55,6 @@
             <td style="width:80px">Resp. Size</td>
             <td style="width:80px">Time</td>
             <td style="min-width:200px">Waterfall</td>
-            <td style="width:70px"></td>
         </tr>
     </thead>
     <tbody>
@@ -65,7 +64,7 @@
         <ng-container *ngFor="let entry of entryViews; let i = index">
             <tr (click)="showEntry(entry)" class="{{statusToClass(entry)}}">
                 <td>{{i + 1}}</td>
-                <td>+{{entry.offsetTime}}ms</td>
+                <td>+{{entry.offsetTime | millisToHr}}</td>
                 <td><span class="status">{{entry.response.status}}</span></td>
                 <td>{{entry.request.method}}</td>
                 <td *ngIf="multiplePages">{{entry.pageref}}</td>
@@ -106,7 +105,6 @@
                         <div class="sent"></div>
                     </div>
                 </td>
-                <td><button (click)="log(entry);$event.stopPropagation()">Log</button></td>
             </tr>
             <!-- <tr *ngIf="entry.detailsOpened">
                 <td colspan="11" class="entry-view">
