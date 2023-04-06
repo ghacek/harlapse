@@ -153,8 +153,8 @@ export class HarViewPageComponent {
         // sort pages by startedDateTime
         entryViews.sort((a, b) => a.startMilis - b.startMilis);
 
-        //this.drawerEntry = entryViews.length > 0 ? entryViews[0] : undefined;
-        //this.drawer.visible = true;
+        this.drawerEntry = entryViews.length > 0 ? entryViews[25] : undefined;
+        this.drawer.visible = true;
 
         this.entryViews = entryViews;
         this.harEndMilis = harEndMilis;

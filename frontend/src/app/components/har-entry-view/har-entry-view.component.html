@@ -97,6 +97,13 @@
                 [src]="htmlPreviewDataUrl(entry)">
         </iframe>
     </div>
+
+    <ngx-json-viewer 
+            *ngIf="tabPreview.json" 
+            [json]="tabPreview.json" 
+            [expanded]="false"
+            class="json-preview">
+    </ngx-json-viewer>
 </ng-container>
 
 <ng-container *ngIf="selectedTabe === tabResponse">

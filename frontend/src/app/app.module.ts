@@ -12,6 +12,7 @@ import { HarEntryViewComponent } from './components/har-entry-view/har-entry-vie
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { FormsModule } from '@angular/forms';
 import { DrawerComponent } from './components/drawer/drawer.component';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { DrawerComponent } from './components/drawer/drawer.component';
     HttpClientModule,
     FormsModule,
     AppRoutingModule,
-    CodemirrorModule
+    CodemirrorModule,
+    NgxJsonViewerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

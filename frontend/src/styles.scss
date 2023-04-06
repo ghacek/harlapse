@@ -9,3 +9,49 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 14px;
 }
+
+
+/*
+--ngx-json-string : color of string values
+--ngx-json-number : color of number values
+--ngx-json-boolean : color of boolean values
+--ngx-json-date : color of date values
+--ngx-json-array : color of array values
+--ngx-json-object : color of object values
+--ngx-json-function : color of function values
+--ngx-json-null : color of null values
+--ngx-json-null-bg : background color of null values
+--ngx-json-undefined : color of undefined values
+--ngx-json-toggler : color of toggler
+--ngx-json-key : color of keys
+--ngx-json-separator : color of separators
+--ngx-json-value : color of values
+--ngx-json-undefined-key : color for key of undefined values
+--ngx-json-font-family : font-family
+--ngx-json-font-family : font-size
+*/
+
+ngx-json-viewer {
+    --ngx-json-string: #a11;
+    --ngx-json-number: #00c;
+    --ngx-json-boolean: #00c;
+
+
+    --ngx-json-undefined: #999;
+    --ngx-json-null: #999;
+    --ngx-json-null-bg: transparent;
+    --ngx-json-undefined-key: #999;
+
+    --ngx-json-toggler: #5f6368;
+    --ngx-json-separator: #5f6368;
+
+    --ngx-json-array: #999;
+    --ngx-json-object: #999;
+
+    --ngx-json-key: #708;
+    
+    .toggler::after {
+        content: "▶" !important;
+    }
+}
+

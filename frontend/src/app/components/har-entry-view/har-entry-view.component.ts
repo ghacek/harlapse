@@ -35,7 +35,7 @@ interface Tab {
 }
 
 interface ResponseTab extends Tab {
-    available?: boolean
+    available?: boolean,
 }
 
 interface PayloadTab extends Tab {
@@ -54,6 +54,12 @@ interface PreviewTab extends Tab {
     showImage?: boolean,
     /** If true - response contains HTML and we will show it in <iframe> */
     showHtml?: boolean,
+
+    /** 
+     * If response is JSON, this will be populated with parsed value and JSON 
+     * viewer will be used to display the content.
+     */
+    json?: any;
 }
 
 @Component({
@@ -98,7 +104,7 @@ export class HarEntryViewComponent implements OnChanges {
     
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['entry']) {
-            this.selectedTabe = this.tabHeaders
+            this.selectedTabe = this.tabPreview;
             this.tabResponse.available = this.isResponseTabAvailable(this.entry);
             this.configurePayloadTab(this.entry);
             this.configurePreviewTab(this.entry);
@@ -150,10 +156,15 @@ export class HarEntryViewComponent implements OnChanges {
         // -- Check if response is HTML we can display
         const isHtmlMime = (content.mimeType === "text/html" || content.mimeType === "application/xhtml+xml");
 
+        // -- Check if response is HTML we can display
+        const isJsonMime = (content.mimeType === "application/json");
+        const json = (isJsonMime && content.text) ? JSON.parse(content.text) : undefined;
+
+        tabPreview.json = json;
 
         tabPreview.showImage = showImagePreview;
         tabPreview.showHtml = isHtmlMime
-        tabPreview.disabled = !(showImagePreview || isHtmlMime);
+        tabPreview.disabled = !(showImagePreview || isHtmlMime || !!json);
     }
 
 
