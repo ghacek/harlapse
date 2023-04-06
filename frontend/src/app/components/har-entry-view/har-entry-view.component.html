@@ -83,6 +83,17 @@
                 }"
             ></ngx-codemirror>
         </div>
+
+        <div class="section" *ngIf="tabPayload.json">
+            <div class="title">Request Payload</div>
+
+            <ngx-json-viewer 
+                    *ngIf="tabPayload.json" 
+                    [json]="tabPayload.json" 
+                    [expanded]="false"
+                    class="json-payload">
+            </ngx-json-viewer>
+        </div>
     </div>
 </ng-container>
 

@@ -43,7 +43,10 @@ interface PayloadTab extends Tab {
     hasFormData?: boolean,
 
     /** Indicates if postData text will be displayed as text  */
-    showText?: boolean
+    showText?: boolean;
+
+    /** If payload is JSON, this will be parsed JSON object */
+    json?: any;
 
     /** If payload contains text, this will be bare mime type, without charset or other attributes. */
     mimeType?: string;
@@ -104,7 +107,7 @@ export class HarEntryViewComponent implements OnChanges {
     
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['entry']) {
-            this.selectedTabe = this.tabPreview;
+            this.selectedTabe = this.tabPayload;
             this.tabResponse.available = this.isResponseTabAvailable(this.entry);
             this.configurePayloadTab(this.entry);
             this.configurePreviewTab(this.entry);
@@ -127,17 +130,27 @@ export class HarEntryViewComponent implements OnChanges {
             const mimeTypeParts = postData.mimeType.split(";");
             const mimeType = mimeTypeParts[0].trim();
 
-            const canShowMimeType = EditorAllowedMimeTypes.includes(mimeType);
+            const isJsonMime = (mimeType === "application/json");
 
-            tabPayload.mimeType = mimeType;
-            tabPayload.showText = canShowMimeType && !tabPayload.hasFormData;
+            if (isJsonMime && postData.text) {
+                const json = JSON.parse(postData.text);
+
+                tabPayload.showText = false;
+                tabPayload.json = json;
+            }
+            else {
+                const canShowMimeType = EditorAllowedMimeTypes.includes(mimeType);
+
+                tabPayload.mimeType = mimeType;
+                tabPayload.showText = canShowMimeType && !tabPayload.hasFormData;
+            }
         }
         else {
             tabPayload.mimeType = undefined;
             tabPayload.showText = false;
         }
 
-        const showTab = tabPayload.hasQueryString || tabPayload.hasFormData || tabPayload.showText;
+        const showTab = tabPayload.hasQueryString || tabPayload.hasFormData || tabPayload.showText || !!tabPayload.json;
 
         tabPayload.disabled = !showTab;
     }
