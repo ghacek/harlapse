@@ -1,22 +1,10 @@
 package dev.harlapse.backend.api;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
-import java.util.UUID;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.RestForm;
-
-import com.google.common.io.ByteStreams;
 
 import dev.harlapse.backend.api.models.HarListItem;
 import dev.harlapse.backend.api.models.NewHarResponse;
@@ -36,8 +24,6 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/api")
 public class DropController {
-
-
 
     @Inject
     DropRepository dropRepo;
