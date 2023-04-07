@@ -1,5 +1,19 @@
 $block-height: #c6538c;
 
+.capture-title {
+    font-size: 32px;
+    margin: 0;
+}
+
+.capture-url {
+    color: #5f6368;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
 td.name {
     max-width: 300px;
     overflow: hidden;
