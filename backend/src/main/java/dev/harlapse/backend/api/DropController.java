@@ -122,21 +122,10 @@ public class DropController {
             @RestForm("har") InputStream harFile) throws IOException {
 
         final Drop drop = dropService.createDrop(title, url, screenshot, harFile);
+
+        try { screenshot.close(); } catch (IOException e) { e.printStackTrace(); }
+        try { harFile.close();    } catch (IOException e) { e.printStackTrace(); }
         
         return new NewHarResponse(drop.getRef());
-    }
-
-
-    private String removeFileSuffix(String fileName) {
-        final String[] parts = fileName.split("-");
-
-        if (parts.length > 1) {
-            return parts[0];
-        }
-        else {
-            return fileName;
-        }
-
-
     }
 }
