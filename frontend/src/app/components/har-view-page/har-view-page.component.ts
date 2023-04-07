@@ -14,6 +14,12 @@ export interface PageView extends Page {
     startMilis: number,
 }
 
+export interface DropInfo {
+    title: string;
+    url: string;
+    created: string;
+}
+
 export interface EntryView extends Entry {
     /** Date object created from startedDateTime */
     startDate: Date,
@@ -60,6 +66,8 @@ export class HarViewPageComponent {
     /** Difference between startTime and endTimeMilis in milliseconds. */
     harDuration: number = 0;
 
+    dropInfo?: DropInfo;
+
     constructor(private http: HttpClient, private route: ActivatedRoute) {
     }
 
@@ -68,6 +76,8 @@ export class HarViewPageComponent {
           const id = params.get('id');
 
           if (id) {
+            this.id = id;
+            this.loadDropInfo(id);
             this.loadHar(id);
           }
         });
@@ -92,8 +102,14 @@ export class HarViewPageComponent {
         return url;
     }
 
+    private loadDropInfo(ref: string) {
+        this.http.get<DropInfo>("http://localhost:8080/api/drop?ref=" + ref)
+            .subscribe(dropInfo => {
+                this.dropInfo = dropInfo;
+            });
+    }
+
     private loadHar(id: string) {
-        this.id = id;
         this.http.get<HarLog>("http://localhost:8080/api/har?id=" + id)
             .subscribe(har => {
                 this.setHar(har);

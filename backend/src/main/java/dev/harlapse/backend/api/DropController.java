@@ -20,6 +20,8 @@ import com.google.common.io.ByteStreams;
 
 import dev.harlapse.backend.api.models.HarListItem;
 import dev.harlapse.backend.api.models.NewHarResponse;
+import dev.harlapse.backend.db.entities.Drop;
+import dev.harlapse.backend.db.entities.repository.DropRepository;
 import dev.harlapse.backend.services.DropService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -29,17 +31,16 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 
 @Path("/api")
-public class GreetingResource {
+public class DropController {
 
-    private static final String HAR_FILE_SUFFIX = "-har.json";
-    private static final String SCREENSHOT_SUFFIX = "-ss.json";
+
 
     @Inject
-    @ConfigProperty(name = "harlapse.drop-dir")
-    private String dropDir;
+    DropRepository dropRepo;
 
     @Inject
     private DropService dropService;
@@ -53,23 +54,36 @@ public class GreetingResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/drop")
+    public Response drop(@QueryParam("ref") String dropRef) {
+        final Drop drop = dropRepo.findByRef(dropRef);
+
+        if (drop == null) {
+            return Response.status(404).build();
+        }
+
+        return Response.ok(drop).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/har")
-    public InputStream har(@QueryParam("id") String dropId) throws FileNotFoundException {
-        return new FileInputStream(new File(dropDir, dropId + HAR_FILE_SUFFIX));
+    public InputStream har(@QueryParam("id") String dropRef) throws FileNotFoundException {
+        return dropService.getHarContent(dropRef);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/screenshot")
-    public InputStream screenshot(@QueryParam("id") String dropId) throws FileNotFoundException {
-        return new FileInputStream(new File(dropDir, dropId + SCREENSHOT_SUFFIX));
+    public InputStream screenshot(@QueryParam("id") String dropRef) throws FileNotFoundException {
+        return dropService.getScreenshotContent(dropRef);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
     public HarListItem[] list() throws IOException {
-        final var folder = Paths.get(dropDir);
+        /*final var folder = Paths.get(dropDir);
 
         final var hashMap = new HashMap<String, HarListItem>();
 
@@ -91,7 +105,8 @@ public class GreetingResource {
                 }
             });
 
-        return hashMap.values().toArray(new HarListItem[0]);
+        return hashMap.values().toArray(new HarListItem[0]);*/
+        return new HarListItem[0];
     }
 
     
@@ -105,37 +120,12 @@ public class GreetingResource {
             @RestForm String url,
             @RestForm("ss") InputStream screenshot, 
             @RestForm("har") InputStream harFile) throws IOException {
-        final String dropId = this.generateId();
 
-        System.out.println("uuid " + dropId);
-        System.out.println("title " + title);
-        System.out.println("url " + url);
-
-
-        storeUploadFile(screenshot, dropId, SCREENSHOT_SUFFIX);
-        storeUploadFile(harFile   , dropId, HAR_FILE_SUFFIX);
-
-        dropService.createDrop(title, url);
-
-        //ByteStreams.copy(screenshot, null)
+        final Drop drop = dropService.createDrop(title, url, screenshot, harFile);
         
-        return new NewHarResponse(dropId);
+        return new NewHarResponse(drop.getRef());
     }
 
-    private void storeUploadFile(InputStream input, String dropId, String fileSuffiex) throws IOException {
-        final String fileName = dropId + fileSuffiex;
-        final OutputStream os = new FileOutputStream(new File(dropDir, fileName));
-
-        try {
-            ByteStreams.copy(input, os);
-        } finally {
-            os.close();
-        }
-    }
-
-    private String generateId() {
-        return UUID.randomUUID().toString().replace("-", "");
-    }
 
     private String removeFileSuffix(String fileName) {
         final String[] parts = fileName.split("-");
