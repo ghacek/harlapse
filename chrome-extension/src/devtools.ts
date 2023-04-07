@@ -39,15 +39,15 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
 
 
 function shareState() {
-    Promise.all([captureHar(), takeScreenshot()])
+    Promise.all([takeScreenshot(), captureHar(), captureBasicInfo()])
         .then((args) => {
-            const har = args[0];
-            //(<any>har).entries_orig = har.entries;
-            //har.entries = requests;
+            const ss = args[0];
+            const har = args[1];
+            const basicInfo = args[2];
 
             mergeEntryContent(har.entries, requests);
 
-            uploadHar(har, args[1])
+            uploadHar(har, ss, basicInfo)
                 .then((resp) => resp.json())
                 .then((resp) => {
                     chrome.tabs.create({ url: ApiHarView + "?id=" + resp.id });
@@ -56,11 +56,13 @@ function shareState() {
         })
 }
 
-function uploadHar(har: any, screenshot: Blob) {
+function uploadHar(har: any, screenshot: Blob, basicInfo: PageBasicInfo) {
     const data = new FormData();
 
     const harBlob = new Blob([JSON.stringify(har)], { type: 'text/plain' });
 
+    data.append("title", basicInfo.title);
+    data.append("url", basicInfo.url);
     data.append("har", harBlob);
     data.append("ss", screenshot);
 
@@ -92,6 +94,26 @@ function takeScreenshot() {
 
     return chrome.tabs.captureVisibleTab()
         .then(dataUrl => dataURItoBlob(dataUrl));
+}
+
+interface PageBasicInfo {
+    title: string,
+    url: string
+}
+
+function captureBasicInfo() {
+    return new Promise<PageBasicInfo>((resolve, reject) => {
+        chrome.devtools.inspectedWindow.eval(
+            "({ title: document.title, url: location.href })",
+            (result: any) => {
+                if (result) {
+                    resolve(result);
+                } 
+                else {
+                    reject();
+                }
+            });
+    });
 }
 
 function dataURItoBlob(dataURI: string) {

@@ -20,6 +20,7 @@ import com.google.common.io.ByteStreams;
 
 import dev.harlapse.backend.api.models.HarListItem;
 import dev.harlapse.backend.api.models.NewHarResponse;
+import dev.harlapse.backend.services.DropService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -39,6 +40,9 @@ public class GreetingResource {
     @Inject
     @ConfigProperty(name = "harlapse.drop-dir")
     private String dropDir;
+
+    @Inject
+    private DropService dropService;
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -60,6 +64,7 @@ public class GreetingResource {
     public InputStream screenshot(@QueryParam("id") String dropId) throws FileNotFoundException {
         return new FileInputStream(new File(dropDir, dropId + SCREENSHOT_SUFFIX));
     }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
@@ -95,15 +100,22 @@ public class GreetingResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/new-har")
-    public NewHarResponse postFormData(@RestForm("ss") InputStream screenshot, @RestForm("har") InputStream harFile) throws IOException {
+    public NewHarResponse postFormData(
+            @RestForm String title,
+            @RestForm String url,
+            @RestForm("ss") InputStream screenshot, 
+            @RestForm("har") InputStream harFile) throws IOException {
         final String dropId = this.generateId();
 
         System.out.println("uuid " + dropId);
-        System.out.println("DDDData harFile: " + harFile);
-        System.out.println("DDDData screenshot: " + screenshot);
+        System.out.println("title " + title);
+        System.out.println("url " + url);
+
 
         storeUploadFile(screenshot, dropId, SCREENSHOT_SUFFIX);
         storeUploadFile(harFile   , dropId, HAR_FILE_SUFFIX);
+
+        dropService.createDrop(title, url);
 
         //ByteStreams.copy(screenshot, null)
         
