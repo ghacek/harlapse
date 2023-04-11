@@ -121,9 +121,7 @@
 
     </table>
 
-    <app-drawer [title]="'Network request details'">
-        <app-har-entry-view *ngIf="drawerEntry" [entry]="drawerEntry"></app-har-entry-view>
-    </app-drawer>
+
 
     <div *ngIf="showScreenshotFullscreen" class="full-screen-image" (click)="showScreenshotFullscreen = false">
         <span class="box">
@@ -136,3 +134,9 @@
 <h2>Console</h2>
 <app-console-view *ngIf="consoleLog" [consoleLog]="consoleLog">
 </app-console-view>
+
+
+
+<app-drawer [title]="'Network request details'">
+    <app-har-entry-view *ngIf="drawerEntry" [entry]="drawerEntry"></app-har-entry-view>
+</app-drawer>
