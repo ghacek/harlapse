@@ -54,15 +54,22 @@ public class DropController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/har")
-    public InputStream har(@QueryParam("id") String dropRef) throws FileNotFoundException {
+    public InputStream har(@QueryParam("ref") String dropRef) throws FileNotFoundException {
         return dropService.getHarContent(dropRef);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/screenshot")
-    public InputStream screenshot(@QueryParam("id") String dropRef) throws FileNotFoundException {
+    public InputStream screenshot(@QueryParam("ref") String dropRef) throws FileNotFoundException {
         return dropService.getScreenshotContent(dropRef);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/console")
+    public InputStream console(@QueryParam("ref") String dropRef) throws FileNotFoundException {
+        return dropService.getConsoleContent(dropRef);
     }
 
     @GET
@@ -105,12 +112,14 @@ public class DropController {
             @RestForm String title,
             @RestForm String url,
             @RestForm("ss") InputStream screenshot, 
-            @RestForm("har") InputStream harFile) throws IOException {
+            @RestForm("har") InputStream harFile, 
+            @RestForm        InputStream console) throws IOException {
 
-        final Drop drop = dropService.createDrop(title, url, screenshot, harFile);
+        final Drop drop = dropService.createDrop(title, url, screenshot, harFile, console);
 
         try { screenshot.close(); } catch (IOException e) { e.printStackTrace(); }
         try { harFile.close();    } catch (IOException e) { e.printStackTrace(); }
+        try { console.close();    } catch (IOException e) { e.printStackTrace(); }
         
         return new NewHarResponse(drop.getRef());
     }

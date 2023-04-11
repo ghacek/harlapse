@@ -13,6 +13,7 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { FormsModule } from '@angular/forms';
 import { DrawerComponent } from './components/drawer/drawer.component';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
+import { ConsoleViewComponent } from './components/console-view/console-view.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
     HarEntryViewComponent,
     DrawerComponent,
     FileSizePipe,
-    MillisToHrPipe
+    MillisToHrPipe,
+    ConsoleViewComponent
   ],
   imports: [
     BrowserModule,

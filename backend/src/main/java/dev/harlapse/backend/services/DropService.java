@@ -26,6 +26,7 @@ public class DropService {
 
     private static final String HAR_FILE_SUFFIX = "-har.json";
     private static final String SCREENSHOT_SUFFIX = "-ss.json";
+    private static final String CONSOLE_SUFFIX = "-console.json";
 
     @Inject
     @ConfigProperty(name = "harlapse.drop-dir")
@@ -35,7 +36,7 @@ public class DropService {
     DropRepository dropRepo;
 
     @Transactional 
-    public Drop createDrop(String title, String url, InputStream screenshot, InputStream harFile) throws IOException {
+    public Drop createDrop(String title, String url, InputStream screenshot, InputStream harFile, InputStream console) throws IOException {
         final String ref = generateRef();
         final Drop drop = new Drop(ref, title, url);
 
@@ -43,6 +44,7 @@ public class DropService {
 
         storeUploadFile(screenshot, ref, SCREENSHOT_SUFFIX);
         storeUploadFile(harFile   , ref, HAR_FILE_SUFFIX);
+        storeUploadFile(console   , ref, CONSOLE_SUFFIX);
 
         return drop;
     }
@@ -59,6 +61,9 @@ public class DropService {
         return new FileInputStream(new File(dropDir, dropRef + SCREENSHOT_SUFFIX));
     }
 
+    public InputStream getConsoleContent(String dropRef) throws FileNotFoundException {
+        return new FileInputStream(new File(dropDir, dropRef + CONSOLE_SUFFIX));
+    }
     private void storeUploadFile(InputStream input, String dropRef, String fileSuffiex) throws IOException {
         final String fileName = dropRef + fileSuffiex;
         final OutputStream os = new FileOutputStream(new File(dropDir, fileName));

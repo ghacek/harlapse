@@ -39,15 +39,17 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
 
 
 function shareState() {
-    Promise.all([takeScreenshot(), captureHar(), captureBasicInfo()])
+
+    Promise.all([takeScreenshot(), captureHar(), captureBasicInfo(), captureLogEntries()])
         .then((args) => {
             const ss = args[0];
             const har = args[1];
             const basicInfo = args[2];
+            const log = args[3];
 
             mergeEntryContent(har.entries, requests);
 
-            uploadHar(har, ss, basicInfo)
+            uploadHar(har, ss, basicInfo, log)
                 .then((resp) => resp.json())
                 .then((resp) => {
                     chrome.tabs.create({ url: ApiHarView + "?id=" + resp.id });
@@ -56,15 +58,17 @@ function shareState() {
         })
 }
 
-function uploadHar(har: any, screenshot: Blob, basicInfo: PageBasicInfo) {
+function uploadHar(har: any, screenshot: Blob, basicInfo: PageBasicInfo, log?: any[]) {
     const data = new FormData();
 
-    const harBlob = new Blob([JSON.stringify(har)], { type: 'text/plain' });
+    const harBlob = new Blob([JSON.stringify(har)], { type: 'application/json' });
+    const consoleBlob = new Blob([JSON.stringify(log)], { type: 'application/json' });
 
     data.append("title", basicInfo.title);
     data.append("url", basicInfo.url);
     data.append("har", harBlob);
     data.append("ss", screenshot);
+    data.append("console", consoleBlob);
 
     return fetch(ApiHarUpload, {
         method: 'POST',
@@ -90,7 +94,7 @@ function takeScreenshot() {
             if (!x.tab.active || x.tab.windowId != x.focusedWin.id) {
                 alert("Tab needs to be active to take a screenshot.");
             }
-        })
+        });
 
     return chrome.tabs.captureVisibleTab()
         .then(dataUrl => dataURItoBlob(dataUrl));
@@ -155,4 +159,39 @@ function mergeEntryContent(entries: HARFormatEntry[], requests: HarRequest[]) {
             }
         }
     }
+}
+
+
+let collectedConsoleLogs: any[] | undefined = undefined;
+
+function debuggerConsoleLogCollector(source: any, method: string, params?: Object) {
+    console.log("CL", source, method, params);
+    
+    if (method !== "Runtime.consoleAPICalled") {
+        return;
+    }
+
+    collectedConsoleLogs?.push(params);
+}
+
+function captureLogEntries() {
+    return new Promise<any[] | undefined>((resolve, reject) => {
+        // TODO handle failure
+        collectedConsoleLogs = [];
+        const target = { tabId: chrome.devtools.inspectedWindow.tabId };
+
+        chrome.debugger.onEvent.addListener(debuggerConsoleLogCollector);
+        chrome.debugger.attach(target, "1.0", function() {
+            chrome.debugger.sendCommand(target, "Runtime.enable", function() {
+                chrome.debugger.onEvent.removeListener(debuggerConsoleLogCollector);
+                chrome.debugger.detach(target);
+
+                const logItems = collectedConsoleLogs;
+
+                collectedConsoleLogs = undefined;
+
+                resolve(logItems);
+            });
+        });
+    });
 }
