@@ -2,12 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>HAR-BIN</title>
+    <title>Harbin</title>
     <link rel="stylesheet" href="panel.css" />
   </head>
   <body>
 
-    <button id="share-har">Share har</button>
+    <div class="logo-line">
+        <div class="logo">
+            <img src="assets/logo.svg" />
+        </div>
+        <div class="title">
+            Make great bug reports.
+        </div>
+    </div>
+
+    <div class="desc">
+        When you click "Capture & Share" we will capture state of the webpage 
+        and make it available to share with developers.
+    </div>
+
+    <div class="btn-line">
+        <button id="share-har" class="btn">Capture & Share</button>
+
+        <div id="capture-state" style="display:none">Uploading...</div>
+    </div>
+
 
     <script src="panel.js"></script>
   </body>

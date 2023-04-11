@@ -1,4 +1,5 @@
 'use strict';
+import { Subject } from 'rxjs';
 
 // A DevTools extension adds functionality to the Chrome DevTools.
 // For more information on DevTools,
@@ -10,7 +11,7 @@ const ApiRoot = "http://localhost:8080/api/";
 const ApiHarUpload = ApiRoot + "new-har";
 const ApiHarView = "http://localhost:4000/view"; //= ApiRoot + "har";
 
-let panelWindow: Window;
+let panelWindow: any;
 
 /**
  * Requests that were logged by chrome.devtools.network.onRequestFinished 
@@ -18,10 +19,10 @@ let panelWindow: Window;
  */
 const requests: chrome.devtools.network.Request[] = [];
 
-chrome.devtools.panels.create('HarBin', '', 'panel.html', (panel) => {
+chrome.devtools.panels.create('Harbin', '', 'panel.html', (panel) => {
     panel.onShown.addListener(window => {
         panelWindow = window;
-        (<any>panelWindow)['har_share'] = shareState;
+        initializePanel();
     });
 });
 
@@ -37,10 +38,47 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
     })
 });
 
+function initializePanel() {
+    if (panelWindow.harbinInitialized) {
+        return;
+    }
 
-function shareState() {
+    panelWindow.harbinInitialized = true;
 
-    Promise.all([takeScreenshot(), captureHar(), captureBasicInfo(), captureLogEntries()])
+    panelWindow.document.getElementById("share-har")?.addEventListener('click', captureAndShareClick);
+    
+}
+
+function captureAndShareClick() {
+    const updateStatus = new Subject<string>();
+    updateStatus.subscribe({
+        next : (msg) => displayCaptureState(msg, false),
+        error: (msg) => {displayCaptureState(msg, true); console.log("obs error")}
+    });
+
+    shareState(updateStatus);
+}
+
+function displayCaptureState(status: string, isError: boolean) {
+    const el: HTMLDivElement = panelWindow.document.getElementById("capture-state");
+
+    if (isError) {
+        el.classList.add("error");
+    } 
+    else {
+        el.classList.remove("error");
+    }
+
+    el.style.display = "block";
+    el.innerText = status;
+}
+
+
+function shareState(updateStatus: Subject<string>) {
+
+    updateStatus.next("Capturing state...")
+
+    return Promise.all([takeScreenshot(), captureHar(), captureBasicInfo(), captureLogEntries()])
         .then((args) => {
             const ss = args[0];
             const har = args[1];
@@ -49,13 +87,16 @@ function shareState() {
 
             mergeEntryContent(har.entries, requests);
 
-            uploadHar(har, ss, basicInfo, log)
+            updateStatus.next("Uploading state...")
+
+            return uploadHar(har, ss, basicInfo, log)
                 .then((resp) => resp.json())
                 .then((resp) => {
                     chrome.tabs.create({ url: ApiHarView + "?id=" + resp.id });
                 })
-                .catch(() => alert('HAR upload failed'));
-        })
+                .then((resp) => updateStatus.next("Capture finished!"))
+                .catch(() => updateStatus.error("Upload failed!"));
+        });
 }
 
 function uploadHar(har: any, screenshot: Blob, basicInfo: PageBasicInfo, log?: any[]) {
@@ -165,7 +206,7 @@ function mergeEntryContent(entries: HARFormatEntry[], requests: HarRequest[]) {
 let collectedConsoleLogs: any[] | undefined = undefined;
 
 function debuggerConsoleLogCollector(source: any, method: string, params?: Object) {
-    console.log("CL", source, method, params);
+    //console.log("CL", source, method, params);
     
     if (method !== "Runtime.consoleAPICalled") {
         return;

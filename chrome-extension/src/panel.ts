@@ -8,6 +8,3 @@
 
 import './panel.css';
 
-document.getElementById("share-har")?.addEventListener('click', () => {
-    (<any>window).har_share();
-});
