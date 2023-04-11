@@ -1,0 +1,26 @@
+
+.messages {
+    border-top: 2px solid #cacdd1;
+}
+
+.log-msg {
+    font-size: 12px;
+    span {
+        white-space: pre-wrap;
+        font-family: consolas, 'Courier New', Courier, monospace;
+    }
+
+    border-bottom: 1px solid #cacdd1;
+    padding: 5px;
+
+    &.type-warning {
+        color: #5c3c00;
+        background: #fffbe6;
+    }
+
+    &.type-error,
+    &.type-assert {
+        color: #F00;
+        background: #fff0f0;
+    }
+}

@@ -8,15 +8,15 @@
 
     <div class="top-blocks">
         <div class="block ss-block">
-            <img class="screenshot" src="http://localhost:8080/api/screenshot?id={{id}}">
+            <img class="screenshot" src="http://localhost:8080/api/screenshot?ref={{id}}">
 
             <div class="expand" (click)="showScreenshotFullscreen = true">&#x26F6;</div>
         </div>
         <div class="block">
             <div><b>Start time:</b> {{harStart | date: 'dd.MM.yyyy HH:mm:ss.SSS'}}</div>
-            <div><b>Created:</b> {{dropInfo?.created | date: 'dd.MM.yyyy HH:mm:ss.SSS'}}</div>
+            <div><b>Created:</b> {{dropInfo.created | date: 'dd.MM.yyyy HH:mm:ss.SSS'}}</div>
         </div>
-        <div class="block">c</div>
+        <div class="block"></div>
     </div>
 
     <ng-container *ngIf="multiplePages">
@@ -40,12 +40,9 @@
                 </tr>
             </tbody>
         </table>
-
-        <h2>Requests</h2>
-
     </ng-container>
 
-
+    <h2>Network Requests</h2>
     <table *ngIf="har" class="gtable">
         <thead>
             <tr>
@@ -130,8 +127,12 @@
 
     <div *ngIf="showScreenshotFullscreen" class="full-screen-image" (click)="showScreenshotFullscreen = false">
         <span class="box">
-            <img class="screenshot" src="http://localhost:8080/api/screenshot?id={{id}}">
+            <img class="screenshot" src="http://localhost:8080/api/screenshot?ref={{id}}">
         </span>
     </div>
 
 </ng-container>
+
+<h2>Console</h2>
+<app-console-view *ngIf="consoleLog" [consoleLog]="consoleLog">
+</app-console-view>

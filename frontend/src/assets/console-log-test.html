@@ -1,0 +1,134 @@
+<script>
+
+console.clear()
+
+var testVariable = 404;
+console.log("This is triggered by console.log")
+console.log("log string", 12);
+console.log("log int", 12);
+console.log("log Math.E", Math.E);
+console.log("log Math.PI", Math.PI);
+console.log("log Number.EPSILON", Number.EPSILON);
+console.log("log Number.MAX_VALUE", Number.MAX_VALUE);
+console.log("log Number.MIN_VALUE", Number.MIN_VALUE);
+console.log("log boolean", true);
+console.log("log date", new Date());
+console.log("log window", window);
+console.log("log object", {my:"property"});
+console.log("log array", [{my1:"property1"},{my2:"property2"}]);
+console.log("log lambda", () => 1);
+console.log("log native f", window.location.reload);
+
+console.log("-----");
+
+console.info("Type info");
+console.debug("Type debug");
+console.warn("Type warn");
+console.error("Type error");
+console.assert(true, "Assert success");
+console.assert(false, "Assert fail");
+console.trace("Trace call");
+
+
+console.log("-----");
+
+
+console.log("Cont default to 5")
+for (i = 1; i <= 5; i++){
+  console.count();
+}
+console.countReset();
+
+console.log("Cont two to 3")
+for (i = 1; i <= 5; i++) {
+  let firstLabel = "First Label"
+  let secondLabel = "Second Label"
+
+  console.count(firstLabel)
+  console.count(secondLabel)
+}
+
+console.log("-----");
+
+console.time("MyTimer");
+console.timeEnd("MyTimer");
+
+console.log("-----");
+
+console.log("This is the first level");
+
+console.group("First group");
+console.log("In the first group");
+
+console.group("Second group");
+console.log("In the second group under first group");
+console.warn("Still in the second group");
+
+console.groupEnd();
+
+console.log("Back to the first group");
+console.groupEnd();
+
+console.groupCollapsed("Collapsed group");
+console.log("List 1"); 
+console.log("List 2"); 
+console.log("List 3");  
+console.groupEnd();
+
+console.log("-----");
+
+console.table({
+  name:"Ravidu",
+  age:25,
+  job:"writer",
+});
+
+
+console.table(["Washington","Delhi","London","Stockholm"]);
+
+console.table(
+    [["USA", "Washington"],["India","Delhi"],["UK","London"],["Sweden","Stockholm"]]
+);
+
+console.table([
+   {
+       name: "Sam",
+       age: 30
+   },
+   {
+       name: "John",
+       age: 45
+   },
+   {
+       name: "Peter",
+       age: 20
+   }
+]);
+
+console.table ({
+  writer: {
+   firstname: "Ravindu",
+   lastname: "Shehan", 
+   email: "ravindu@gmail.com"
+  }, 
+  reviewer: {
+   firstname: "Ravindu",
+   lastname: "Shehan", 
+   email: "ravindu@gmail.com"
+  }
+});
+
+console.log("-----");
+
+console.dir(window);
+console.dir({
+   firstname: "Ravindu",
+   lastname: "Shehan", 
+   email: "ravindu@gmail.com"
+  });
+
+  console.dirxml(document.body);
+
+  console.profile()
+  console.profileEnd()
+</script>

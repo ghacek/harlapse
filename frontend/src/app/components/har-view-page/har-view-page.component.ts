@@ -68,17 +68,20 @@ export class HarViewPageComponent {
 
     dropInfo?: DropInfo;
 
+    consoleLog?: any[];
+
     constructor(private http: HttpClient, private route: ActivatedRoute) {
     }
 
     ngOnInit() {
         this.route.queryParamMap.subscribe(params => {
-          const id = params.get('id');
+          const ref = params.get('id');
 
-          if (id) {
-            this.id = id;
-            this.loadDropInfo(id);
-            this.loadHar(id);
+          if (ref) {
+            this.id = ref;
+            this.loadDropInfo(ref);
+            this.loadHar(ref);
+            this.loadConsole(ref);
           }
         });
     }
@@ -110,9 +113,16 @@ export class HarViewPageComponent {
     }
 
     private loadHar(id: string) {
-        this.http.get<HarLog>("http://localhost:8080/api/har?id=" + id)
+        this.http.get<HarLog>("http://localhost:8080/api/har?ref=" + id)
             .subscribe(har => {
                 this.setHar(har);
+            });
+    }
+
+    private loadConsole(ref: string) {
+        this.http.get<any[]>("http://localhost:8080/api/console?ref=" + ref)
+            .subscribe(log => {
+                this.consoleLog = log;
             });
     }
 

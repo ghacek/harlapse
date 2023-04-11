@@ -1,0 +1,21 @@
+<div class="messages">
+    <div *ngFor="let logItem of consoleLog" class="log-msg" [class]="'type-' + logItem.type">
+        <ng-container [ngSwitch]="logItem.type">
+            <div class="type-log"  *ngSwitchDefault>
+                <ng-container *ngFor="let arg of logItem.args">
+                    <ng-container [ngSwitch]="arg.type">
+                        <span *ngSwitchCase="'string'">{{arg.value}} </span>
+                        <span *ngSwitchCase="'number'">{{arg.description}} </span>
+                        <span *ngSwitchCase="'boolean'">{{arg.value  ? 'true' : 'false'}} </span>
+                        <span *ngSwitchCase="'object'">{{arg.description}} </span>
+                        <span *ngSwitchCase="'function'">{{arg.description}} </span>
+                        
+                        <span *ngSwitchDefault>XXXX {{arg.description}} </span>
+                    </ng-container>
+                </ng-container>
+                
+            </div>
+        </ng-container>
+    </div>
+
+</div>
