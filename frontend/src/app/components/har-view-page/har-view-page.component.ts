@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Log as HarLog } from 'har-format';
 import { Entry, Page } from 'har-format';
 import { DrawerComponent } from '../drawer/drawer.component';
+import { environment } from 'src/environments/environment';
 
 
 export interface PageView extends Page {
@@ -106,21 +107,21 @@ export class HarViewPageComponent {
     }
 
     private loadDropInfo(ref: string) {
-        this.http.get<DropInfo>("http://localhost:8080/api/drop?ref=" + ref)
+        this.http.get<DropInfo>(environment.apiRootUrl + "/api/drop?ref=" + ref)
             .subscribe(dropInfo => {
                 this.dropInfo = dropInfo;
             });
     }
 
     private loadHar(id: string) {
-        this.http.get<HarLog>("http://localhost:8080/api/har?ref=" + id)
+        this.http.get<HarLog>(environment.apiRootUrl + "/api/har?ref=" + id)
             .subscribe(har => {
                 this.setHar(har);
             });
     }
 
     private loadConsole(ref: string) {
-        this.http.get<any[]>("http://localhost:8080/api/console?ref=" + ref)
+        this.http.get<any[]>(environment.apiRootUrl + "/api/console?ref=" + ref)
             .subscribe(log => {
                 this.consoleLog = log;
             });
@@ -211,6 +212,9 @@ export class HarViewPageComponent {
         this.drawerEntry = entry;
         this.drawer.visible = true;
     }
+
+    // UI proxy
+    apiRootUrl = environment.apiRootUrl;
 
 }
 

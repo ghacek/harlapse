@@ -7,9 +7,12 @@ import { Subject } from 'rxjs';
 
 type HarRequest = chrome.devtools.network.Request;
 
-const ApiRoot = "http://localhost:8080/api/";
+const ApiRoot = "http://cutes.io:8081/api/";
 const ApiHarUpload = ApiRoot + "new-har";
-const ApiHarView = "http://localhost:4000/view"; //= ApiRoot + "har";
+//const ApiHarView = "http://localhost:4000/view"; //= ApiRoot + "har";
+const ApiHarView = "https://harbin.dev/view";
+
+
 
 let panelWindow: any;
 

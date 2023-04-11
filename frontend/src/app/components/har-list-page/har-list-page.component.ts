@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   templateUrl: './har-list-page.component.html',
@@ -10,7 +11,7 @@ export class HarListPageComponent {
     hars?: any;
 
     constructor(private http: HttpClient) {
-        http.get("http://localhost:8080/api/list")
+        http.get(environment.apiRootUrl + "/api/list")
             .subscribe(x => this.hars = x);
     }
 

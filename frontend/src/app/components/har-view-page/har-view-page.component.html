@@ -8,7 +8,7 @@
 
     <div class="top-blocks">
         <div class="block ss-block">
-            <img class="screenshot" src="http://localhost:8080/api/screenshot?ref={{id}}">
+            <img class="screenshot" src="{{apiRootUrl}}/api/screenshot?ref={{id}}">
 
             <div class="expand" (click)="showScreenshotFullscreen = true">&#x26F6;</div>
         </div>
@@ -125,7 +125,7 @@
 
     <div *ngIf="showScreenshotFullscreen" class="full-screen-image" (click)="showScreenshotFullscreen = false">
         <span class="box">
-            <img class="screenshot" src="http://localhost:8080/api/screenshot?ref={{id}}">
+            <img class="screenshot" src="{{apiRootUrl}}/screenshot?ref={{id}}">
         </span>
     </div>
 
