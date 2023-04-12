@@ -1,3 +1,8 @@
+<div class="top-bar">
+    <img src="/assets/logo.svg" height="40">
+</div>
+
+<div class="offset">
 
 <div *ngIf="!har || !dropInfo">Loading...</div>
 
@@ -135,7 +140,7 @@
 <app-console-view *ngIf="consoleLog" [consoleLog]="consoleLog">
 </app-console-view>
 
-
+</div>
 
 <app-drawer [title]="'Network request details'">
     <app-har-entry-view *ngIf="drawerEntry" [entry]="drawerEntry"></app-har-entry-view>

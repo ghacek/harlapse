@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { DrawerComponent } from './components/drawer/drawer.component';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import { ConsoleViewComponent } from './components/console-view/console-view.component';
+import { IndexPageComponent } from './components/index-page/index-page.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { ConsoleViewComponent } from './components/console-view/console-view.com
     DrawerComponent,
     FileSizePipe,
     MillisToHrPipe,
-    ConsoleViewComponent
+    ConsoleViewComponent,
+    IndexPageComponent
   ],
   imports: [
     BrowserModule,

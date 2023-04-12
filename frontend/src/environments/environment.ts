@@ -1,8 +1,8 @@
 
 export const environment = {
     production: false,
-    //apiRootUrl: "http://localhost:8080",
-    apiRootUrl: "https://harbin.dev",
+    apiRootUrl: "http://localhost:8080",
+    //apiRootUrl: "https://harbin.dev",
 };
 
 /*
