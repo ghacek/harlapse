@@ -15,8 +15,7 @@
     "devtools_page": "devtools.html",
     "permissions": [
         "activeTab",
-        "debugger",
-        "<all_urls>"
+        "debugger"
     ],
     "host_permissions": [
         "<all_urls>"
