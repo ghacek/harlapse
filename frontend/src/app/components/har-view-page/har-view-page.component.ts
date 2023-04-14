@@ -16,8 +16,10 @@ export interface PageView extends Page {
 }
 
 export interface DropInfo {
-    title: string;
-    url: string;
+    pageTitle: string;
+    pageUrl: string;
+    title?: string;
+    description?: string;
     created: string;
 }
 

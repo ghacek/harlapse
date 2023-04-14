@@ -8,8 +8,8 @@
 
 <ng-container *ngIf="har && dropInfo">
 
-    <h1 class="capture-title">{{dropInfo.title}}</h1>
-    <a class="capture-url" [href]="dropInfo.url">{{dropInfo.url}}</a>
+    <h1 class="capture-title">{{dropInfo.title ?? dropInfo.pageUrl}}</h1>
+    <a class="capture-url" [href]="dropInfo.pageUrl">{{dropInfo.pageUrl}}</a>
 
     <div class="top-blocks">
         <div class="block ss-block">
@@ -17,9 +17,10 @@
 
             <div class="expand" (click)="showScreenshotFullscreen = true">&#x26F6;</div>
         </div>
-        <div class="block">
-            <div><b>Start time:</b> {{harStart | date: 'dd.MM.yyyy HH:mm:ss.SSS'}}</div>
+        <div class="block p-2">
+            <div><b>Page title:</b> {{dropInfo.pageTitle}}</div>
             <div><b>Created:</b> {{dropInfo.created | date: 'dd.MM.yyyy HH:mm:ss.SSS'}}</div>
+            <div><b>Description:</b> {{dropInfo.description}}</div>
         </div>
         <div class="block"></div>
     </div>
@@ -47,7 +48,7 @@
         </table>
     </ng-container>
 
-    <h2>Network Requests</h2>
+    <h2>Network Requests <span class="start-time">&nbsp; (Start time: {{harStart | date: 'dd.MM.yyyy HH:mm:ss.SSS'}})</span></h2>
     <table *ngIf="har" class="gtable">
         <thead>
             <tr>
