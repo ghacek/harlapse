@@ -208,7 +208,8 @@ export class SnapshotControllerService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<StrictHttpResponse<Blob>> {
+): Observable<StrictHttpResponse<{
+}>> {
 
     const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.GetSnapshotConsoleLogPath, 'get');
     if (params) {
@@ -216,13 +217,14 @@ export class SnapshotControllerService extends BaseService {
     }
 
     return this.http.request(rb.build({
-      responseType: 'blob',
+      responseType: 'json',
       accept: 'application/json',
       context: context
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Blob>;
+        return r as StrictHttpResponse<{
+        }>;
       })
     );
   }
@@ -238,10 +240,13 @@ export class SnapshotControllerService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<Blob> {
+): Observable<{
+}> {
 
     return this.getSnapshotConsoleLog$Response(params,context).pipe(
-      map((r: StrictHttpResponse<Blob>) => r.body as Blob)
+      map((r: StrictHttpResponse<{
+}>) => r.body as {
+})
     );
   }
 
