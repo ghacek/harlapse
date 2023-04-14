@@ -8,6 +8,7 @@ import org.jboss.resteasy.reactive.RestForm;
 
 import dev.harlapse.backend.api.models.HarListItem;
 import dev.harlapse.backend.api.models.NewHarResponse;
+import dev.harlapse.backend.api.models.TitleAndDesc;
 import dev.harlapse.backend.db.entities.Drop;
 import dev.harlapse.backend.db.entities.repository.DropRepository;
 import dev.harlapse.backend.services.DropService;
@@ -16,6 +17,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
@@ -70,6 +72,14 @@ public class DropController {
     @Path("/console")
     public InputStream console(@QueryParam("ref") String dropRef) throws FileNotFoundException {
         return dropService.getConsoleContent(dropRef);
+    }
+
+    
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/capture/{ref}/title-and-desc")
+    public void updateCaptureTitleAndDesc(@PathParam("ref") String dropRef, TitleAndDesc body) {
+        dropService.updateTitleAndDesc(dropRef, body.getTitle(), body.getDescription());
     }
 
     @GET

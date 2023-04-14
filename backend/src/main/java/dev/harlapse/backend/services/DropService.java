@@ -25,7 +25,7 @@ import jakarta.transaction.Transactional;
 public class DropService {
 
     private static final String HAR_FILE_SUFFIX = "-har.json";
-    private static final String SCREENSHOT_SUFFIX = "-ss.json";
+    private static final String SCREENSHOT_SUFFIX = "-ss.png";
     private static final String CONSOLE_SUFFIX = "-console.json";
 
     @Inject
@@ -35,10 +35,10 @@ public class DropService {
     @Inject
     DropRepository dropRepo;
 
-    @Transactional 
-    public Drop createDrop(String title, String url, InputStream screenshot, InputStream harFile, InputStream console) throws IOException {
+    @Transactional
+    public Drop createDrop(String pageTitle, String pageUrl, InputStream screenshot, InputStream harFile, InputStream console) throws IOException {
         final String ref = generateRef();
-        final Drop drop = new Drop(ref, title, url);
+        final Drop drop = new Drop(ref, pageTitle, pageUrl);
 
         dropRepo.persist(drop);
 
@@ -64,6 +64,15 @@ public class DropService {
     public InputStream getConsoleContent(String dropRef) throws FileNotFoundException {
         return new FileInputStream(new File(dropDir, dropRef + CONSOLE_SUFFIX));
     }
+
+    @Transactional
+    public void updateTitleAndDesc(String ref, String title, String desc) {
+        final Drop drop = dropRepo.findByRef(ref);
+
+        drop.setTitle(title);
+        drop.setDescription(desc);
+    }
+
     private void storeUploadFile(InputStream input, String dropRef, String fileSuffiex) throws IOException {
         final String fileName = dropRef + fileSuffiex;
         final OutputStream os = new FileOutputStream(new File(dropDir, fileName));

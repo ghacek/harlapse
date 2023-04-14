@@ -22,13 +22,25 @@ public class Drop {
     @Column(length = 45)
     private String ref;
 
+    /** Page title of this capture at the moment when capture was created. */
+    @Getter @Setter
+    @Column(length = 1024)
+    private String pageTitle;
+
+    /** Page URL of this capture at the moment when capture was created. */
+    @Getter @Setter
+    @Column(length = 2048)
+    private String pageUrl;
+
+    /** User privided title of this capture. */
     @Getter @Setter
     @Column(length = 1024)
     private String title;
 
+    /** User privided description of this capture. */
     @Getter @Setter
-    @Column(length = 2048)
-    private String url;
+    @Column
+    private String description;
 
     @Getter
     private Date created;
@@ -36,10 +48,10 @@ public class Drop {
     public Drop() {
     }
 
-    public Drop(String ref, String title, String url) {
+    public Drop(String ref, String pageTitle, String pageUrl) {
         this.ref = ref;
-        this.title = title;
-        this.url = url;
+        this.pageTitle = pageTitle;
+        this.pageUrl = pageUrl;
     }
 
     @PrePersist
