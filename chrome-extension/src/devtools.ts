@@ -79,7 +79,7 @@ function shareState(updateStatus: Subject<string>) {
             return uploadCapture(har, ss, basicInfo, log)
                 .then((resp) => resp.json())
                 .then((resp) => {
-                    chrome.tabs.create({ url: ApiHarView + "?id=" + resp.id });
+                    chrome.tabs.create({ url: ApiHarView + "/" + resp.id + "/captured" });
                 })
                 .then((resp) => updateStatus.next("Capture finished!"))
                 .catch(() => updateStatus.error("Upload failed!"));

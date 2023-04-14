@@ -1,0 +1,44 @@
+<div class="background" >
+    <div class="inner" [style.background-image]="backgroundUrl">
+    </div>
+</div>
+
+<div class="content">
+    <div class="form">
+        <h1>Page state successfuly captured!</h1>
+        <div class="lead">You now have an option to provide even more details.</div>
+
+        <div class="mt-5">
+            <label for="inputTitle" class="form-label">Capture title</label>
+            <input #titleInput type="email" class="form-control" id="inputTitle" autofocus>
+            <div class="form-text">
+                Short description why you created this capture. This will help 
+                you find it later.
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <label for="inputTitle" class="form-label">Capture description</label>
+            <textarea #descInput class="form-control"></textarea>
+            <div class="form-text">
+                Describe why you created this capture in more detail. Write 
+                something that will help developers reproduce the issue.
+            </div>
+        </div>
+
+        <div class="text-end mt-5">
+            <button type="button" 
+                    class="btn btn-link" 
+                    title="Providing capture title and description is optional"
+                    [routerLink]="['/view', ref]">
+                Skip →
+            </button>
+            <button type="button" 
+                    class="btn btn-primary"
+                    (click)="updateTitleAndDesc(titleInput.value, descInput.value)">
+                Save & Proceed
+            </button>
+        </div>
+
+    </div>
+</div>

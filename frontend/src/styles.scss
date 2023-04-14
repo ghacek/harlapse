@@ -1,6 +1,12 @@
 @import 'codemirror/lib/codemirror';
 @import 'styles/codemirror.css';
 
+@import "bootstrap/scss/bootstrap";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/forms";
+
 
 html,
 body {

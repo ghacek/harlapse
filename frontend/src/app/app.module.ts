@@ -15,6 +15,7 @@ import { DrawerComponent } from './components/drawer/drawer.component';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import { ConsoleViewComponent } from './components/console-view/console-view.component';
 import { IndexPageComponent } from './components/index-page/index-page.component';
+import { CaptureSuccessfulPageComponent } from './components/capture-successful-page/capture-successful-page.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { IndexPageComponent } from './components/index-page/index-page.component
     FileSizePipe,
     MillisToHrPipe,
     ConsoleViewComponent,
-    IndexPageComponent
+    IndexPageComponent,
+    CaptureSuccessfulPageComponent
   ],
   imports: [
     BrowserModule,

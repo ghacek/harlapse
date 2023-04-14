@@ -75,8 +75,10 @@ export class HarViewPageComponent {
     }
 
     ngOnInit() {
-        this.route.queryParamMap.subscribe(params => {
-          const ref = params.get('id');
+        this.route.params.subscribe(params => {
+          const ref = params['ref'];
+
+          console.log(params);
 
           if (ref) {
             this.id = ref;
