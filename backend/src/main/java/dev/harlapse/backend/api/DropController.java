@@ -80,39 +80,7 @@ public class DropController {
     @Path("/capture/{ref}/title-and-desc")
     public void updateCaptureTitleAndDesc(@PathParam("ref") String dropRef, TitleAndDesc body) {
         dropService.updateTitleAndDesc(dropRef, body.getTitle(), body.getDescription());
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/list")
-    public HarListItem[] list() throws IOException {
-        /*final var folder = Paths.get(dropDir);
-
-        final var hashMap = new HashMap<String, HarListItem>();
-
-        Files.list(folder)
-            .filter(Files::isRegularFile)
-            .forEach(file -> {
-                final String dropId = removeFileSuffix(file.getFileName().toString());
-
-                if (hashMap.get(dropId) == null) {
-                    long createdMilis = 0;
-                    try {
-                        BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
-                        createdMilis = attr.creationTime().toMillis();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    
-                    hashMap.put(dropId, new HarListItem(dropId, createdMilis));
-                }
-            });
-
-        return hashMap.values().toArray(new HarListItem[0]);*/
-        return new HarListItem[0];
-    }
-
-    
+    } 
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
