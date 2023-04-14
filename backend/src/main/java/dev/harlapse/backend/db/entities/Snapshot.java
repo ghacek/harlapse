@@ -11,8 +11,8 @@ import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity(name = "`drop`")
-public class Drop {
+@Entity(name = "snapshot")
+public class Snapshot {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Getter @Setter
@@ -45,10 +45,10 @@ public class Drop {
     @Getter
     private Date created;
 
-    public Drop() {
+    public Snapshot() {
     }
 
-    public Drop(String ref, String pageTitle, String pageUrl) {
+    public Snapshot(String ref, String pageTitle, String pageUrl) {
         this.ref = ref;
         this.pageTitle = pageTitle;
         this.pageUrl = pageUrl;

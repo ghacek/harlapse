@@ -13,7 +13,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.google.common.io.ByteStreams;
 
-import dev.harlapse.backend.db.entities.Drop;
+import dev.harlapse.backend.db.entities.Snapshot;
 import dev.harlapse.backend.db.entities.repository.DropRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -36,9 +36,9 @@ public class DropService {
     DropRepository dropRepo;
 
     @Transactional
-    public Drop createDrop(String pageTitle, String pageUrl, InputStream screenshot, InputStream harFile, InputStream console) throws IOException {
+    public Snapshot createDrop(String pageTitle, String pageUrl, InputStream screenshot, InputStream harFile, InputStream console) throws IOException {
         final String ref = generateRef();
-        final Drop drop = new Drop(ref, pageTitle, pageUrl);
+        final Snapshot drop = new Snapshot(ref, pageTitle, pageUrl);
 
         dropRepo.persist(drop);
 
@@ -67,7 +67,7 @@ public class DropService {
 
     @Transactional
     public void updateTitleAndDesc(String ref, String title, String desc) {
-        final Drop drop = dropRepo.findByRef(ref);
+        final Snapshot drop = dropRepo.findByRef(ref);
 
         drop.setTitle(title);
         drop.setDescription(desc);

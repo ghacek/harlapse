@@ -6,10 +6,9 @@ import java.io.InputStream;
 
 import org.jboss.resteasy.reactive.RestForm;
 
-import dev.harlapse.backend.api.models.HarListItem;
 import dev.harlapse.backend.api.models.NewHarResponse;
 import dev.harlapse.backend.api.models.TitleAndDesc;
-import dev.harlapse.backend.db.entities.Drop;
+import dev.harlapse.backend.db.entities.Snapshot;
 import dev.harlapse.backend.db.entities.repository.DropRepository;
 import dev.harlapse.backend.services.DropService;
 import jakarta.inject.Inject;
@@ -19,13 +18,12 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 
-@Path("/api")
-public class DropController {
+@Path("/api/snapshot")
+public class SnapshotController {
 
     @Inject
     DropRepository dropRepo;
@@ -42,9 +40,9 @@ public class DropController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/drop")
-    public Response drop(@QueryParam("ref") String dropRef) {
-        final Drop drop = dropRepo.findByRef(dropRef);
+    @Path("/{ref}")
+    public Response getShanpshotInfo(@PathParam("ref") String dropRef) {
+        final Snapshot drop = dropRepo.findByRef(dropRef);
 
         if (drop == null) {
             return Response.status(404).build();
@@ -53,47 +51,48 @@ public class DropController {
         return Response.ok(drop).build();
     }
 
+    /** Returns network activity of the snapshot */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/har")
-    public InputStream har(@QueryParam("ref") String dropRef) throws FileNotFoundException {
+    @Path("/{ref}/network")
+    public InputStream getSnapshotNetwork(@PathParam("ref") String dropRef) throws FileNotFoundException {
         return dropService.getHarContent(dropRef);
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/screenshot")
-    public InputStream screenshot(@QueryParam("ref") String dropRef) throws FileNotFoundException {
+    @Produces("image/png")
+    @Path("/{ref}/screenshot")
+    public InputStream getSnapshotScreenshot(@PathParam("ref") String dropRef) throws FileNotFoundException {
         return dropService.getScreenshotContent(dropRef);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/console")
-    public InputStream console(@QueryParam("ref") String dropRef) throws FileNotFoundException {
+    @Path("/{ref}/console")
+    public InputStream getSnapshotConsoleLog(@PathParam("ref") String dropRef) throws FileNotFoundException {
         return dropService.getConsoleContent(dropRef);
     }
 
     
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/capture/{ref}/title-and-desc")
-    public void updateCaptureTitleAndDesc(@PathParam("ref") String dropRef, TitleAndDesc body) {
+    @Path("/{ref}/title-and-desc")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void updateSnapshotTitleAndDesc(@PathParam("ref") String dropRef, TitleAndDesc body) {
         dropService.updateTitleAndDesc(dropRef, body.getTitle(), body.getDescription());
     } 
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/new-har")
-    public NewHarResponse postFormData(
+    @Path("/")
+    public NewHarResponse createNewSnapshot(
             @RestForm String title,
             @RestForm String url,
             @RestForm("ss") InputStream screenshot, 
             @RestForm("har") InputStream harFile, 
             @RestForm        InputStream console) throws IOException {
 
-        final Drop drop = dropService.createDrop(title, url, screenshot, harFile, console);
+        final Snapshot drop = dropService.createDrop(title, url, screenshot, harFile, console);
 
         try { screenshot.close(); } catch (IOException e) { e.printStackTrace(); }
         try { harFile.close();    } catch (IOException e) { e.printStackTrace(); }

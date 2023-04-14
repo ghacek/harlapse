@@ -30,7 +30,7 @@ export class CaptureSuccessfulPageComponent {
         const body = {
             title, description
         }
-        this.http.post(environment.apiRootUrl + "/api/capture/" + this.ref + "/title-and-desc", body)
+        this.http.post(environment.apiRootUrl + "/api/snapshot/" + this.ref + "/title-and-desc", body)
             .subscribe(x => {
                 this.router.navigate(['/view', this.ref])
             });

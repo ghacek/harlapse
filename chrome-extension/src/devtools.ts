@@ -8,7 +8,7 @@ import { PageBasicInfo, collectBasicInfo } from './collectors/basic-info-collect
 
 const ApiRoot = "http://localhost:8080/api/";
 //const ApiRoot = "http://cutes.io:8081/api/";
-const ApiHarUpload = ApiRoot + "new-har";
+const ApiHarUpload = ApiRoot + "snapshot";
 const ApiHarView = "http://localhost:4000/view"; //= ApiRoot + "har";
 //const ApiHarView = "https://harbin.dev/view";
 
