@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SnapshotControllerService } from 'src/api/services';
 import { apiScreenshotUrl } from 'src/app/util/api-util';
 import { environment } from 'src/environments/environment';
 
@@ -14,7 +15,10 @@ export class CaptureSuccessfulPageComponent {
 
     backgroundUrl?: string;
 
-    constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) {
+    constructor(
+        private snapshotController: SnapshotControllerService,
+        private route: ActivatedRoute, 
+        private router: Router) {
     }
 
     ngOnInit() {
@@ -27,11 +31,14 @@ export class CaptureSuccessfulPageComponent {
     }
 
     updateTitleAndDesc(title: string, description: string) {
-        const body = {
-            title, description
+        const params = {
+            ref: this.ref!, 
+            body: {
+                title, description
+            }
         }
-        this.http.post(environment.apiRootUrl + "/api/snapshot/" + this.ref + "/title-and-desc", body)
-            .subscribe(x => {
+        this.snapshotController.updateSnapshotTitleAndDesc(params)
+            .subscribe(() => {
                 this.router.navigate(['/view', this.ref])
             });
     }

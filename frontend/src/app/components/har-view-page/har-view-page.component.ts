@@ -5,6 +5,8 @@ import { Log as HarLog } from 'har-format';
 import { Entry, Page } from 'har-format';
 import { DrawerComponent } from '../drawer/drawer.component';
 import { environment } from 'src/environments/environment';
+import { SnapshotControllerService } from 'src/api/services';
+import { Snapshot } from 'src/api/models';
 
 
 export interface PageView extends Page {
@@ -13,14 +15,6 @@ export interface PageView extends Page {
 
     /** Unix timestamp of startDate */
     startMilis: number,
-}
-
-export interface DropInfo {
-    pageTitle: string;
-    pageUrl: string;
-    title?: string;
-    description?: string;
-    created: string;
 }
 
 export interface EntryView extends Entry {
@@ -69,11 +63,13 @@ export class HarViewPageComponent {
     /** Difference between startTime and endTimeMilis in milliseconds. */
     harDuration: number = 0;
 
-    dropInfo?: DropInfo;
+    dropInfo?: Snapshot;
 
     consoleLog?: any[];
 
-    constructor(private http: HttpClient, private route: ActivatedRoute) {
+    constructor(
+            private snapshotController: SnapshotControllerService,
+            private route: ActivatedRoute) {
     }
 
     ngOnInit() {
@@ -111,23 +107,24 @@ export class HarViewPageComponent {
     }
 
     private loadDropInfo(ref: string) {
-        this.http.get<DropInfo>(environment.apiRootUrl + "/api/drop?ref=" + ref)
+        this.snapshotController.getShanpshotInfo({ ref })
             .subscribe(dropInfo => {
+                console.log("dropInfo", dropInfo)
                 this.dropInfo = dropInfo;
             });
     }
 
-    private loadHar(id: string) {
-        this.http.get<HarLog>(environment.apiRootUrl + "/api/har?ref=" + id)
+    private loadHar(ref: string) {
+        this.snapshotController.getSnapshotNetwork({ ref })
             .subscribe(har => {
-                this.setHar(har);
+                this.setHar(<HarLog>har);
             });
     }
 
     private loadConsole(ref: string) {
-        this.http.get<any[]>(environment.apiRootUrl + "/api/console?ref=" + ref)
+        this.snapshotController.getSnapshotConsoleLog({ ref })
             .subscribe(log => {
-                this.consoleLog = log;
+                this.consoleLog = <any>log;
             });
     }
 

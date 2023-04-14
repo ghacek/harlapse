@@ -1,0 +1,180 @@
+---
+openapi: 3.0.3
+info:
+  title: backend API
+  version: 1.0.0-SNAPSHOT
+paths:
+  /api/snapshot:
+    post:
+      tags:
+      - Snapshot Controller
+      operationId: createNewSnapshot
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                url:
+                  type: string
+                ss:
+                  format: binary
+                  type: string
+                har:
+                  format: binary
+                  type: string
+                console:
+                  format: binary
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewHarResponse'
+  /api/snapshot/hello:
+    get:
+      tags:
+      - Snapshot Controller
+      operationId: hello
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+  /api/snapshot/{ref}:
+    get:
+      tags:
+      - Snapshot Controller
+      operationId: getShanpshotInfo
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Snapshot'
+  /api/snapshot/{ref}/console:
+    get:
+      tags:
+      - Snapshot Controller
+      operationId: getSnapshotConsoleLog
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/snapshot/{ref}/network:
+    get:
+      tags:
+      - Snapshot Controller
+      operationId: getSnapshotNetwork
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/snapshot/{ref}/screenshot:
+    get:
+      tags:
+      - Snapshot Controller
+      operationId: getSnapshotScreenshot
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            image/png:
+              schema:
+                format: binary
+                type: string
+  /api/snapshot/{ref}/title-and-desc:
+    post:
+      tags:
+      - Snapshot Controller
+      operationId: updateSnapshotTitleAndDesc
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TitleAndDesc'
+      responses:
+        "201":
+          description: Created
+components:
+  schemas:
+    Date:
+      format: date
+      type: string
+      example: 2022-03-10
+    NewHarResponse:
+      type: object
+      properties:
+        id:
+          type: string
+    Snapshot:
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+        ref:
+          type: string
+        pageTitle:
+          type: string
+        pageUrl:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        created:
+          $ref: '#/components/schemas/Date'
+    TitleAndDesc:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      description: Authentication
+      scheme: basic

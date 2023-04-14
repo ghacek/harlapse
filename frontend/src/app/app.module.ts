@@ -16,6 +16,8 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import { ConsoleViewComponent } from './components/console-view/console-view.component';
 import { IndexPageComponent } from './components/index-page/index-page.component';
 import { CaptureSuccessfulPageComponent } from './components/capture-successful-page/capture-successful-page.component';
+import { ApiModule } from 'src/api/api.module';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import { CaptureSuccessfulPageComponent } from './components/capture-successful-
     FormsModule,
     AppRoutingModule,
     CodemirrorModule,
-    NgxJsonViewerModule
+    NgxJsonViewerModule,
+    ApiModule.forRoot({ rootUrl: environment.apiRootUrl }),
   ],
   providers: [],
   bootstrap: [AppComponent]

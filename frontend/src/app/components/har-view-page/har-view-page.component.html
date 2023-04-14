@@ -8,19 +8,19 @@
 
 <ng-container *ngIf="har && dropInfo">
 
-    <h1 class="capture-title">{{dropInfo.title ?? dropInfo.pageUrl}}</h1>
+    <h1 class="capture-title">{{dropInfo.title ?? dropInfo.pageTitle}}</h1>
     <a class="capture-url" [href]="dropInfo.pageUrl">{{dropInfo.pageUrl}}</a>
 
     <div class="top-blocks">
         <div class="block ss-block">
-            <img class="screenshot" src="{{apiRootUrl}}/api/screenshot?ref={{id}}">
+            <img class="screenshot" src="{{apiRootUrl}}/api/snapshot/{{id}}/screenshot">
 
             <div class="expand" (click)="showScreenshotFullscreen = true">&#x26F6;</div>
         </div>
         <div class="block p-2">
-            <div><b>Page title:</b> {{dropInfo.pageTitle}}</div>
+            <div *ngIf="dropInfo.title"><b>Page title:</b> {{dropInfo.pageTitle}}</div>
             <div><b>Created:</b> {{dropInfo.created | date: 'dd.MM.yyyy HH:mm:ss.SSS'}}</div>
-            <div><b>Description:</b> {{dropInfo.description}}</div>
+            <div *ngIf="dropInfo.description"><b>Description:</b> {{dropInfo.description}}</div>
         </div>
         <div class="block"></div>
     </div>
@@ -131,7 +131,7 @@
 
     <div *ngIf="showScreenshotFullscreen" class="full-screen-image" (click)="showScreenshotFullscreen = false">
         <span class="box">
-            <img class="screenshot" src="{{apiRootUrl}}/api/screenshot?ref={{id}}">
+            <img class="screenshot" src="{{apiRootUrl}}/api/snapshot/{{id}}/screenshot">
         </span>
     </div>
 

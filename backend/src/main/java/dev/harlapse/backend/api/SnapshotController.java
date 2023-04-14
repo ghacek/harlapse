@@ -4,6 +4,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.jboss.resteasy.reactive.RestForm;
 
 import dev.harlapse.backend.api.models.NewHarResponse;
@@ -19,7 +23,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
 
 @Path("/api/snapshot")
@@ -41,20 +44,22 @@ public class SnapshotController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{ref}")
-    public Response getShanpshotInfo(@PathParam("ref") String dropRef) {
+    public Snapshot getShanpshotInfo(@PathParam("ref") String dropRef) {
         final Snapshot drop = dropRepo.findByRef(dropRef);
 
-        if (drop == null) {
-            return Response.status(404).build();
-        }
-
-        return Response.ok(drop).build();
+        return drop;
     }
 
     /** Returns network activity of the snapshot */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{ref}/network")
+    @APIResponse(
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(type = SchemaType.OBJECT)
+        )
+    )
     public InputStream getSnapshotNetwork(@PathParam("ref") String dropRef) throws FileNotFoundException {
         return dropService.getHarContent(dropRef);
     }
@@ -69,6 +74,12 @@ public class SnapshotController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{ref}/console")
+    @APIResponse(
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(type = SchemaType.OBJECT)
+        )
+    )
     public InputStream getSnapshotConsoleLog(@PathParam("ref") String dropRef) throws FileNotFoundException {
         return dropService.getConsoleContent(dropRef);
     }
