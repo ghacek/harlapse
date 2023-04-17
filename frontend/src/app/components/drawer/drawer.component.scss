@@ -62,6 +62,13 @@
         font-weight: 400;
         font-size: 24px;
         margin: 0;
+        line-height: 63px;
+    }
+
+    button {
+        line-height: normal;
+        border: 1px solid black;
+        border-radius: 2px;
     }
 }
 

@@ -76,8 +76,6 @@ export class HarViewPageComponent {
         this.route.params.subscribe(params => {
           const ref = params['ref'];
 
-          console.log(params);
-
           if (ref) {
             this.id = ref;
             this.loadDropInfo(ref);

@@ -8,6 +8,6 @@ import { Component, Input } from '@angular/core';
 export class ConsoleViewComponent {
 
     @Input()
-    public consoleLog: any[] = [];
+    public consoleLog?: any[];
 
 }
