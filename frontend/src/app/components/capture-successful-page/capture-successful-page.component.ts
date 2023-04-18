@@ -13,6 +13,8 @@ export class CaptureSuccessfulPageComponent {
 
     ref?: string;
 
+    screenshotUrl?: string;
+
     backgroundUrl?: string;
 
     constructor(
@@ -26,7 +28,8 @@ export class CaptureSuccessfulPageComponent {
           const ref = params['ref'];
 
           this.ref = ref;
-          this.backgroundUrl = "url(" + apiScreenshotUrl(ref) + ")";
+          this.screenshotUrl = apiScreenshotUrl(ref);
+          this.backgroundUrl = "url(" + this.screenshotUrl + ")";
         });
     }
 

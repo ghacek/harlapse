@@ -1,8 +1,9 @@
-<div class="image-editor" [style.background-image]="backgroundUrl">
+<div class="image-editor">
+
+    <app-image-annotate *ngIf="screenshotUrl" [imageUrl]="screenshotUrl"></app-image-annotate>
 </div>
 
 <div class="right-side">
-
 
 
     <div class="form">
@@ -20,7 +21,7 @@
 
         <div class="mt-3">
             <label for="inputTitle" class="form-label">Capture description</label>
-            <textarea #descInput class="form-control"></textarea>
+            <textarea #descInput class="form-control" rows="10"></textarea>
             <div class="form-text">
                 Describe why you created this capture in more detail. Write 
                 something that will help developers reproduce the issue.

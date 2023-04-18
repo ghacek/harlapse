@@ -17,6 +17,7 @@ import { IndexPageComponent } from './components/index-page/index-page.component
 import { CaptureSuccessfulPageComponent } from './components/capture-successful-page/capture-successful-page.component';
 import { ApiModule } from 'src/api/api.module';
 import { environment } from 'src/environments/environment';
+import { ImageAnnotateComponent } from './components/image-annotate/image-annotate.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { environment } from 'src/environments/environment';
     MillisToHrPipe,
     ConsoleViewComponent,
     IndexPageComponent,
-    CaptureSuccessfulPageComponent
+    CaptureSuccessfulPageComponent,
+    ImageAnnotateComponent
   ],
   imports: [
     BrowserModule,
