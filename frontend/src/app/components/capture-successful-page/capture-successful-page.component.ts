@@ -1,9 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SnapshotControllerService } from 'src/api/services';
 import { apiScreenshotUrl } from 'src/app/util/api-util';
-import { environment } from 'src/environments/environment';
 
 @Component({
   templateUrl: './capture-successful-page.component.html',

@@ -1,10 +1,17 @@
 import { createSVG } from "./painter-utils";
 import { Point, Vector } from "./vector";
 
+
+export interface PolylineAnnotationConfig {
+    color: string,
+    width: number,
+    path: string
+}
+
 export class PolylinePainter {
 
     /** SVG element representing this polyline. */
-    node: Element;
+    node: SVGElement;
 
     /** Array of the points defining the polyline */
     points: Point[] = [];
@@ -15,7 +22,7 @@ export class PolylinePainter {
     /** Last added point. */
     last?: Point;
 
-    constructor(canvas: Element) {
+    constructor(canvas: SVGElement) {
         this.node = createSVG("polyline", canvas);
         this.node.setAttribute("stroke", "blue");
         this.node.setAttribute("fill", "none");
@@ -134,11 +141,41 @@ export class PolylinePainter {
         return path;
     }
 
-    public addSimplifiedCurve(svg: SVGElement) {
-        const curve = createSVG("path", svg);
+    public getConfig(): PolylineAnnotationConfig {
+        return {
+            color: "purple",
+            width: 5,
+            path: this.solve(this.simplify(2))
+        };
+    }
 
-        curve.setAttribute("stroke", "purple");
-        curve.setAttribute("fill", "transparent");
-        curve.setAttribute("d", this.solve(this.simplify(2)));
+    public createAnnotation() {
+        return new PolylineAnnotation(<SVGElement><any>this.node.parentElement!, this.getConfig());
     }
 }
+
+export class PolylineAnnotation {
+    config: PolylineAnnotationConfig;
+
+    curve: SVGElement;
+
+    constructor(svg: SVGElement, config: PolylineAnnotationConfig) {
+        const curve = createSVG("path", svg);
+
+        this.curve = drawPolylineAnnotation(svg, config);
+        this.config = config;
+    }
+}
+
+
+function drawPolylineAnnotation(svg: SVGElement, config: PolylineAnnotationConfig): SVGElement {
+    const curve = createSVG("path", svg);
+
+    curve.setAttribute("stroke", config.color);
+    curve.setAttribute("stroke-width", config.width.toString());
+    curve.setAttribute("fill", "transparent");
+    curve.setAttribute("d", config.path);
+
+    return curve;
+}
+
