@@ -1,2 +1,24 @@
+<div class="tools">
+    Zoom:
+    <select #zoomSelect (change)="setZoomLevel(parseFloat(zoomSelect.value))">
+        <option class="zoom" *ngFor="let opt of zoomOptions" [value]="opt.value" >
+            {{opt.label}}
+        </option>
+    </select>
 
-<svg #svg></svg>
+    Pen size:
+    <button *ngFor="let opt of penSizeOptions" 
+            class="pen-size" 
+            [attr.data-size]="opt.size" 
+            [class.selected]="opt.size === penSize"
+            (click)="setPenSize(opt.size)">
+        <span [style.width.px]="opt.size" [style.height.px]="opt.size"></span>
+    </button>
+
+</div>
+<div #canvas class="canvas">
+    <div #image class="image">
+        <img [src]="imageUrl" (load)="onScreenshotLoad($event)" >
+        <svg #svg></svg>
+    </div>
+</div>

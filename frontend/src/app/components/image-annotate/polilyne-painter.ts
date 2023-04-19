@@ -11,24 +11,30 @@ export interface PolylineAnnotationConfig {
 export class PolylinePainter {
 
     /** SVG element representing this polyline. */
-    node: SVGElement;
+    private node: SVGElement;
 
     /** Array of the points defining the polyline */
-    points: Point[] = [];
+    private points: Point[] = [];
 
     /** Array of points in flat format: x1,y1,x2,y2,x3,... */
-    flatPoints: number[] = [];
+    private flatPoints: number[] = [];
 
     /** Last added point. */
-    last?: Point;
+    private last?: Point;
 
-    constructor(canvas: SVGElement) {
+    private readonly penSize: number = 8;
+
+    constructor(canvas: SVGElement, penSize: number) {
         this.node = createSVG("polyline", canvas);
         this.node.setAttribute("stroke", "blue");
         this.node.setAttribute("fill", "none");
+        this.node.setAttribute("stroke-width", penSize.toString());
+
+        this.penSize = penSize;
     }
 
-    addPoint(point: Point) {
+
+    public addPoint(point: Point) {
         if (this.last?.x !== point.x || this.last.y !== point.y) {
             this.last = point;
             this.points.push(point);
@@ -39,14 +45,14 @@ export class PolylinePainter {
         return this;
     }
 
-    destroy() {
+    public destroy() {
         this.node.parentElement?.removeChild(this.node);
         this.last = undefined;
         this.points = [];
         this.flatPoints = [];
     }
 
-    simplify(tolerance = 10) {
+    private simplify(tolerance = 10) {
         const points = this.points;
         const length = points.length;
 
@@ -83,7 +89,6 @@ export class PolylinePainter {
             if (previousVector.dot(currentVector) < 0) {
                 acceptPoint();
             } else {
-
                 let candidate = Vector.fromPoints(acceptedPoint, currentPoint);
                 let lastVector = Vector.fromPoints(acceptedPoint, previousPoint)
 
@@ -109,7 +114,7 @@ export class PolylinePainter {
         }, <number[]>[]);;
     }
 
-    solve(data: any) {
+    private solve(data: any) {
         var size = data.length;
         var last = size - 4;    
         
@@ -144,7 +149,7 @@ export class PolylinePainter {
     public getConfig(): PolylineAnnotationConfig {
         return {
             color: "purple",
-            width: 5,
+            width: this.penSize,
             path: this.solve(this.simplify(2))
         };
     }
