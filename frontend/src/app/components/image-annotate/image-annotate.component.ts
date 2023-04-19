@@ -99,6 +99,11 @@ export class ImageAnnotateComponent {
         console.log("kkk", canvasEl.clientWidth, canvasEl.clientHeight);
     }
 
+    clearAnotations() {
+        this.annotations.forEach(x => x.remove());
+        this.annotations = [];
+    }
+
     undoAnnotation() {
         if (this.annotations.length === 0) {
             return;
