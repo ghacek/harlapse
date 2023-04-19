@@ -18,8 +18,11 @@ export class ImageAnnotateComponent {
     @ViewChild('svg')
     svgRef!: ElementRef<SVGElement>;
 
+    @ViewChild('imgContainer')
+    imgContainerRef!: ElementRef<HTMLDivElement>;
+
     @ViewChild('canvas')
-    canvasEl!: ElementRef<HTMLDivElement>;
+    canvasRef!: ElementRef<HTMLDivElement>;
 
     @ViewChild('image')
     imageRef!: ElementRef<HTMLDivElement>;
@@ -82,21 +85,44 @@ export class ImageAnnotateComponent {
 
     onScreenshotLoad(event: Event) {
         const img = <HTMLImageElement>event.target;
+        const imgContainerEl = this.imgContainerRef.nativeElement;
 
         this.imageWidth = img.naturalWidth;
         this.imageHeight = img.naturalHeight;
 
         this.svgRef.nativeElement.setAttribute("viewBox", "0 0 " + this.imageWidth + " " + this.imageHeight);
 
-        this.setZoomLevel(this.zoomLevel);
-        this.imageRef.nativeElement.style.display = "block";
+        
+        const bestZoom = this.findBestZoomLevel(
+            imgContainerEl.clientWidth,
+            imgContainerEl.clientHeight,
+            this.imageWidth, 
+            this.imageHeight
+            );
+        this.setZoomLevel(bestZoom);
+        this.canvasRef.nativeElement.style.display = "block";
     }
 
-    @HostListener('window:resize', ['$event'])
-    onWindowResize(event: Event) {
-        const canvasEl = this.canvasEl.nativeElement;
+    private findBestZoomLevel(containerW: number, containerH: number, imageW: number, imageH: number) {
+        const wScale = containerW / imageW;
+        const hScale = containerH / imageH;
 
-        console.log("kkk", canvasEl.clientWidth, canvasEl.clientHeight);
+        const minScale = Math.min(wScale, hScale);
+
+        if (minScale >= 1) {
+            return 1;
+        }
+
+        let last = this.zoomOptions[0];
+        for (let i = 1; i < this.zoomOptions.length; i++) {
+            const opt = this.zoomOptions[i];
+            if (minScale < opt.value) {
+                break;
+            }
+            last = opt
+        }
+
+        return last.value;
     }
 
     clearAnotations() {
@@ -118,10 +144,15 @@ export class ImageAnnotateComponent {
 
     setZoomLevel(zoomLevel: number) {
         this.zoomLevel = zoomLevel;
+        const canvasEl = this.canvasRef.nativeElement;
         const imageEl = this.imageRef.nativeElement;
+        const svgEl = this.svgRef.nativeElement;
 
-        imageEl.style.width = (this.imageWidth * zoomLevel) + "px";
-        imageEl.style.height = (this.imageHeight * zoomLevel) + "px";
+        const imgWidth = (this.imageWidth * zoomLevel) + "px";
+        const imageHeight = (this.imageHeight * zoomLevel) + "px";
+
+        canvasEl.style.width  = imageEl.style.width  = svgEl.style.width  = imgWidth;
+        canvasEl.style.height = imageEl.style.height = svgEl.style.height = imageHeight;
     }
 
     setPenSize(size: number) {

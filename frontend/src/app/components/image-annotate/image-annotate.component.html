@@ -1,7 +1,10 @@
 <div class="tools">
     <div class="label">Zoom:</div>
-    <select #zoomSelect (change)="setZoomLevel(parseFloat(zoomSelect.value))">
-        <option class="zoom" *ngFor="let opt of zoomOptions" [value]="opt.value" >
+    <select #zoomSelect (change)="setZoomLevel(parseFloat(zoomSelect.value))" [value]="zoomLevel">
+        <option *ngFor="let opt of zoomOptions" 
+                class="zoom" 
+                [selected]="zoomLevel === opt.value"
+                [value]="opt.value">
             {{opt.label}}
         </option>
     </select>
@@ -34,9 +37,9 @@
     </button>
 
 </div>
-<div #canvas class="canvas">
-    <div #image class="image">
-        <img [src]="imageUrl" (load)="onScreenshotLoad($event)" >
+<div #imgContainer class="img-container">
+    <div #canvas class="canvas">
+        <img #image [src]="imageUrl" (load)="onScreenshotLoad($event)" >
         <svg #svg></svg>
     </div>
 </div>

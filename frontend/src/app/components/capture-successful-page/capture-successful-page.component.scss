@@ -12,7 +12,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #212121;
+    background-color: #333;
+
+    overflow: hidden; /* to scale */
 
     app-image-annotate {
         width: 100%;
