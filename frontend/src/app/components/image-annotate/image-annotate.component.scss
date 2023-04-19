@@ -14,32 +14,38 @@
     gap: 4px;
     display: flex;
     align-items: center;
-}
 
-.pen-size {
-    border: 1px solid #666;
-    width: 30px;
-    height: 30px;
-    background: none;
-    border-radius: 3px;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    button {
+        border: 1px solid #666;
+        width: 30px;
+        height: 30px;
+        background: none;
+        border-radius: 3px;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-    
+        span {
+            display: block;
+            background: white;
+            border-radius: 99px;
+        }
 
-    span {
-        display: inline-block;
-        display: block;
-        background: white;
-        border-radius: 99px;
-    }
-
-    &.selected {
-        background: #333;
+        &.selected {
+            background: #333;
+        }
     }
 }
+
+.pen-size span {
+    background: white;
+}
+.pen-color span {
+    width: 12px;
+    height: 12px;
+}
+
 
 .canvas {
     flex: 1;

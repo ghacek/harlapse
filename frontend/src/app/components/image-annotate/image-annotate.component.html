@@ -9,10 +9,17 @@
     Pen size:
     <button *ngFor="let opt of penSizeOptions" 
             class="pen-size" 
-            [attr.data-size]="opt.size" 
             [class.selected]="opt.size === penSize"
             (click)="setPenSize(opt.size)">
         <span [style.width.px]="opt.size" [style.height.px]="opt.size"></span>
+    </button>
+
+    Pen color:
+    <button *ngFor="let opt of penColorOptions" 
+            class="pen-color" 
+            [class.selected]="opt.color === penColor"
+            (click)="setPenColor(opt.color)">
+        <span [style.background]="opt.color" ></span>
     </button>
 
 </div>

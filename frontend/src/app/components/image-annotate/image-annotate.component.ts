@@ -35,7 +35,7 @@ export class ImageAnnotateComponent {
 
     zoomLevel = 0.5;
 
-    zoomOptions = [
+    readonly zoomOptions = [
         { value: 0.25, label: "25%" },
         { value: 0.33, label: "33%" },
         { value: 0.50, label: "50%" },
@@ -54,14 +54,24 @@ export class ImageAnnotateComponent {
         { value: 4.00, label: "400%" }
     ];
 
+    readonly penSizeOptions = [
+        { size: 2 , fontSize: "4px" },
+        { size: 4 , fontSize: "8px" },
+        { size: 8 , fontSize: "12px" },
+        { size: 12, fontSize: "16px" }
+    ];
+
+    readonly penColorOptions = [
+        { color: "#FF0000" },
+        { color: "#00FF00" },
+        { color: "#0000FF" },
+        { color: "#FFA500" },
+        { color: "#FFFF00" }
+    ];
+
     penSize = 8;
 
-    penSizeOptions = [
-        { size: 2, fontSize: "4px" },
-        { size: 4, fontSize: "8px" },
-        { size: 8, fontSize: "12px" },
-        { size: 12, fontSize: "16px" }
-    ]
+    penColor = this.penColorOptions[0].color;
 
     ngAfterViewInit() {
         this.svgRef.nativeElement.addEventListener("mousedown", this.startDrawing);
@@ -70,7 +80,7 @@ export class ImageAnnotateComponent {
     startDrawing = (event: MouseEvent) => {
         const svg = this.svgRef.nativeElement;
 
-        this.painter = new PolylinePainter(svg, this.penSize);
+        this.painter = new PolylinePainter(svg, this.penSize, this.penColor);
 
         svg.addEventListener("mousemove" , this.updateDrawing);
         svg.addEventListener("mouseup"   , this.stopDrawing);
@@ -136,6 +146,12 @@ export class ImageAnnotateComponent {
     setPenSize(size: number) {
         this.penSize = size;
     }
+
+    setPenColor(color: string) {
+        this.penColor = color;
+    }
+
+    
 
     // ui proxy 
     parseFloat = parseFloat;

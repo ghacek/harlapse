@@ -22,15 +22,17 @@ export class PolylinePainter {
     /** Last added point. */
     private last?: Point;
 
-    private readonly penSize: number = 8;
+    private readonly penSize: number;
+    private readonly penColor: string;
 
-    constructor(canvas: SVGElement, penSize: number) {
+    constructor(canvas: SVGElement, penSize: number, penColor: string) {
         this.node = createSVG("polyline", canvas);
-        this.node.setAttribute("stroke", "blue");
+        this.node.setAttribute("stroke", penColor);
         this.node.setAttribute("fill", "none");
         this.node.setAttribute("stroke-width", penSize.toString());
 
         this.penSize = penSize;
+        this.penColor = penColor;
     }
 
 
@@ -148,7 +150,7 @@ export class PolylinePainter {
 
     public getConfig(): PolylineAnnotationConfig {
         return {
-            color: "purple",
+            color: this.penColor,
             width: this.penSize,
             path: this.solve(this.simplify(2))
         };
