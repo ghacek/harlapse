@@ -1,5 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { PolylineAnnotation, PolylinePainter } from './polilyne-painter';
+import { PolylineAnnotationConfig } from './polilyne-painter';
+
+interface AnnotationImage {
+    w: number,
+    h: number
+}
+
+interface AnnotationsConfig {
+    image: AnnotationImage,
+    annotations: PolylineAnnotationConfig[]
+}
 
 @Component({
     selector: 'app-image-annotate',
@@ -161,6 +172,16 @@ export class ImageAnnotateComponent {
 
     setPenColor(color: string) {
         this.penColor = color;
+    }
+
+    public getAnnotationConfiguration(): AnnotationsConfig {
+        return {
+            image: {
+                w: this.imageWidth,
+                h: this.imageHeight
+            },
+            annotations: this.annotations.map(x => x.config)
+        }
     }
 
 
