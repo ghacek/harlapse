@@ -120,7 +120,7 @@ export class PolylinePainter {
         var size = data.length;
         var last = size - 4;    
         
-        var path = `M${data[0]},${data[1]}`;
+        var path = `M${data[0].toFixed(0)},${data[1].toFixed(0)}`;
             
         for (var i = 0; i < size - 2; i +=2) {
                 
@@ -142,7 +142,7 @@ export class PolylinePainter {
           var cp2x = (x1 + 6 * x2 - x3) / 6;
           var cp2y = (y1 + 6 * y2 - y3) / 6;
                 
-          path += `C ${cp1x},${cp1y} ${cp2x},${cp2y} ${x2},${y2}`;
+          path += `C ${cp1x.toFixed(0)},${cp1y.toFixed(0)} ${cp2x.toFixed(0)},${cp2y.toFixed(0)} ${x2.toFixed(0)},${y2.toFixed(0)}`;
         }
         
         return path;
