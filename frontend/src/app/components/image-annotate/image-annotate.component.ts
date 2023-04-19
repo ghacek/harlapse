@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { PolylineAnnotation, PolylinePainter } from './polilyne-painter';
 
 @Component({
@@ -12,17 +12,8 @@ import { PolylineAnnotation, PolylinePainter } from './polilyne-painter';
 })
 export class ImageAnnotateComponent {
 
-    private painter?: PolylinePainter;
-    private annotations: PolylineAnnotation[] = [];
-
     @Input()
     public imageUrl: string = "";
-
-    /** Original image width. */
-    imageWidth = 0;
-
-    /** Original image height. */
-    imageHeight = 0;
 
     @ViewChild('svg')
     svgRef!: ElementRef<SVGElement>;
@@ -33,7 +24,109 @@ export class ImageAnnotateComponent {
     @ViewChild('image')
     imageRef!: ElementRef<HTMLDivElement>;
 
+    private painter?: PolylinePainter;
+    annotations: PolylineAnnotation[] = [];
+
+    /** Original image width. */
+    private imageWidth = 0;
+
+    /** Original image height. */
+    private imageHeight = 0;
+
     zoomLevel = 0.5;
+    penSize = 8;
+    penColor = "#FF0000";
+
+    constructor(private changeDetectorRef: ChangeDetectorRef) {
+    }
+
+    ngAfterViewInit() {
+        this.svgRef.nativeElement.addEventListener("mousedown", this.startDrawing);
+    }
+
+    startDrawing = (event: MouseEvent) => {
+        const svg = this.svgRef.nativeElement;
+
+        this.painter = new PolylinePainter(svg, this.penSize, this.penColor);
+
+        svg.addEventListener("mousemove" , this.updateDrawing);
+        svg.addEventListener("mouseup"   , this.stopDrawing);
+        svg.addEventListener("mouseleave", this.stopDrawing);
+    }
+
+    private updateDrawing = (event: MouseEvent) => {
+        const svg = this.svgRef.nativeElement;
+        const bounds = svg.getBoundingClientRect();
+
+        const x = (event.clientX - bounds.left) / this.zoomLevel;
+        const y = (event.clientY - bounds.top) / this.zoomLevel;
+
+        this.painter!.addPoint({x, y});
+    }
+
+    private stopDrawing = (event: MouseEvent) => {
+        const svg = this.svgRef.nativeElement;
+        svg.removeEventListener("mousemove", this.updateDrawing);
+        svg.removeEventListener("mouseup", this.stopDrawing);
+        svg.removeEventListener("mouseleave", this.stopDrawing);
+
+        if (this.painter) {
+            this.annotations.push(this.painter.createAnnotation());
+
+            this.painter.destroy();
+            this.painter = undefined;
+
+            this.changeDetectorRef.markForCheck();
+        }
+    }
+
+    onScreenshotLoad(event: Event) {
+        const img = <HTMLImageElement>event.target;
+
+        this.imageWidth = img.naturalWidth;
+        this.imageHeight = img.naturalHeight;
+
+        this.svgRef.nativeElement.setAttribute("viewBox", "0 0 " + this.imageWidth + " " + this.imageHeight);
+
+        this.setZoomLevel(this.zoomLevel);
+        this.imageRef.nativeElement.style.display = "block";
+    }
+
+    @HostListener('window:resize', ['$event'])
+    onWindowResize(event: Event) {
+        const canvasEl = this.canvasEl.nativeElement;
+
+        console.log("kkk", canvasEl.clientWidth, canvasEl.clientHeight);
+    }
+
+    undoAnnotation() {
+        if (this.annotations.length === 0) {
+            return;
+        }
+        const lastIndex = this.annotations.length - 1;
+        const last = this.annotations[lastIndex];
+
+        this.annotations.splice(lastIndex, 1);
+
+        last.remove();
+    }
+
+    setZoomLevel(zoomLevel: number) {
+        this.zoomLevel = zoomLevel;
+        const imageEl = this.imageRef.nativeElement;
+
+        imageEl.style.width = (this.imageWidth * zoomLevel) + "px";
+        imageEl.style.height = (this.imageHeight * zoomLevel) + "px";
+    }
+
+    setPenSize(size: number) {
+        this.penSize = size;
+    }
+
+    setPenColor(color: string) {
+        this.penColor = color;
+    }
+
 
     readonly zoomOptions = [
         { value: 0.25, label: "25%" },
@@ -68,90 +161,6 @@ export class ImageAnnotateComponent {
         { color: "#FFA500" },
         { color: "#FFFF00" }
     ];
-
-    penSize = 8;
-
-    penColor = this.penColorOptions[0].color;
-
-    ngAfterViewInit() {
-        this.svgRef.nativeElement.addEventListener("mousedown", this.startDrawing);
-    }
-
-    startDrawing = (event: MouseEvent) => {
-        const svg = this.svgRef.nativeElement;
-
-        this.painter = new PolylinePainter(svg, this.penSize, this.penColor);
-
-        svg.addEventListener("mousemove" , this.updateDrawing);
-        svg.addEventListener("mouseup"   , this.stopDrawing);
-        svg.addEventListener("mouseleave", this.stopDrawing);
-    }
-
-    private updateDrawing = (event: MouseEvent) => {
-        const svg = this.svgRef.nativeElement;
-        const bounds = svg.getBoundingClientRect();
-
-        const x = (event.clientX - bounds.left) / this.zoomLevel;
-        const y = (event.clientY - bounds.top) / this.zoomLevel;
-
-        this.painter!.addPoint({x, y});
-    }
-
-    private stopDrawing = (event: MouseEvent) => {
-        const svg = this.svgRef.nativeElement;
-        svg.removeEventListener("mousemove", this.updateDrawing);
-        svg.removeEventListener("mouseup", this.stopDrawing);
-        svg.removeEventListener("mouseleave", this.stopDrawing);
-
-        if (this.painter) {
-
-            this.annotations.push(this.painter.createAnnotation())
-
-            this.painter.destroy();
-            this.painter = undefined;
-        }
-    }
-
-    onScreenshotLoad(event: Event) {
-        const img = <HTMLImageElement>event.target;
-
-        this.imageWidth = img.naturalWidth;
-        this.imageHeight = img.naturalHeight;
-
-        this.svgRef.nativeElement.setAttribute("viewBox", "0 0 " + this.imageWidth + " " + this.imageHeight);
-
-        this.setZoomLevel(this.zoomLevel);
-        this.imageRef.nativeElement.style.display = "block";
-    }
-
-    @HostListener('window:resize', ['$event'])
-    onWindowResize(event: Event) {
-        const canvasEl = this.canvasEl.nativeElement;
-
-        console.log("kkk", canvasEl.clientWidth, canvasEl.clientHeight);
-    }
-
-    private updateCanvasSize() {
-        const canvasEl = this.canvasEl.nativeElement;
-    }
-
-    setZoomLevel(zoomLevel: number) {
-        this.zoomLevel = zoomLevel;
-        const imageEl = this.imageRef.nativeElement;
-
-        imageEl.style.width = (this.imageWidth * zoomLevel) + "px";
-        imageEl.style.height = (this.imageHeight * zoomLevel) + "px";
-    }
-
-    setPenSize(size: number) {
-        this.penSize = size;
-    }
-
-    setPenColor(color: string) {
-        this.penColor = color;
-    }
-
-    
 
     // ui proxy 
     parseFloat = parseFloat;

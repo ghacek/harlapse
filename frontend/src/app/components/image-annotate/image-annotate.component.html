@@ -1,12 +1,12 @@
 <div class="tools">
-    Zoom:
+    <div class="label">Zoom:</div>
     <select #zoomSelect (change)="setZoomLevel(parseFloat(zoomSelect.value))">
         <option class="zoom" *ngFor="let opt of zoomOptions" [value]="opt.value" >
             {{opt.label}}
         </option>
     </select>
 
-    Pen size:
+    <div class="label">Pen size:</div>
     <button *ngFor="let opt of penSizeOptions" 
             class="pen-size" 
             [class.selected]="opt.size === penSize"
@@ -14,12 +14,18 @@
         <span [style.width.px]="opt.size" [style.height.px]="opt.size"></span>
     </button>
 
-    Pen color:
+    <div class="label">Pen color:</div>
     <button *ngFor="let opt of penColorOptions" 
             class="pen-color" 
             [class.selected]="opt.color === penColor"
             (click)="setPenColor(opt.color)">
         <span [style.background]="opt.color" ></span>
+    </button>
+
+    <div class="spring"></div>
+
+    <button class="undo" title="Undo" (click)="undoAnnotation()" [disabled]="annotations.length === 0">
+        ↺
     </button>
 
 </div>

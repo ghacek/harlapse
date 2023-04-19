@@ -162,15 +162,18 @@ export class PolylinePainter {
 }
 
 export class PolylineAnnotation {
+
     config: PolylineAnnotationConfig;
 
     curve: SVGElement;
 
     constructor(svg: SVGElement, config: PolylineAnnotationConfig) {
-        const curve = createSVG("path", svg);
-
         this.curve = drawPolylineAnnotation(svg, config);
         this.config = config;
+    }
+
+    public remove() {
+        this.curve.parentElement?.removeChild(this.curve);
     }
 }
 
