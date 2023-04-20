@@ -11,7 +11,6 @@ import { map, filter } from 'rxjs/operators';
 
 import { NewHarResponse } from '../models/new-har-response';
 import { Snapshot } from '../models/snapshot';
-import { TitleAndDesc } from '../models/title-and-desc';
 
 @Injectable({
   providedIn: 'root',
@@ -251,6 +250,72 @@ export class SnapshotControllerService extends BaseService {
   }
 
   /**
+   * Path part for operation finalizeSnapshotCapture
+   */
+  static readonly FinalizeSnapshotCapturePath = '/api/snapshot/{ref}/finalize-capture';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `finalizeSnapshotCapture()` instead.
+   *
+   * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
+   */
+  finalizeSnapshotCapture$Response(params: {
+    ref: string;
+    body?: {
+'title'?: string;
+'description'?: string;
+'annotations-config'?: Blob;
+'annotations-svg'?: Blob;
+}
+  },
+  context?: HttpContext
+
+): Observable<StrictHttpResponse<void>> {
+
+    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.FinalizeSnapshotCapturePath, 'post');
+    if (params) {
+      rb.path('ref', params.ref, {});
+      rb.body(params.body, 'multipart/form-data');
+    }
+
+    return this.http.request(rb.build({
+      responseType: 'text',
+      accept: '*/*',
+      context: context
+    })).pipe(
+      filter((r: any) => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `finalizeSnapshotCapture$Response()` instead.
+   *
+   * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
+   */
+  finalizeSnapshotCapture(params: {
+    ref: string;
+    body?: {
+'title'?: string;
+'description'?: string;
+'annotations-config'?: Blob;
+'annotations-svg'?: Blob;
+}
+  },
+  context?: HttpContext
+
+): Observable<void> {
+
+    return this.finalizeSnapshotCapture$Response(params,context).pipe(
+      map((r: StrictHttpResponse<void>) => r.body as void)
+    );
+  }
+
+  /**
    * Path part for operation getSnapshotNetwork
    */
   static readonly GetSnapshotNetworkPath = '/api/snapshot/{ref}/network';
@@ -358,62 +423,6 @@ export class SnapshotControllerService extends BaseService {
 
     return this.getSnapshotScreenshot$Response(params,context).pipe(
       map((r: StrictHttpResponse<Blob>) => r.body as Blob)
-    );
-  }
-
-  /**
-   * Path part for operation updateSnapshotTitleAndDesc
-   */
-  static readonly UpdateSnapshotTitleAndDescPath = '/api/snapshot/{ref}/title-and-desc';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateSnapshotTitleAndDesc()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateSnapshotTitleAndDesc$Response(params: {
-    ref: string;
-    body?: TitleAndDesc
-  },
-  context?: HttpContext
-
-): Observable<StrictHttpResponse<void>> {
-
-    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.UpdateSnapshotTitleAndDescPath, 'post');
-    if (params) {
-      rb.path('ref', params.ref, {});
-      rb.body(params.body, 'application/json');
-    }
-
-    return this.http.request(rb.build({
-      responseType: 'text',
-      accept: '*/*',
-      context: context
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
-      })
-    );
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateSnapshotTitleAndDesc$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateSnapshotTitleAndDesc(params: {
-    ref: string;
-    body?: TitleAndDesc
-  },
-  context?: HttpContext
-
-): Observable<void> {
-
-    return this.updateSnapshotTitleAndDesc$Response(params,context).pipe(
-      map((r: StrictHttpResponse<void>) => r.body as void)
     );
   }
 

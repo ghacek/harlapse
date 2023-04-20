@@ -37,19 +37,21 @@ export class CaptureSuccessfulPageComponent {
     }
 
     updateTitleAndDesc(title: string, description: string) {
-        console.log("config", this.imageAnnotate?.getAnnotationConfiguration());
-
-        return;
+        const annConfig = JSON.stringify(this.imageAnnotate?.getAnnotationConfiguration());
+        const annSvg = this.imageAnnotate?.getAnnotationSvg() || "";
 
         const params = {
             ref: this.ref!, 
             body: {
-                title, description
+                title, 
+                description,
+                "annotations-config": new Blob([annConfig], { type: 'application/json' }),
+                "annotations-svg": new Blob([annSvg], { type: 'image/svg+xml' })
             }
         }
-        this.snapshotController.updateSnapshotTitleAndDesc(params)
+        this.snapshotController.finalizeSnapshotCapture(params)
             .subscribe(() => {
-                this.router.navigate(['/view', this.ref])
+                //this.router.navigate(['/view', this.ref])
             });
     }
 

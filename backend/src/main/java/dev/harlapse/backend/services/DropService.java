@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 
 import dev.harlapse.backend.db.entities.Snapshot;
@@ -27,6 +28,8 @@ public class DropService {
     private static final String HAR_FILE_SUFFIX = "-har.json";
     private static final String SCREENSHOT_SUFFIX = "-ss.png";
     private static final String CONSOLE_SUFFIX = "-console.json";
+    private static final String ANNOTATIONS_CONFIG = "-ann.json";
+    private static final String ANNOTATIONS_SVG = "-ann.svg";
 
     @Inject
     @ConfigProperty(name = "harlapse.drop-dir")
@@ -65,12 +68,23 @@ public class DropService {
         return new FileInputStream(new File(dropDir, dropRef + CONSOLE_SUFFIX));
     }
 
+    public InputStream getAnnotationsConfig(String dropRef) throws FileNotFoundException {
+        return new FileInputStream(new File(dropDir, dropRef + ANNOTATIONS_CONFIG));
+    }
+
+    public InputStream getAnnotationsSvg(String dropRef) throws FileNotFoundException {
+        return new FileInputStream(new File(dropDir, dropRef + ANNOTATIONS_SVG));
+    }
+
     @Transactional
-    public void updateTitleAndDesc(String ref, String title, String desc) {
+    public void finalizeCapture(String ref, String title, String desc, InputStream isConfig, InputStream isSvg) throws IOException {
         final Snapshot drop = dropRepo.findByRef(ref);
 
-        drop.setTitle(title);
-        drop.setDescription(desc);
+        storeUploadFile(isConfig, ref, ANNOTATIONS_CONFIG);
+        storeUploadFile(isSvg   , ref, ANNOTATIONS_SVG);
+
+        drop.setTitle(Strings.emptyToNull(title));
+        drop.setDescription(Strings.emptyToNull(desc));
     }
 
     private void storeUploadFile(InputStream input, String dropRef, String fileSuffiex) throws IOException {

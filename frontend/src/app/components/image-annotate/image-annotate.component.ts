@@ -105,10 +105,14 @@ export class ImageAnnotateComponent {
         this.imageWidth = img.naturalWidth;
         this.imageHeight = img.naturalHeight;
 
-        this.svgRef.nativeElement.setAttribute("viewBox", "0 0 " + this.imageWidth + " " + this.imageHeight);
+        this.svgRef.nativeElement.setAttribute("viewBox", this.getSvgViewbox());
 
         this.setBestZoomLevel();
         this.canvasRef.nativeElement.style.display = "block";
+    }
+
+    private getSvgViewbox() {
+        return "0 0 " + this.imageWidth + " " + this.imageHeight;
     }
 
     private setBestZoomLevel() {
@@ -207,6 +211,12 @@ export class ImageAnnotateComponent {
             },
             annotations: this.annotations.map(x => x.config)
         }
+    }
+
+    public getAnnotationSvg() {
+        return "<svg viewbox='" + this.getSvgViewbox() + "'>"
+            + this.svgRef.nativeElement.innerHTML
+            + "</svg>";
     }
 
 

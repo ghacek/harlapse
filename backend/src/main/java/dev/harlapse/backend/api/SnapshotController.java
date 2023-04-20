@@ -73,6 +73,20 @@ public class SnapshotController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{ref}/annotations-config")
+    public InputStream getSnapshotAnnotationsConfig(@PathParam("ref") String dropRef) throws FileNotFoundException {
+        return dropService.getAnnotationsConfig(dropRef);
+    }
+
+    @GET
+    @Produces("image/svg+xml")
+    @Path("/{ref}/annotations-svg")
+    public InputStream getSnapshotAnnotationsSvg(@PathParam("ref") String dropRef) throws FileNotFoundException {
+        return dropService.getAnnotationsSvg(dropRef);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/{ref}/console")
     @APIResponse(
         content = @Content(
@@ -86,10 +100,19 @@ public class SnapshotController {
 
     
     @POST
-    @Path("/{ref}/title-and-desc")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void updateSnapshotTitleAndDesc(@PathParam("ref") String dropRef, TitleAndDesc body) {
-        dropService.updateTitleAndDesc(dropRef, body.getTitle(), body.getDescription());
+    @Path("/{ref}/finalize-capture")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public void finalizeSnapshotCapture(
+            @PathParam("ref") String dropRef, 
+            @RestForm String title,
+            @RestForm String description,
+            @RestForm("annotations-config") InputStream isConfig,
+            @RestForm("annotations-svg") InputStream isSvg) throws IOException {
+
+        dropService.finalizeCapture(dropRef, title, description, isConfig, isSvg);
+
+        try { isConfig.close();    } catch (IOException e) { e.printStackTrace(); }
+        try { isSvg.close();    } catch (IOException e) { e.printStackTrace(); }
     } 
 
     @POST

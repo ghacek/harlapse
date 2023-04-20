@@ -65,6 +65,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Snapshot'
+  /api/snapshot/{ref}/annotations-config:
+    get:
+      tags:
+      - Snapshot Controller
+      operationId: getSnapshotAnnotationsConfig
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                format: binary
+                type: string
+  /api/snapshot/{ref}/annotations-svg:
+    get:
+      tags:
+      - Snapshot Controller
+      operationId: getSnapshotAnnotationsSvg
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            image/svg+xml:
+              schema:
+                format: binary
+                type: string
   /api/snapshot/{ref}/console:
     get:
       tags:
@@ -82,6 +120,36 @@ paths:
             application/json:
               schema:
                 type: object
+  /api/snapshot/{ref}/finalize-capture:
+    post:
+      tags:
+      - Snapshot Controller
+      operationId: finalizeSnapshotCapture
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                annotations-config:
+                  format: binary
+                  type: string
+                annotations-svg:
+                  format: binary
+                  type: string
+      responses:
+        "201":
+          description: Created
   /api/snapshot/{ref}/network:
     get:
       tags:
@@ -118,25 +186,6 @@ paths:
               schema:
                 format: binary
                 type: string
-  /api/snapshot/{ref}/title-and-desc:
-    post:
-      tags:
-      - Snapshot Controller
-      operationId: updateSnapshotTitleAndDesc
-      parameters:
-      - name: ref
-        in: path
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TitleAndDesc'
-      responses:
-        "201":
-          description: Created
 components:
   schemas:
     Date:
@@ -166,13 +215,6 @@ components:
           type: string
         created:
           $ref: '#/components/schemas/Date'
-    TitleAndDesc:
-      type: object
-      properties:
-        title:
-          type: string
-        description:
-          type: string
   securitySchemes:
     SecurityScheme:
       type: http
