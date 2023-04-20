@@ -28,12 +28,16 @@
     <div class="spring"></div>
 
     
+    <button class="undo" title="Undo" (click)="undoAnnotation()" [disabled]="annotations.length === 0">
+        ↺
+    </button>
+
     <button class="clear" title="Clear all" (click)="clearAnotations()" [disabled]="annotations.length === 0">
         🗑
     </button>
 
-    <button class="undo" title="Undo" (click)="undoAnnotation()" [disabled]="annotations.length === 0">
-        ↺
+    <button class="full-screen" title="Clear all" (click)="toggleFullScreen()">
+        ⛶
     </button>
 
 </div>

@@ -1,10 +1,7 @@
 :host {
     position: fixed;
     inset: 0;
-    overflow: none;
-
     display: flex;
-
 }
 
 .image-editor {
@@ -12,7 +9,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #333;
 
     overflow: hidden; /* to scale */
 
@@ -26,18 +22,4 @@
     width: 400px;
     padding: 10px;
     border-left: 2px solid #1a73e8;
-}
-
-.content {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .form {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-    }
 }

@@ -7,6 +7,10 @@ interface AnnotationImage {
     h: number
 }
 
+enum AnnotationType {
+    "pen"
+}
+
 interface AnnotationsConfig {
     image: AnnotationImage,
     annotations: PolylineAnnotationConfig[]
@@ -51,7 +55,7 @@ export class ImageAnnotateComponent {
     penSize = 8;
     penColor = "#FF0000";
 
-    constructor(private changeDetectorRef: ChangeDetectorRef) {
+    constructor(private hostRef: ElementRef<HTMLElement>, private changeDetectorRef: ChangeDetectorRef) {
     }
 
     ngAfterViewInit() {
@@ -96,25 +100,31 @@ export class ImageAnnotateComponent {
 
     onScreenshotLoad(event: Event) {
         const img = <HTMLImageElement>event.target;
-        const imgContainerEl = this.imgContainerRef.nativeElement;
+        
 
         this.imageWidth = img.naturalWidth;
         this.imageHeight = img.naturalHeight;
 
         this.svgRef.nativeElement.setAttribute("viewBox", "0 0 " + this.imageWidth + " " + this.imageHeight);
 
-        
-        const bestZoom = this.findBestZoomLevel(
+        this.setBestZoomLevel();
+        this.canvasRef.nativeElement.style.display = "block";
+    }
+
+    private setBestZoomLevel() {
+        const imgContainerEl = this.imgContainerRef.nativeElement;
+
+        const zoomLevel = this.calcBestZoomLevel(
             imgContainerEl.clientWidth,
             imgContainerEl.clientHeight,
             this.imageWidth, 
             this.imageHeight
-            );
-        this.setZoomLevel(bestZoom);
-        this.canvasRef.nativeElement.style.display = "block";
+        );
+
+        this.setZoomLevel(zoomLevel);
     }
 
-    private findBestZoomLevel(containerW: number, containerH: number, imageW: number, imageH: number) {
+    private calcBestZoomLevel(containerW: number, containerH: number, imageW: number, imageH: number) {
         const wScale = containerW / imageW;
         const hScale = containerH / imageH;
 
@@ -151,6 +161,21 @@ export class ImageAnnotateComponent {
         this.annotations.splice(lastIndex, 1);
 
         last.remove();
+    }
+
+    toggleFullScreen() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen()
+                .then(() => this.setBestZoomLevel());;
+        }
+        else {
+            const hostEl = this.hostRef.nativeElement;
+
+            hostEl.requestFullscreen()
+                .then(() => this.setBestZoomLevel());
+        }
+
+
     }
 
     setZoomLevel(zoomLevel: number) {
