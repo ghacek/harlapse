@@ -7,6 +7,7 @@ import { DrawerComponent } from '../drawer/drawer.component';
 import { environment } from 'src/environments/environment';
 import { SnapshotControllerService } from 'src/api/services';
 import { Snapshot } from 'src/api/models';
+import { apiAnnotationSvgUrl } from 'src/app/util/api-util';
 
 
 export interface PageView extends Page {
@@ -66,6 +67,7 @@ export class HarViewPageComponent {
     dropInfo?: Snapshot;
 
     consoleLog?: any[];
+    annotationsUrl?: string;
 
     constructor(
             private snapshotController: SnapshotControllerService,
@@ -81,6 +83,7 @@ export class HarViewPageComponent {
             this.loadDropInfo(ref);
             this.loadHar(ref);
             this.loadConsole(ref);
+            this.annotationsUrl = apiAnnotationSvgUrl(ref)
           }
         });
     }

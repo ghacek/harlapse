@@ -14,6 +14,7 @@
     <div class="top-blocks">
         <div class="block ss-block">
             <img class="screenshot" src="{{apiRootUrl}}/api/snapshot/{{id}}/screenshot">
+            <img class="annotations" [src]="annotationsUrl">
 
             <div class="expand" (click)="showScreenshotFullscreen = true">&#x26F6;</div>
         </div>
@@ -127,12 +128,11 @@
 
     </table>
 
-
-
     <div *ngIf="showScreenshotFullscreen" class="full-screen-image" (click)="showScreenshotFullscreen = false">
-        <span class="box">
+        <div class="box">
             <img class="screenshot" src="{{apiRootUrl}}/api/snapshot/{{id}}/screenshot">
-        </span>
+            <img class="annotations" [src]="annotationsUrl">
+        </div>
     </div>
 
 </ng-container>

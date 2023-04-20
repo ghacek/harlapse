@@ -214,7 +214,7 @@ export class ImageAnnotateComponent {
     }
 
     public getAnnotationSvg() {
-        return "<svg viewbox='" + this.getSvgViewbox() + "'>"
+        return "<svg width='" + this.imageWidth+ "' height='" + this.imageHeight + "' xmlns='http://www.w3.org/2000/svg'>"
             + this.svgRef.nativeElement.innerHTML
             + "</svg>";
     }

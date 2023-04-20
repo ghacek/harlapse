@@ -192,6 +192,112 @@ export class SnapshotControllerService extends BaseService {
   }
 
   /**
+   * Path part for operation getSnapshotAnnotationsConfig
+   */
+  static readonly GetSnapshotAnnotationsConfigPath = '/api/snapshot/{ref}/annotations-config';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getSnapshotAnnotationsConfig()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSnapshotAnnotationsConfig$Response(params: {
+    ref: string;
+  },
+  context?: HttpContext
+
+): Observable<StrictHttpResponse<Blob>> {
+
+    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.GetSnapshotAnnotationsConfigPath, 'get');
+    if (params) {
+      rb.path('ref', params.ref, {});
+    }
+
+    return this.http.request(rb.build({
+      responseType: 'blob',
+      accept: 'application/json',
+      context: context
+    })).pipe(
+      filter((r: any) => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<Blob>;
+      })
+    );
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getSnapshotAnnotationsConfig$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSnapshotAnnotationsConfig(params: {
+    ref: string;
+  },
+  context?: HttpContext
+
+): Observable<Blob> {
+
+    return this.getSnapshotAnnotationsConfig$Response(params,context).pipe(
+      map((r: StrictHttpResponse<Blob>) => r.body as Blob)
+    );
+  }
+
+  /**
+   * Path part for operation getSnapshotAnnotationsSvg
+   */
+  static readonly GetSnapshotAnnotationsSvgPath = '/api/snapshot/{ref}/annotations-svg';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getSnapshotAnnotationsSvg()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSnapshotAnnotationsSvg$Response(params: {
+    ref: string;
+  },
+  context?: HttpContext
+
+): Observable<StrictHttpResponse<Blob>> {
+
+    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.GetSnapshotAnnotationsSvgPath, 'get');
+    if (params) {
+      rb.path('ref', params.ref, {});
+    }
+
+    return this.http.request(rb.build({
+      responseType: 'blob',
+      accept: 'image/svg+xml',
+      context: context
+    })).pipe(
+      filter((r: any) => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<Blob>;
+      })
+    );
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getSnapshotAnnotationsSvg$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSnapshotAnnotationsSvg(params: {
+    ref: string;
+  },
+  context?: HttpContext
+
+): Observable<Blob> {
+
+    return this.getSnapshotAnnotationsSvg$Response(params,context).pipe(
+      map((r: StrictHttpResponse<Blob>) => r.body as Blob)
+    );
+  }
+
+  /**
    * Path part for operation getSnapshotConsoleLog
    */
   static readonly GetSnapshotConsoleLogPath = '/api/snapshot/{ref}/console';
