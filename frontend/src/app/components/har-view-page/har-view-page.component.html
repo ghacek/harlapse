@@ -9,7 +9,7 @@
 <ng-container *ngIf="har && dropInfo">
 
     <h1 class="capture-title">{{dropInfo.title ?? dropInfo.pageTitle}}</h1>
-    <a class="capture-url" [href]="dropInfo.pageUrl">{{dropInfo.pageUrl}}</a>
+    <a class="capture-url" [href]="dropInfo.pageUrl" [title]="dropInfo.pageUrl">{{dropInfo.pageUrl}}</a>
 
     <div class="top-blocks">
         <div class="block ss-block">
