@@ -53,8 +53,6 @@ td.name {
         object-fit: contain;
     }
 
-
-
     .expand {
         display: none;
         position: absolute;
@@ -78,7 +76,6 @@ td.name {
 
     display: flex;
     gap: 20px;
-    
 
     .block {
         flex: 1;
@@ -203,6 +200,18 @@ td.name {
     background-color: #00000033;
     animation: fade-in 250ms;
 
+    .dialog {
+        border: 1px solid black;
+        background: white;
+    }
+
+    .tools {
+        background: black;
+    }
+
+    .canvas {
+        position: relative;
+    }
 
     img {
         max-width: 95vw;
@@ -211,18 +220,18 @@ td.name {
 
     .annotations {
         position: absolute;
-        top: 5px;
-        left: 5px;
+        top: 0;
+        left: 0;
         max-width: 95vw;
         max-height: 95vh;
     }
+}
 
-    .box {
-        border: 1px solid black;
-        background: white;
-        padding: 5px;
-        position: relative
-    }
+.tools {
+    display: flex;
+    gap: 5px;
+    justify-content: flex-end;
+    padding: 5px 5px;
 }
 
 

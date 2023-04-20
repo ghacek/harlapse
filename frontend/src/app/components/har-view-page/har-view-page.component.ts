@@ -50,7 +50,8 @@ export class HarViewPageComponent {
 
     drawerEntry?: EntryView;
 
-    showScreenshotFullscreen = false;
+    showScreenshotFullscreen = true;
+    showAnnotations = true;
 
     /** Defines if loaded HAR file contains requests from multiple pages. */
     multiplePages = false;
@@ -86,6 +87,11 @@ export class HarViewPageComponent {
             this.annotationsUrl = apiAnnotationSvgUrl(ref)
           }
         });
+    }
+
+    doShowScreenshotFullscreen() {
+        this.showScreenshotFullscreen = true;
+        this.showAnnotations = true;
     }
 
     fileNameFromURL(url: string) {

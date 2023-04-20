@@ -16,7 +16,7 @@
             <img class="screenshot" src="{{apiRootUrl}}/api/snapshot/{{id}}/screenshot">
             <img class="annotations" [src]="annotationsUrl">
 
-            <div class="expand" (click)="showScreenshotFullscreen = true">&#x26F6;</div>
+            <div class="expand" (click)="doShowScreenshotFullscreen()">&#x26F6;</div>
         </div>
         <div class="block p-2">
             <div *ngIf="dropInfo.title"><b>Page title:</b> {{dropInfo.pageTitle}}</div>
@@ -124,14 +124,19 @@
             </ng-container>
 
         </tbody>
-
-
     </table>
 
     <div *ngIf="showScreenshotFullscreen" class="full-screen-image" (click)="showScreenshotFullscreen = false">
-        <div class="box">
-            <img class="screenshot" src="{{apiRootUrl}}/api/snapshot/{{id}}/screenshot">
-            <img class="annotations" [src]="annotationsUrl">
+
+        <div class="dialog" (click)="$event.stopPropagation()">
+            <div class="tools">
+                <button class="dark" (click)="showAnnotations = !showAnnotations">👁</button>
+                <button class="dark" (click)="showScreenshotFullscreen = false">X</button>
+            </div>
+            <div class="canvas">
+                <img class="screenshot" src="{{apiRootUrl}}/api/snapshot/{{id}}/screenshot">
+                <img *ngIf="showAnnotations" class="annotations" [src]="annotationsUrl">
+            </div>
         </div>
     </div>
 

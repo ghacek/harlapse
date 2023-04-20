@@ -27,6 +27,36 @@ body {
     padding: 10px;
 }
 
+button.dark {
+    border: 1px solid #666;
+    width: 30px;
+    height: 30px;
+    background: none;
+    border-radius: 3px;
+    color: white;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    span {
+        display: block;
+        background: white;
+        border-radius: 99px;
+    }
+
+    &:hover {
+        background: #181818;
+    }
+
+    &.selected {
+        background: #333;
+    }
+
+    &:disabled  {
+        color: #666;
+    }
+}
+
 
 /*
 --ngx-json-string : color of string values

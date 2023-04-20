@@ -11,7 +11,7 @@
 
     <div class="label">Pen size:</div>
     <button *ngFor="let opt of penSizeOptions" 
-            class="pen-size" 
+            class="dark pen-size" 
             [class.selected]="opt.size === penSize"
             (click)="setPenSize(opt.size)">
         <span [style.width.px]="opt.size" [style.height.px]="opt.size"></span>
@@ -19,7 +19,7 @@
 
     <div class="label">Pen color:</div>
     <button *ngFor="let opt of penColorOptions" 
-            class="pen-color" 
+            class="dark pen-color" 
             [class.selected]="opt.color === penColor"
             (click)="setPenColor(opt.color)">
         <span [style.background]="opt.color" ></span>
@@ -28,15 +28,15 @@
     <div class="spring"></div>
 
     
-    <button class="undo" title="Undo" (click)="undoAnnotation()" [disabled]="annotations.length === 0">
+    <button class="dark undo" title="Undo" (click)="undoAnnotation()" [disabled]="annotations.length === 0">
         ↺
     </button>
 
-    <button class="clear" title="Clear all" (click)="clearAnotations()" [disabled]="annotations.length === 0">
+    <button class="dark clear" title="Clear all" (click)="clearAnotations()" [disabled]="annotations.length === 0">
         🗑
     </button>
 
-    <button class="full-screen" title="Clear all" (click)="toggleFullScreen()">
+    <button class="dark full-screen" title="Clear all" (click)="toggleFullScreen()">
         ⛶
     </button>
 
