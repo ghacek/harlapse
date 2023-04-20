@@ -41,6 +41,7 @@ export class SnapshotControllerService extends BaseService {
 'ss'?: Blob;
 'har'?: Blob;
 'console'?: Blob;
+'html'?: Blob;
 }
   },
   context?: HttpContext
@@ -77,6 +78,7 @@ export class SnapshotControllerService extends BaseService {
 'ss'?: Blob;
 'har'?: Blob;
 'console'?: Blob;
+'html'?: Blob;
 }
   },
   context?: HttpContext
@@ -418,6 +420,59 @@ export class SnapshotControllerService extends BaseService {
 
     return this.finalizeSnapshotCapture$Response(params,context).pipe(
       map((r: StrictHttpResponse<void>) => r.body as void)
+    );
+  }
+
+  /**
+   * Path part for operation getSnapshotHtml
+   */
+  static readonly GetSnapshotHtmlPath = '/api/snapshot/{ref}/html';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getSnapshotHtml()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSnapshotHtml$Response(params: {
+    ref: string;
+  },
+  context?: HttpContext
+
+): Observable<StrictHttpResponse<string>> {
+
+    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.GetSnapshotHtmlPath, 'get');
+    if (params) {
+      rb.path('ref', params.ref, {});
+    }
+
+    return this.http.request(rb.build({
+      responseType: 'text',
+      accept: 'text/html',
+      context: context
+    })).pipe(
+      filter((r: any) => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<string>;
+      })
+    );
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getSnapshotHtml$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSnapshotHtml(params: {
+    ref: string;
+  },
+  context?: HttpContext
+
+): Observable<string> {
+
+    return this.getSnapshotHtml$Response(params,context).pipe(
+      map((r: StrictHttpResponse<string>) => r.body as string)
     );
   }
 

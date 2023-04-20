@@ -50,7 +50,7 @@ export class HarViewPageComponent {
 
     drawerEntry?: EntryView;
 
-    showScreenshotFullscreen = true;
+    showScreenshotFullscreen = false;
     showAnnotations = true;
 
     /** Defines if loaded HAR file contains requests from multiple pages. */
@@ -68,7 +68,10 @@ export class HarViewPageComponent {
     dropInfo?: Snapshot;
 
     consoleLog?: any[];
+
+    capturedHtml?: string;
     annotationsUrl?: string;
+
 
     constructor(
             private snapshotController: SnapshotControllerService,
@@ -84,6 +87,7 @@ export class HarViewPageComponent {
             this.loadDropInfo(ref);
             this.loadHar(ref);
             this.loadConsole(ref);
+            this.loadHtml(ref);
             this.annotationsUrl = apiAnnotationSvgUrl(ref)
           }
         });
@@ -132,6 +136,13 @@ export class HarViewPageComponent {
         this.snapshotController.getSnapshotConsoleLog({ ref })
             .subscribe(log => {
                 this.consoleLog = <any>log;
+            });
+    }
+
+    private loadHtml(ref: string) {
+        this.snapshotController.getSnapshotHtml({ ref })
+            .subscribe(html => {
+                this.capturedHtml = html;
             });
     }
 

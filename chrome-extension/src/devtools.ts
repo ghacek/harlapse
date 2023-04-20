@@ -3,6 +3,7 @@ import { collectScreenshot } from './collectors/screenshot-collector'
 import { collectNetworkRequests } from './collectors/network-collector';
 import { captureLogEntries as collectLogEntries } from './collectors/console-collector';
 import { PageBasicInfo, collectBasicInfo } from './collectors/basic-info-collector';
+import { collectHtml } from './collectors/html-collector';
 
 
 
@@ -67,16 +68,17 @@ function shareState(updateStatus: Subject<string>) {
 
     updateStatus.next("Capturing state...")
 
-    return Promise.all([collectScreenshot(), collectNetworkRequests(), collectBasicInfo(), collectLogEntries()])
+    return Promise.all([collectScreenshot(), collectNetworkRequests(), collectBasicInfo(), collectLogEntries(), collectHtml()])
         .then((args) => {
             const ss = args[0];
             const har = args[1];
             const basicInfo = args[2];
             const log = args[3];
+            const html = args[4];
 
-            updateStatus.next("Uploading state...")
+            updateStatus.next("Uploading state...");
 
-            return uploadCapture(har, ss, basicInfo, log)
+            return uploadCapture(har, ss, basicInfo, log, html)
                 .then((resp) => resp.json())
                 .then((resp) => {
                     chrome.tabs.create({ url: ApiHarView + "/" + resp.id + "/captured" });
@@ -86,17 +88,19 @@ function shareState(updateStatus: Subject<string>) {
         });
 }
 
-function uploadCapture(har: any, screenshot: Blob, basicInfo: PageBasicInfo, log?: any[]) {
+function uploadCapture(har: any, screenshot: Blob, basicInfo: PageBasicInfo, log: any[] | undefined, html: string) {
     const data = new FormData();
 
     const harBlob = new Blob([JSON.stringify(har)], { type: 'application/json' });
     const consoleBlob = new Blob([JSON.stringify(log)], { type: 'application/json' });
+    const htmlBlob = new Blob([html], { type: 'text/html' });
 
     data.append("title", basicInfo.title);
     data.append("url", basicInfo.url);
     data.append("har", harBlob);
     data.append("ss", screenshot);
     data.append("console", consoleBlob);
+    data.append("html", htmlBlob);
 
     return fetch(ApiHarUpload, {
         method: 'POST',

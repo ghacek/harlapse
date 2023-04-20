@@ -22,6 +22,7 @@ h2 {
 .capture-url {
     color: #5f6368;
     text-decoration: none;
+    word-wrap: break-word;
 
     &:hover {
         text-decoration: underline;
@@ -234,8 +235,16 @@ td.name {
     padding: 5px 5px;
 }
 
+.captured-html-title {
+    border-bottom: 2px solid #cacdd1;
+}
+
+.captured-html ::ng-deep .CodeMirror {
+    height: auto;
+    max-height: 95vh;
+}
 
 @keyframes fade-in {
     0% { opacity: 0; }
     100% { opacity: 1; }
-  }
+}

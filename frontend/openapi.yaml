@@ -28,6 +28,9 @@ paths:
                 console:
                   format: binary
                   type: string
+                html:
+                  format: binary
+                  type: string
       responses:
         "200":
           description: OK
@@ -150,6 +153,23 @@ paths:
       responses:
         "201":
           description: Created
+  /api/snapshot/{ref}/html:
+    get:
+      tags:
+      - Snapshot Controller
+      operationId: getSnapshotHtml
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            text/html:
+              schema:
+                type: string
   /api/snapshot/{ref}/network:
     get:
       tags:

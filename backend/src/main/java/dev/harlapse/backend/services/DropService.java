@@ -30,6 +30,7 @@ public class DropService {
     private static final String CONSOLE_SUFFIX = "-console.json";
     private static final String ANNOTATIONS_CONFIG = "-ann.json";
     private static final String ANNOTATIONS_SVG = "-ann.svg";
+    private static final String HTML_SUFFIX = ".html";
 
     @Inject
     @ConfigProperty(name = "harlapse.drop-dir")
@@ -39,7 +40,7 @@ public class DropService {
     DropRepository dropRepo;
 
     @Transactional
-    public Snapshot createDrop(String pageTitle, String pageUrl, InputStream screenshot, InputStream harFile, InputStream console) throws IOException {
+    public Snapshot createDrop(String pageTitle, String pageUrl, InputStream screenshot, InputStream harFile, InputStream console, InputStream html) throws IOException {
         final String ref = generateRef();
         final Snapshot drop = new Snapshot(ref, pageTitle, pageUrl);
 
@@ -48,6 +49,7 @@ public class DropService {
         storeUploadFile(screenshot, ref, SCREENSHOT_SUFFIX);
         storeUploadFile(harFile   , ref, HAR_FILE_SUFFIX);
         storeUploadFile(console   , ref, CONSOLE_SUFFIX);
+        storeUploadFile(html      , ref, HTML_SUFFIX);
 
         return drop;
     }
@@ -74,6 +76,9 @@ public class DropService {
 
     public InputStream getAnnotationsSvg(String dropRef) throws FileNotFoundException {
         return new FileInputStream(new File(dropDir, dropRef + ANNOTATIONS_SVG));
+    }
+    public InputStream getHtml(String dropRef) throws FileNotFoundException {
+        return new FileInputStream(new File(dropDir, dropRef + HTML_SUFFIX));
     }
 
     @Transactional

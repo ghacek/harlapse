@@ -11,7 +11,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.jboss.resteasy.reactive.RestForm;
 
 import dev.harlapse.backend.api.models.NewHarResponse;
-import dev.harlapse.backend.api.models.TitleAndDesc;
 import dev.harlapse.backend.db.entities.Snapshot;
 import dev.harlapse.backend.db.entities.repository.DropRepository;
 import dev.harlapse.backend.services.DropService;
@@ -98,6 +97,41 @@ public class SnapshotController {
         return dropService.getConsoleContent(dropRef);
     }
 
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/{ref}/html")
+    @APIResponse(
+        content = @Content(
+            mediaType = "text/html",
+            schema = @Schema(type = SchemaType.STRING)
+        )
+    )
+    public InputStream getSnapshotHtml(@PathParam("ref") String dropRef) throws FileNotFoundException {
+        return dropService.getHtml(dropRef);
+    }
+
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/")
+    public NewHarResponse createNewSnapshot(
+            @RestForm String title,
+            @RestForm String url,
+            @RestForm("ss") InputStream screenshot, 
+            @RestForm("har") InputStream harFile, 
+            @RestForm        InputStream console, 
+            @RestForm        InputStream html) throws IOException {
+
+        final Snapshot drop = dropService.createDrop(title, url, screenshot, harFile, console, html);
+
+        try { screenshot.close(); } catch (IOException e) { e.printStackTrace(); }
+        try { harFile.close();    } catch (IOException e) { e.printStackTrace(); }
+        try { console.close();    } catch (IOException e) { e.printStackTrace(); }
+        try { html.close();       } catch (IOException e) { e.printStackTrace(); }
+        
+        return new NewHarResponse(drop.getRef());
+    }
+
     
     @POST
     @Path("/{ref}/finalize-capture")
@@ -114,24 +148,4 @@ public class SnapshotController {
         try { isConfig.close();    } catch (IOException e) { e.printStackTrace(); }
         try { isSvg.close();    } catch (IOException e) { e.printStackTrace(); }
     } 
-
-    @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/")
-    public NewHarResponse createNewSnapshot(
-            @RestForm String title,
-            @RestForm String url,
-            @RestForm("ss") InputStream screenshot, 
-            @RestForm("har") InputStream harFile, 
-            @RestForm        InputStream console) throws IOException {
-
-        final Snapshot drop = dropService.createDrop(title, url, screenshot, harFile, console);
-
-        try { screenshot.close(); } catch (IOException e) { e.printStackTrace(); }
-        try { harFile.close();    } catch (IOException e) { e.printStackTrace(); }
-        try { console.close();    } catch (IOException e) { e.printStackTrace(); }
-        
-        return new NewHarResponse(drop.getRef());
-    }
 }

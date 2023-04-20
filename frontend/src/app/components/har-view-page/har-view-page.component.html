@@ -146,6 +146,19 @@
 <app-console-view [consoleLog]="consoleLog">
 </app-console-view>
 
+<h2 *ngIf="capturedHtml" class="captured-html-title">Captured HTML</h2>
+
+<ngx-codemirror 
+    class="captured-html"
+    *ngIf="capturedHtml"
+    [(ngModel)]="capturedHtml"
+    [options]="{
+        readOnly: true,
+        lineNumbers: true,
+        mode: 'text/html'
+    }"
+></ngx-codemirror>
+
 </div>
 
 <app-drawer [title]="'Network request details'">
