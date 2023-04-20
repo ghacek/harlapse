@@ -51,7 +51,7 @@ export class CaptureSuccessfulPageComponent {
         }
         this.snapshotController.finalizeSnapshotCapture(params)
             .subscribe(() => {
-                //this.router.navigate(['/view', this.ref])
+                this.router.navigate(['/view', this.ref])
             });
     }
 
