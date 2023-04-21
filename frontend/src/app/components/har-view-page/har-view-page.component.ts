@@ -37,6 +37,8 @@ export interface EntryView extends Entry {
   styleUrls: ['./har-view-page.component.scss']
 })
 export class HarViewPageComponent {
+
+
     @ViewChild(DrawerComponent, { static: true })
     drawer!: DrawerComponent;
 
@@ -96,6 +98,21 @@ export class HarViewPageComponent {
     doShowScreenshotFullscreen() {
         this.showScreenshotFullscreen = true;
         this.showAnnotations = true;
+    }
+
+    copyHtmlToClipboard() {
+        navigator.clipboard.writeText(this.capturedHtml!);
+    }
+
+    downloadHtml() {
+        const blob = new Blob([this.capturedHtml!], {type: 'text/csv'});
+    
+        const elem = window.document.createElement('a');
+        elem.href = window.URL.createObjectURL(blob);
+        elem.download = "captured.html";
+        document.body.appendChild(elem);
+        elem.click();
+        document.body.removeChild(elem);
     }
 
     fileNameFromURL(url: string) {

@@ -27,7 +27,8 @@ body {
     padding: 10px;
 }
 
-button.dark {
+button.dark,
+button.light {
     border: 1px solid #666;
     width: 30px;
     height: 30px;
@@ -54,6 +55,14 @@ button.dark {
 
     &:disabled  {
         color: #666;
+    }
+}
+
+button.light {
+    color: var(--bs-body-color);
+
+    &:hover {
+        background: #CCC;
     }
 }
 

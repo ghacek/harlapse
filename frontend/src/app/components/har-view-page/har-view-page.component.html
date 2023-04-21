@@ -28,7 +28,9 @@
 
     <ng-container *ngIf="multiplePages">
 
-        <h2>Pages</h2>
+        <div class="segment-title">
+            <h2>Pages</h2>
+        </div>
         <table class="gtable">
             <thead>
                 <tr>
@@ -49,7 +51,9 @@
         </table>
     </ng-container>
 
-    <h2>Network Requests <span *ngIf="harStart" class="start-time">&nbsp; (Start time: {{harStart | date: 'dd.MM.yyyy HH:mm:ss.SSS'}})</span></h2>
+    <div class="segment-title">
+        <h2>Network Requests <span *ngIf="harStart" class="start-time">&nbsp; (Start time: {{harStart | date: 'dd.MM.yyyy HH:mm:ss.SSS'}})</span></h2>
+    </div>
     <table *ngIf="har" class="gtable">
         <thead>
             <tr>
@@ -142,11 +146,20 @@
 
 </ng-container>
 
-<h2>Console</h2>
+<div class="segment-title">
+    <h2>Console</h2>
+</div>
 <app-console-view [consoleLog]="consoleLog">
 </app-console-view>
 
-<h2 *ngIf="capturedHtml" class="captured-html-title">Captured HTML</h2>
+<div class="segment-title captured-html-title">
+    <h2 *ngIf="capturedHtml" class="">Captured HTML</h2>
+    <div class="actions">
+        
+        <button class="light" title="Copy HTML" (click)="copyHtmlToClipboard()">⎘</button>
+        <button class="light" title="Download HTML" (click)="downloadHtml()">↓</button>
+    </div>
+</div>
 
 <ngx-codemirror 
     class="captured-html"
