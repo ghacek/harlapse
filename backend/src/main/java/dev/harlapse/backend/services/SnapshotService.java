@@ -15,7 +15,7 @@ import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 
 import dev.harlapse.backend.db.entities.Snapshot;
-import dev.harlapse.backend.db.entities.repository.DropRepository;
+import dev.harlapse.backend.db.entities.repository.SnapshotRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -23,7 +23,7 @@ import jakarta.transaction.Transactional;
 
 
 @ApplicationScoped
-public class DropService {
+public class SnapshotService {
 
     private static final String HAR_FILE_SUFFIX = "-har.json";
     private static final String SCREENSHOT_SUFFIX = "-ss.png";
@@ -37,7 +37,7 @@ public class DropService {
     private String dropDir;
 
     @Inject
-    DropRepository dropRepo;
+    SnapshotRepository dropRepo;
 
     @Transactional
     public Snapshot createDrop(String pageTitle, String pageUrl, InputStream screenshot, InputStream harFile, InputStream console, InputStream html) throws IOException {

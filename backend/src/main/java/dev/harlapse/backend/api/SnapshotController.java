@@ -12,8 +12,8 @@ import org.jboss.resteasy.reactive.RestForm;
 
 import dev.harlapse.backend.api.models.NewHarResponse;
 import dev.harlapse.backend.db.entities.Snapshot;
-import dev.harlapse.backend.db.entities.repository.DropRepository;
-import dev.harlapse.backend.services.DropService;
+import dev.harlapse.backend.db.entities.repository.SnapshotRepository;
+import dev.harlapse.backend.services.SnapshotService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -28,10 +28,10 @@ import jakarta.ws.rs.core.MediaType;
 public class SnapshotController {
 
     @Inject
-    DropRepository dropRepo;
+    SnapshotRepository dropRepo;
 
     @Inject
-    private DropService dropService;
+    private SnapshotService dropService;
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
