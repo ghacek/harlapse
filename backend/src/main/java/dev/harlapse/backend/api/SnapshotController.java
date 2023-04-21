@@ -145,7 +145,7 @@ public class SnapshotController {
 
         dropService.finalizeCapture(dropRef, title, description, isConfig, isSvg);
 
-        try { isConfig.close();    } catch (IOException e) { e.printStackTrace(); }
-        try { isSvg.close();    } catch (IOException e) { e.printStackTrace(); }
+        try { if (isConfig != null) isConfig.close();    } catch (IOException e) { e.printStackTrace(); }
+        try { if (isSvg != null) isSvg.close();    } catch (IOException e) { e.printStackTrace(); }
     } 
 }

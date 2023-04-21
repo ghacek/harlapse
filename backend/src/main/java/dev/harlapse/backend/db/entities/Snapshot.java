@@ -42,6 +42,11 @@ public class Snapshot {
     @Column
     private String description;
 
+    /** Is true if user has annotated the screenshot.  */
+    @Getter @Setter
+    @Column(name="has_annotations")
+    private boolean hasAnnotations = false;
+
     @Getter
     private Date created;
 

@@ -37,14 +37,14 @@ public class SnapshotService {
     private String dropDir;
 
     @Inject
-    SnapshotRepository dropRepo;
+    SnapshotRepository snapshotRepo;
 
     @Transactional
     public Snapshot createDrop(String pageTitle, String pageUrl, InputStream screenshot, InputStream harFile, InputStream console, InputStream html) throws IOException {
         final String ref = generateRef();
         final Snapshot drop = new Snapshot(ref, pageTitle, pageUrl);
 
-        dropRepo.persist(drop);
+        snapshotRepo.persist(drop);
 
         storeUploadFile(screenshot, ref, SCREENSHOT_SUFFIX);
         storeUploadFile(harFile   , ref, HAR_FILE_SUFFIX);
@@ -83,13 +83,17 @@ public class SnapshotService {
 
     @Transactional
     public void finalizeCapture(String ref, String title, String desc, InputStream isConfig, InputStream isSvg) throws IOException {
-        final Snapshot drop = dropRepo.findByRef(ref);
+        final Snapshot snapshot = snapshotRepo.findByRef(ref);
 
-        storeUploadFile(isConfig, ref, ANNOTATIONS_CONFIG);
-        storeUploadFile(isSvg   , ref, ANNOTATIONS_SVG);
+        if (isConfig != null && isSvg != null) {
+            storeUploadFile(isConfig, ref, ANNOTATIONS_CONFIG);
+            storeUploadFile(isSvg   , ref, ANNOTATIONS_SVG);
 
-        drop.setTitle(Strings.emptyToNull(title));
-        drop.setDescription(Strings.emptyToNull(desc));
+            snapshot.setHasAnnotations(true);
+        }
+
+        snapshot.setTitle(Strings.emptyToNull(title));
+        snapshot.setDescription(Strings.emptyToNull(desc));
     }
 
     private void storeUploadFile(InputStream input, String dropRef, String fileSuffiex) throws IOException {

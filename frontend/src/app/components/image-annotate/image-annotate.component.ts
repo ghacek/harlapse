@@ -178,8 +178,6 @@ export class ImageAnnotateComponent {
             hostEl.requestFullscreen()
                 .then(() => this.setBestZoomLevel());
         }
-
-
     }
 
     setZoomLevel(zoomLevel: number) {
@@ -201,6 +199,11 @@ export class ImageAnnotateComponent {
 
     setPenColor(color: string) {
         this.penColor = color;
+    }
+
+    /** Returns true if at least one annotation has been created. */
+    public hasAnnotations() {
+        return this.annotations.length > 0;
     }
 
     public getAnnotationConfiguration(): AnnotationsConfig {

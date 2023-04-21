@@ -233,6 +233,8 @@ components:
           type: string
         description:
           type: string
+        hasAnnotations:
+          type: boolean
         created:
           $ref: '#/components/schemas/Date'
   securitySchemes:

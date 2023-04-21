@@ -90,7 +90,6 @@ export class HarViewPageComponent {
             this.loadHar(ref);
             this.loadConsole(ref);
             this.loadHtml(ref);
-            this.annotationsUrl = apiAnnotationSvgUrl(ref)
           }
         });
     }
@@ -139,6 +138,10 @@ export class HarViewPageComponent {
             .subscribe(dropInfo => {
                 console.log("dropInfo", dropInfo)
                 this.dropInfo = dropInfo;
+
+                if (dropInfo.hasAnnotations) {
+                    this.annotationsUrl = apiAnnotationSvgUrl(ref);
+                }
             });
     }
 

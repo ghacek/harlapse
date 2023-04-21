@@ -37,16 +37,24 @@ export class CaptureSuccessfulPageComponent {
     }
 
     updateTitleAndDesc(title: string, description: string) {
-        const annConfig = JSON.stringify(this.imageAnnotate?.getAnnotationConfiguration());
-        const annSvg = this.imageAnnotate?.getAnnotationSvg() || "";
+        let annConfigBlob;
+        let annSvgBlob;
+
+        if (this.imageAnnotate && this.imageAnnotate.hasAnnotations()) {
+            const annConfig = JSON.stringify(this.imageAnnotate.getAnnotationConfiguration());
+            const annSvg = this.imageAnnotate.getAnnotationSvg() || "";
+
+            annConfigBlob = new Blob([annConfig], { type: 'application/json' });
+            annSvgBlob = new Blob([annSvg], { type: 'image/svg+xml' });
+        }
 
         const params = {
             ref: this.ref!, 
             body: {
                 title, 
                 description,
-                "annotations-config": new Blob([annConfig], { type: 'application/json' }),
-                "annotations-svg": new Blob([annSvg], { type: 'image/svg+xml' })
+                "annotations-config": annConfigBlob,
+                "annotations-svg": annSvgBlob
             }
         }
         this.snapshotController.finalizeSnapshotCapture(params)

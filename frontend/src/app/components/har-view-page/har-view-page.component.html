@@ -14,7 +14,7 @@
     <div class="top-blocks">
         <div class="block ss-block">
             <img class="screenshot" src="{{apiRootUrl}}/api/snapshot/{{id}}/screenshot">
-            <img class="annotations" [src]="annotationsUrl">
+            <img *ngIf="annotationsUrl" class="annotations" [src]="annotationsUrl">
 
             <div class="expand" (click)="doShowScreenshotFullscreen()">&#x26F6;</div>
         </div>
@@ -134,12 +134,12 @@
 
         <div class="dialog" (click)="$event.stopPropagation()">
             <div class="tools">
-                <button class="dark" (click)="showAnnotations = !showAnnotations">👁</button>
+                <button *ngIf="annotationsUrl" class="dark" (click)="showAnnotations = !showAnnotations">👁</button>
                 <button class="dark" (click)="showScreenshotFullscreen = false">X</button>
             </div>
             <div class="canvas">
                 <img class="screenshot" src="{{apiRootUrl}}/api/snapshot/{{id}}/screenshot">
-                <img *ngIf="showAnnotations" class="annotations" [src]="annotationsUrl">
+                <img *ngIf="annotationsUrl && showAnnotations" class="annotations" [src]="annotationsUrl">
             </div>
         </div>
     </div>
