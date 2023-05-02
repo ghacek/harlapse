@@ -1,19 +1,12 @@
+import { CaptureContext } from "../capture/capture-context";
+import { getPageBasicInfoCmdName } from "../content-script/command-handlers/commands";
+
 export interface PageBasicInfo {
     title: string,
     url: string
 }
 
-export function collectBasicInfo() {
-    return new Promise<PageBasicInfo>((resolve, reject) => {
-        chrome.devtools.inspectedWindow.eval(
-            "({ title: document.title, url: location.href })",
-            (result: any) => {
-                if (result) {
-                    resolve(result);
-                } 
-                else {
-                    reject();
-                }
-            });
-    });
+export function collectBasicInfo(ctx: CaptureContext) {
+    return ctx.sendCmd<any, PageBasicInfo>(getPageBasicInfoCmdName)
+        .then(x => { console.log("basic info", x); return x; });
 }

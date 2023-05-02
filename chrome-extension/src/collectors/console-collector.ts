@@ -1,3 +1,5 @@
+import { CaptureContext } from "../capture/capture-context";
+
 let collectedConsoleLogs: any[] | undefined = undefined;
 
 function debuggerConsoleLogCollector(source: any, method: string, params?: Object) {
@@ -10,11 +12,11 @@ function debuggerConsoleLogCollector(source: any, method: string, params?: Objec
     collectedConsoleLogs?.push(params);
 }
 
-export function captureLogEntries() {
+export function collectLogEntries(ctx: CaptureContext) {
     return new Promise<any[] | undefined>((resolve, reject) => {
         // TODO handle failure
         collectedConsoleLogs = [];
-        const target = { tabId: chrome.devtools.inspectedWindow.tabId };
+        const target = { tabId: ctx.tabId };
 
         chrome.debugger.onEvent.addListener(debuggerConsoleLogCollector);
         chrome.debugger.attach(target, "1.0", function() {

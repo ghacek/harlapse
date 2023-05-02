@@ -1,19 +1,6 @@
-export interface PageBasicInfo {
-    title: string,
-    url: string
-}
+import { CaptureContext } from "../capture/capture-context";
+import { getDocumentHtmlCmdName } from "../content-script/command-handlers/commands";
 
-export function collectHtml() {
-    return new Promise<string>((resolve, reject) => {
-        chrome.devtools.inspectedWindow.eval(
-            "document.documentElement.outerHTML",
-            (result: any) => {
-                if (result) {
-                    resolve(result);
-                } 
-                else {
-                    reject();
-                }
-            });
-    });
+export function collectHtml(ctx: CaptureContext) {
+    return ctx.sendCmd<any, string>(getDocumentHtmlCmdName);
 }
