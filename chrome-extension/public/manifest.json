@@ -29,6 +29,7 @@
     },
     "devtools_page": "devtools.html",
     "permissions": [
+        "tabs",
         "webRequest",
         "activeTab",
         "debugger"

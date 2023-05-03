@@ -21,7 +21,7 @@ if (chrome.devtools) {
     });
 }
 
-export function collectNetworkRequests1() {
+function collectNetworkRequestsFromDevTools() {
     return new Promise<HARFormatLog>((resolve) => {
         chrome.devtools.network.getHAR((har) => {
             mergeEntryContent(har.entries, requests);
@@ -31,8 +31,17 @@ export function collectNetworkRequests1() {
     });
 }
 
-export function collectNetworkRequests(ctx: CaptureContext) {
+function collectNetworkRequestsFromPerformance(ctx: CaptureContext) {
     return ctx.sendCmd<any, string>(getHarFromPerformanceCmdName);
+}
+
+export function collectNetworkRequests(ctx: CaptureContext) {
+    if (chrome.devtools) {
+        return collectNetworkRequestsFromDevTools();
+    } 
+    else {
+        return collectNetworkRequestsFromPerformance(ctx);
+    }
 }
 
 function mergeEntryContent(entries: HARFormatEntry[], requests: HarRequest[]) {

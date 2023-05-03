@@ -40,14 +40,14 @@ export function getHarFromPerformance() {
             startedDateTime: new Date(timeOrigin + entry.startTime).toISOString(),
             time: entry.duration,
             "timings": {
-                "blocked": entry.connectStart - entry.startTime,
+                "blocked": (entry.connectStart === 0) ? 0 : (entry.connectStart - entry.startTime),
                 "dns": entry.domainLookupEnd - entry.domainLookupStart,
                 "ssl": entry.requestStart - entry.secureConnectionStart,
                 "connect": entry.connectEnd - entry.connectStart,
                 "send": entry.responseStart - entry.requestStart, // not good
                 "wait": 0, // not good
-                "receive": entry.responseEnd - entry.responseStart, // not good
-                "_blocked_queueing": 0.44700002763420343
+                "receive": (entry.responseStart === 0) ? entry.duration : (entry.responseEnd - entry.responseStart),
+                //"_blocked_queueing": 0.44700002763420343
             }
         });
     }
