@@ -29,8 +29,8 @@
     },
     "devtools_page": "devtools.html",
     "permissions": [
+        "webRequest",
         "activeTab",
-        "scripting",
         "debugger"
     ],
     "host_permissions": [

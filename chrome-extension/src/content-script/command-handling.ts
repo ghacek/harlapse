@@ -1,14 +1,16 @@
-import { CmdKey, getPageBasicInfoCmdName, getDocumentHtmlCmdName } from "./command-handlers/commands";
+import { CmdKey, getPageBasicInfoCmdName, getDocumentHtmlCmdName, getHarFromPerformanceCmdName } from "./command-handlers/commands";
 import { getDocumentHtml } from "./command-handlers/get-document-html";
 import { getPageBasicInfo } from "./command-handlers/get-page-basic-info";
+import { getHarFromPerformance } from "./command-handlers/get-har-from-performance";
 
 type CmdHandler = (request: object) => any;
 
 type CmdHandlerMap = { [cmd: string]: CmdHandler };
 
 const cmdHandlers: CmdHandlerMap = {
-    [getPageBasicInfoCmdName]: getPageBasicInfo,
-    [getDocumentHtmlCmdName]: getDocumentHtml
+    [getPageBasicInfoCmdName     ]: getPageBasicInfo,
+    [getDocumentHtmlCmdName      ]: getDocumentHtml,
+    [getHarFromPerformanceCmdName]: getHarFromPerformance
 };
 
 
@@ -24,6 +26,9 @@ export function registerCommandHandler() {
         if (!handler) {
             console.error("CMD handler not found for request ", request);
             return;
+        }
+        else {
+            console.log("CMD handler found for request ", request);
         }
 
         sendResponse(handler(request));

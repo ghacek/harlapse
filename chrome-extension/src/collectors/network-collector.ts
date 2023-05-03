@@ -1,22 +1,27 @@
+import { CaptureContext } from "../capture/capture-context";
+import { getHarFromPerformanceCmdName } from "../content-script/command-handlers/commands";
 
 
 const requests: chrome.devtools.network.Request[] = [];
 
 type HarRequest = chrome.devtools.network.Request;
 
-chrome.devtools.network.onRequestFinished.addListener(request => {
-    request.getContent(function(content: string, encoding: string) {
+if (chrome.devtools) {
 
-        request.response.content.text = content;
-        if (encoding) {
-            request.response.content.encoding = encoding;
-        }
+    chrome.devtools.network.onRequestFinished.addListener(request => {
+        request.getContent(function(content: string, encoding: string) {
 
-        requests.push(request);
-    })
-});
+            request.response.content.text = content;
+            if (encoding) {
+                request.response.content.encoding = encoding;
+            }
 
-export function collectNetworkRequests() {
+            requests.push(request);
+        })
+    });
+}
+
+export function collectNetworkRequests1() {
     return new Promise<HARFormatLog>((resolve) => {
         chrome.devtools.network.getHAR((har) => {
             mergeEntryContent(har.entries, requests);
@@ -24,6 +29,10 @@ export function collectNetworkRequests() {
             resolve(har);
         });
     });
+}
+
+export function collectNetworkRequests(ctx: CaptureContext) {
+    return ctx.sendCmd<any, string>(getHarFromPerformanceCmdName);
 }
 
 function mergeEntryContent(entries: HARFormatEntry[], requests: HarRequest[]) {

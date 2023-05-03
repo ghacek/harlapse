@@ -3,6 +3,7 @@ import { PageBasicInfo, collectBasicInfo } from "../collectors/basic-info-collec
 import { collectLogEntries } from "../collectors/console-collector";
 import { collectHtml } from "../collectors/html-collector";
 import { CaptureContext } from "./capture-context";
+import { collectNetworkRequests } from "../collectors/network-collector";
 
 const ApiRoot = "http://localhost:8080/api/";
 //const ApiRoot = "http://cutes.io:8081/api/";
@@ -14,7 +15,7 @@ export function shareState(ctx: CaptureContext ,updateStatus: Subject<string>) {
 
     updateStatus.next("Capturing state...")
 
-    return Promise.all([ctx.collectScreenshot(), /*collectNetworkRequests()*/ Promise.resolve({}), collectBasicInfo(ctx), collectLogEntries(ctx), collectHtml(ctx)])
+    return Promise.all([ctx.collectScreenshot(), collectNetworkRequests(ctx), collectBasicInfo(ctx), collectLogEntries(ctx), collectHtml(ctx)])
         .then((args) => {
             const ss = args[0];
             const har = args[1];
