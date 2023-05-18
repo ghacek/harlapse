@@ -1,3 +1,4 @@
+import { BgCmdKey } from "../background-script/command-handlers/commands";
 import { CmdKey } from "../content-script/command-handlers/commands";
 
 
@@ -10,10 +11,11 @@ export interface CaptureContext {
     eval<T>(script: string) : Promise<T>;
 
     /** Sends a message to the content script */
-    sendMessage<M = any, R = any>(message: M) : Promise<R>;
+    sendContentMessage<M = any, R = any>(message: M) : Promise<R>;
 
     /** Sends a command to the content script */
-    sendCmd<M = any, R = any>(cmd: string, message?: M) : Promise<R>;
+    sendContentCmd<M = any, R = any>(cmd: string, message?: M) : Promise<R>;
+    sendBgCmd<M = any, R = any>(cmd: string, message?: M) : Promise<R>;
 
     collectScreenshot() : Promise<Blob>;
 }
@@ -37,17 +39,29 @@ export abstract class TabIdBaseCaptureContext implements CaptureContext {
         });
     }
 
-    public sendMessage<M, R>(message: M): Promise<R> {
+    public sendContentMessage<M, R>(message: M): Promise<R> {
         return chrome.tabs.sendMessage<M, R>(this.tabId, message);
     }
 
-    public sendCmd<M = any, R = any>(cmd: string, message?: M) : Promise<R> {
+    public sendBgMessage<M, R>(message: M): Promise<R> {
+        return chrome.runtime.sendMessage<M, R>(message);
+    }
+
+    public sendContentCmd<M = any, R = any>(cmd: string, message?: M) : Promise<R> {
         const msg = Object.assign(
             { [CmdKey]: cmd },
             message
         );
 
-        return this.sendMessage(msg);
+        return this.sendContentMessage(msg);
+    }
+    public sendBgCmd<M = any, R = any>(cmd: string, message?: M) : Promise<R> {
+        const msg = Object.assign(
+            { [BgCmdKey]: cmd },
+            message
+        );
+
+        return this.sendBgMessage(msg);
     }
 
     collectScreenshot(): Promise<Blob> {

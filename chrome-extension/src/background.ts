@@ -1,5 +1,8 @@
 'use strict';
 
+import { registerBgCommandHandler } from "./background-script/command-handling";
+import { initNetworkMonitor, networkLogAll } from "./network/monitor";
+
 // With background scripts you can communicate with popup
 // and contentScript files.
 // For more information on background script,
@@ -8,10 +11,5 @@
 console.log("background", chrome.action.onClicked);
 
 
-chrome.webRequest.onBeforeRequest.addListener(
-    function(details) {
-      console.log("oncomplete", details);
-    },
-    {urls: ["<all_urls>"]},
-    []
-);
+initNetworkMonitor();
+registerBgCommandHandler();

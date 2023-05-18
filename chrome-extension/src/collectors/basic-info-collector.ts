@@ -7,6 +7,6 @@ export interface PageBasicInfo {
 }
 
 export function collectBasicInfo(ctx: CaptureContext) {
-    return ctx.sendCmd<any, PageBasicInfo>(getPageBasicInfoCmdName)
+    return ctx.sendContentCmd<any, PageBasicInfo>(getPageBasicInfoCmdName)
         .then(x => { console.log("basic info", x); return x; });
 }

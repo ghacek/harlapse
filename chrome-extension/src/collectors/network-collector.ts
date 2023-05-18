@@ -1,5 +1,7 @@
+import { getNetworkLogCmdName } from "../background-script/command-handlers/commands";
 import { CaptureContext } from "../capture/capture-context";
 import { getHarFromPerformanceCmdName } from "../content-script/command-handlers/commands";
+import { getHarForTabId } from "../network/monitor";
 
 
 const requests: chrome.devtools.network.Request[] = [];
@@ -32,7 +34,7 @@ function collectNetworkRequestsFromDevTools() {
 }
 
 function collectNetworkRequestsFromPerformance(ctx: CaptureContext) {
-    return ctx.sendCmd<any, string>(getHarFromPerformanceCmdName);
+    return ctx.sendContentCmd<any, string>(getHarFromPerformanceCmdName);
 }
 
 export function collectNetworkRequests(ctx: CaptureContext) {
@@ -40,7 +42,9 @@ export function collectNetworkRequests(ctx: CaptureContext) {
         return collectNetworkRequestsFromDevTools();
     } 
     else {
-        return collectNetworkRequestsFromPerformance(ctx);
+        console.log("collectNetworkRequests() getNetworkLogCmdName");
+        return ctx.sendBgCmd<any, string>(getNetworkLogCmdName, { tabId: ctx.tabId });
+        //return collectNetworkRequestsFromPerformance(ctx);
     }
 }
 
