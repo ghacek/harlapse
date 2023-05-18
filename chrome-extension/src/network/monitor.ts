@@ -43,13 +43,23 @@ export function initNetworkMonitor() {
 }
 
 function onBeforeNavigate(details: chrome.webNavigation.WebNavigationParentedCallbackDetails) {
-    //console.log("webNavigation.onBeforeNavigate", details);
+    console.log("webNavigation.onBeforeNavigate", details);
 
     const isTopFrame = (details.frameId === 0);
 
     if (isTopFrame) {
         // Clear network entries that were captured until last navigation event
-        delete networkLog[details.tabId];
+        const tab = networkLog[details.tabId];
+        if (tab) {
+            // If tab exists last record is the load of the new document that we are navigating to.
+            // TODO make sure this holds in all cases
+            const lastRecord = tab[tab.length - 1];
+
+            networkLog[details.tabId] = [lastRecord];
+        }
+        else {
+            delete networkLog[details.tabId];
+        }
     } 
     else {
         //console.log("Ignoring onBeforeNavigate because not top frame", details);
@@ -67,6 +77,8 @@ function onBeforeRequest(details: chrome.webRequest.WebRequestBodyDetails) {
     if (details.tabId <= 0) {
         return;
     }
+
+    console.log("webRequest.onBeforeRequest", details);
 
     let tab: LogEntry[] = networkLog[details.tabId];
     if (!tab) {
@@ -90,7 +102,7 @@ function onSendHeaders(details: chrome.webRequest.WebRequestHeadersDetails) {
 
     request.onSendHeaders = details;
 
-    console.log("webRequest.onSendHeaders", details);
+    //console.log("webRequest.onSendHeaders", details);
 }
 
 
@@ -104,7 +116,7 @@ function onCompleted(details: chrome.webRequest.WebResponseCacheDetails) {
 
     request.onCompleted = details;
 
-    console.log("webRequest.onCompleted", details, request);
+    //console.log("webRequest.onCompleted", details, request);
 }
 
 function getRequest(tabId: number, requestId: string) {
