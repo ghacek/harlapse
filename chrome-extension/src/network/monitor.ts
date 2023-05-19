@@ -1,4 +1,4 @@
-
+import { QueryString, Header, Cookie } from 'har-format';
 
 // TODO handle onTabReplaced event
 //    If a navigation was triggered via Chrome Instant or Instant Pages, a completely loaded page is swapped into the current tab. In that case, an onTabReplaced event is fired.
@@ -16,21 +16,21 @@ const networkLog: {
 } = {};
 
 export function initNetworkMonitor() {
-    
+
     chrome.webRequest.onBeforeRequest.addListener(
         onBeforeRequest,
-        {urls: ["<all_urls>"]},
+        { urls: ["<all_urls>"] },
         ["requestBody"]
     );
 
     chrome.webRequest.onSendHeaders.addListener(
         onSendHeaders,
-        {urls: ["<all_urls>"]},
+        { urls: ["<all_urls>"] },
         ["requestHeaders", "extraHeaders"]
     );
     chrome.webRequest.onCompleted.addListener(
         onCompleted,
-        {urls: ["<all_urls>"]},
+        { urls: ["<all_urls>"] },
         ["responseHeaders", "extraHeaders"]
     );
 
@@ -60,12 +60,12 @@ function onBeforeNavigate(details: chrome.webNavigation.WebNavigationParentedCal
         else {
             delete networkLog[details.tabId];
         }
-    } 
+    }
     else {
         //console.log("Ignoring onBeforeNavigate because not top frame", details);
     }
 
-    
+
 }
 
 function onCommittedNavigate(details: chrome.webNavigation.WebNavigationTransitionCallbackDetails) {
@@ -150,41 +150,35 @@ function convertLogToHar(tabId: number) {
         .filter(r => (r.onSendHeaders && r.onCompleted))
         .map((r: LogEntry) => {
             return {
-                startedDateTime: new Date(r.onSendHeaders!.timeStamp).toISOString(),
+                startedDateTime: new Date(r.onBeforeRequest!.timeStamp).toISOString(),
                 time: r.onCompleted!.timeStamp - r.startTime,
                 request: {
                     method: r.onSendHeaders!.method,
                     url: r.onSendHeaders!.url,
                     httpVersion: "??", // TODO detect from statusLine,
-                    cookies: [], // TODO parse cookies from headers
-                    headers: (r.onSendHeaders!.requestHeaders ?? []).map(h => ({
-                            name: h.name,
-                            value: h.value ?? ""
-                        })),
-                    queryString: [], // TODO parse query string from URL
+                    cookies: parseCookiesFromHeaders(r.onSendHeaders!.requestHeaders),
+                    headers: convertHeaderList(r.onSendHeaders!.requestHeaders),
+                    queryString: convertUrlToQueryString(r.onSendHeaders!.url),
                     postData: undefined, // TODO parse from  r.onBeforeRequest?.requestBody
-                    headersSize: -1, // TODO calc form headers array
-                    bodySize: -1 // TODO calc form WebRequestBody 
+                    headersSize: calcHeaderSize(r.onSendHeaders!.requestHeaders),
+                    bodySize: parseContentLength(r.onSendHeaders!.requestHeaders)
                 },
                 response: {
                     status: r.onCompleted!.statusCode,
                     statusText: r.onCompleted!.statusLine,
                     httpVersion: "??", // TODO detect from statusLine,
-                    headers: (r.onCompleted!.responseHeaders ?? []).map(h => ({
-                        name: h.name,
-                        value: h.value ?? ""
-                    })),
-                    cookies: [], // TODO parse cookies from headers
+                    headers: convertHeaderList(r.onCompleted!.responseHeaders),
+                    cookies: parseSetCookieAttributes(r.onCompleted!.responseHeaders),
                     content: {
                         size: -1,
                         mimeType: "text/plain"
                     },
-                    headersSize: -1, // TODO calc form headers array
-                    bodySize: -1, // TODO calc form WebRequestBody
+                    headersSize: calcHeaderSize(r.onCompleted!.responseHeaders),
+                    bodySize: parseContentLength(r.onCompleted!.responseHeaders),
                     redirectURL: ""
                 },
                 cache: {
-                    
+
                 },
                 timings: {
                     blocked: -1,
@@ -192,7 +186,7 @@ function convertLogToHar(tabId: number) {
                     connect: -1,
                     send: -1,
                     wait: -1,
-                    receive: -1
+                    receive: r.onCompleted!.timeStamp - r.onBeforeRequest!.timeStamp
                 },
                 serverIPAddress: r.onCompleted!.ip,
                 _fromCache: r.onCompleted!.fromCache ? "disk" : undefined,
@@ -217,13 +211,186 @@ function convertLogToHar(tabId: number) {
 
 }
 
-function convertEventTypeToHarType(type: String ) {
-    switch(type) {
+function convertEventTypeToHarType(type: String) {
+    switch (type) {
         case "main_frame": return "document";
         case "sub_frame": return "document";
         case "xmlhttprequest": return "xhr";
         default: return type;
     }
+}
+
+
+
+/**
+ * Converts a given URL string to a query string array.
+ *
+ * @param urlString - The URL string to be converted.
+ * @return An array of query string objects containing name-value pairs.
+ */
+function convertUrlToQueryString(urlString: string) {
+    let url;
+    try {
+        url = new URL(urlString);
+    } catch (ex) {
+        console.error("Failed to parse URL", ex);
+        return [];
+    }
+
+    const searchParams = url.searchParams;
+
+    const queryParams: QueryString[] = [];
+
+    searchParams.forEach((value, key) => {
+        queryParams.push({
+            name: key,
+            value: value
+        });
+    });
+
+    return queryParams;
+}
+
+function convertHeaderList(headers: chrome.webRequest.HttpHeader[] | undefined): Header[] {
+    if (!headers) {
+        return [];
+    }
+
+    return headers.map(h => ({
+        name: h.name,
+        value: h.value ?? ""
+    }))
+}
+
+/**
+ * Calculates the size of the headers based on the provided HttpHeader array.
+ * This is an approximation based on the size based on parsed values, not real 
+ * request content.
+ *
+ * @param headers - An array of HttpHeader objects or undefined.
+ * @return The calculated size of the headers.
+ */
+function calcHeaderSize(headers: chrome.webRequest.HttpHeader[] | undefined): number {
+    if (!headers) {
+        return 0;
+    }
+
+    let size = 0;
+
+    headers.forEach(h => {
+        size += h.name.length + (h.value ?? "").length + 4; // 4 for ": " and "\r\n"
+    });
+
+    return size;
+}
+
+function parseCookiesFromHeaders(headersArray: chrome.webRequest.HttpHeader[] | undefined): Cookie[] {
+    if (!headersArray) {
+        return [];
+    }
+
+    const cookies: Cookie[] = [];
+
+    // Iterate over each header object
+    for (let i = 0; i < headersArray.length; i++) {
+        const header = headersArray[i];
+        const headerName = header.name.toLowerCase();
+
+        // Check if the header is a "cookie" header
+        if (headerName === "cookie") {
+            const headerValue = header.value ?? "";
+            // Split the header value into individual cookies
+            const cookieArr = headerValue.split(";");
+
+            // Iterate over each cookie
+            for (let j = 0; j < cookieArr.length; j++) {
+                const cookie = cookieArr[j].trim();
+
+                // Split the cookie into name and value
+                const [name, value] = cookie.split("=", 2);
+
+                // Store the cookie in the cookies object
+                cookies.push({
+                    name,
+                    value: decodeURIComponent(value)
+                });
+            }
+        }
+    }
+
+    return cookies;
+}
+
+function parseSetCookieAttributes(headers: chrome.webRequest.HttpHeader[] | undefined): Cookie[] {
+    if (!headers) {
+        return [];
+    }
+
+    const cookies: Cookie[] = [];
+
+    headers
+        .filter(header => header.name.toLowerCase() === 'set-cookie')
+        .forEach(header => {
+            const headerValue = header.value ?? "";
+            const attributes = headerValue.split(';').map(attr => attr.trim());
+
+            if (attributes.length < 2) {
+                return;
+            }
+
+            const [name, value] = attributes.shift()!.split('=');
+            const cookie: Cookie = { name, value };
+
+            attributes.forEach(attribute => {
+                const [key, val] = attribute.split('=');
+
+                switch (key.toLowerCase()) {
+                    case 'path':
+                        cookie.path = val;
+                        break;
+                    case 'domain':
+                        cookie.domain = val;
+                        break;
+                    case 'expires':
+                        cookie.expires = val;
+                        break;
+                    case 'httponly':
+                        cookie.httpOnly = true;
+                        break;
+                    case 'secure':
+                        cookie.secure = true;
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+            cookies.push(cookie);
+        });
+
+    return cookies;
+}
+
+/**
+ * Parses the content length from a given array of HTTP headers.
+ *
+ * @param headers The array of HTTP headers to search.
+ * @return The parsed content length, or -1 if not found.
+ */
+function parseContentLength(headers: chrome.webRequest.HttpHeader[] | undefined): number {
+    if (!headers) {
+        return -1;
+    }
+
+    const contentLengthHeader = headers.find(header =>
+        header.name.toLowerCase() === 'content-length'
+    );
+
+    if (contentLengthHeader && contentLengthHeader.value) {
+        return parseInt(contentLengthHeader.value, 10);
+    }
+
+    return -1;
 }
 
 
