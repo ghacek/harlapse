@@ -16,8 +16,14 @@ const EditorAllowedMimeTypes = [
     "image/svg+xml",
     "application/xhtml+xml",
     "application/xml",
-    "application/atom+xml",
+    "application/atom+xml"
 ];
+
+const PayloadAllowedMimeTypes = [
+    ...EditorAllowedMimeTypes,
+    "application/x-www-form-urlencoded"
+];
+
 
 const SupportedPreviewImageMimeTypes = [
     "image/jpeg",
@@ -107,10 +113,13 @@ export class HarEntryViewComponent implements OnChanges {
     
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['entry']) {
-            this.selectedTabe = this.tabHeaders;
             this.tabResponse.available = this.isResponseTabAvailable(this.entry);
             this.configurePayloadTab(this.entry);
             this.configurePreviewTab(this.entry);
+
+            if (this.selectedTabe.disabled) {
+                this.selectedTabe = this.tabHeaders;
+            }
         }
     }
 
@@ -125,8 +134,11 @@ export class HarEntryViewComponent implements OnChanges {
 
         tabPayload.hasQueryString = (entry.request.queryString && entry.request.queryString.length > 0);
         tabPayload.hasFormData = (postData && postData.params && postData.params.length > 0);
+        tabPayload.mimeType = undefined;
+        tabPayload.showText = false;
+        tabPayload.json = undefined;
 
-        if (postData && postData.mimeType) {
+        if (postData) {
             const mimeTypeParts = postData.mimeType.split(";");
             const mimeType = mimeTypeParts[0].trim();
 
@@ -139,7 +151,8 @@ export class HarEntryViewComponent implements OnChanges {
                 tabPayload.json = json;
             }
             else {
-                const canShowMimeType = EditorAllowedMimeTypes.includes(mimeType);
+                const canShowMimeType = PayloadAllowedMimeTypes.includes(mimeType)
+                    || mimeType === "";
 
                 tabPayload.mimeType = mimeType;
                 tabPayload.showText = canShowMimeType && !tabPayload.hasFormData;
