@@ -1,4 +1,4 @@
-import { QueryString, Header, Cookie } from 'har-format';
+import { QueryString, Header, Cookie, PostData } from 'har-format';
 
 // TODO handle onTabReplaced event
 //    If a navigation was triggered via Chrome Instant or Instant Pages, a completely loaded page is swapped into the current tab. In that case, an onTabReplaced event is fired.
@@ -159,7 +159,7 @@ function convertLogToHar(tabId: number) {
                     cookies: parseCookiesFromHeaders(r.onSendHeaders!.requestHeaders),
                     headers: convertHeaderList(r.onSendHeaders!.requestHeaders),
                     queryString: convertUrlToQueryString(r.onSendHeaders!.url),
-                    postData: undefined, // TODO parse from  r.onBeforeRequest?.requestBody
+                    postData: convertRequestBodyToPostData(r.onSendHeaders!, r.onBeforeRequest!),
                     headersSize: calcHeaderSize(r.onSendHeaders!.requestHeaders),
                     bodySize: parseContentLength(r.onSendHeaders!.requestHeaders)
                 },
@@ -391,6 +391,72 @@ function parseContentLength(headers: chrome.webRequest.HttpHeader[] | undefined)
     }
 
     return -1;
+}
+
+function convertRequestBodyToPostData(
+            headerDetails: chrome.webRequest.WebRequestHeadersDetails, 
+            bodyDetails: chrome.webRequest.WebRequestBodyDetails
+        ) : PostData | undefined {
+    
+    const body = bodyDetails.requestBody;
+
+    if (headerDetails.type === "ping") {
+        // ping requests always return requestBody: {error: 'Unknown error.'}
+        return;
+    }
+
+    if (bodyDetails.method === "POST") {
+        console.log("-----YYYYY----- post req", body, bodyDetails);
+    }
+
+    if (!body) {
+        return;
+    }
+
+    
+    const headers = headerDetails.requestHeaders || [];
+    const mimeType = headers.find(header => header.name.toLowerCase() === 'content-type')?.value ?? "";
+
+
+    if (body.formData) {
+        const data = {
+            mimeType,
+            params: Object.keys(body.formData)
+                .map(key => ({
+                    name: key,
+                    value: (body.formData![key] ?? []).join(";")
+                }))
+        } as PostData;
+
+        console.log("-----XXXXXX----- parsed post data", body);
+
+        return data;
+    }
+    else if (body.raw && body.raw.length === 1) {
+        const onlyPart = body.raw[0];
+
+        console.log("-----XXXXXX----- we have raw", body);
+
+        if (onlyPart.bytes) {
+            return {
+                mimeType,
+                text: new TextDecoder("utf-8").decode(onlyPart.bytes),
+            } as PostData;
+        }
+        else {
+            return {
+                mimeType,
+                text: "file name: " + onlyPart.file,
+            } as PostData;
+        }
+    }
+    else if (body.raw) {
+        console.error("Failed to encode post body", body,bodyDetails);
+    }
+
+
+
+    return;
 }
 
 
