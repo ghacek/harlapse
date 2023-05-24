@@ -155,7 +155,7 @@ function convertLogToHar(tabId: number) {
                 request: {
                     method: r.onSendHeaders!.method,
                     url: r.onSendHeaders!.url,
-                    httpVersion: "??", // TODO detect from statusLine,
+                    httpVersion: "", // cannot be detected as onCompleted.statusLine is always HTTP/1.1
                     cookies: parseCookiesFromHeaders(r.onSendHeaders!.requestHeaders),
                     headers: convertHeaderList(r.onSendHeaders!.requestHeaders),
                     queryString: convertUrlToQueryString(r.onSendHeaders!.url),
@@ -165,8 +165,8 @@ function convertLogToHar(tabId: number) {
                 },
                 response: {
                     status: r.onCompleted!.statusCode,
-                    statusText: r.onCompleted!.statusLine,
-                    httpVersion: "??", // TODO detect from statusLine,
+                    statusText: "",
+                    httpVersion: "", // cannot be detected as onCompleted.statusLine is always HTTP/1.1
                     headers: convertHeaderList(r.onCompleted!.responseHeaders),
                     cookies: parseSetCookieAttributes(r.onCompleted!.responseHeaders),
                     content: {
@@ -417,7 +417,6 @@ function convertRequestBodyToPostData(
     const headers = headerDetails.requestHeaders || [];
     const mimeType = headers.find(header => header.name.toLowerCase() === 'content-type')?.value ?? "";
 
-
     if (body.formData) {
         const data = {
             mimeType,
@@ -432,29 +431,28 @@ function convertRequestBodyToPostData(
 
         return data;
     }
-    else if (body.raw && body.raw.length === 1) {
-        const onlyPart = body.raw[0];
+    else if (body.raw) {
+        let content = "";
+        body.raw.forEach(part => {
+            console.log("POST part", part);
+            if (part.bytes) {
+                content += new TextDecoder("utf-8").decode(part.bytes);
+            }
+            else {
+                content += "{{file content not included}}\n";
+            }
+            console.log("POST content", content);
+        })
 
         console.log("-----XXXXXX----- we have raw", body);
 
-        if (onlyPart.bytes) {
-            return {
-                mimeType,
-                text: new TextDecoder("utf-8").decode(onlyPart.bytes),
-            } as PostData;
-        }
-        else {
-            return {
-                mimeType,
-                text: "file name: " + onlyPart.file,
-            } as PostData;
-        }
-    }
-    else if (body.raw) {
-        console.error("Failed to encode post body", body,bodyDetails);
-    }
 
-
+        return {
+            mimeType,
+            text: content,
+        } as PostData;
+        
+    }
 
     return;
 }

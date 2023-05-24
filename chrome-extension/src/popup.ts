@@ -5,9 +5,6 @@ import { TabCaptureContext } from "./capture/tab-capture-context";
 import { BgCmdKey, getNetworkLogCmdName } from "./background-script/command-handlers/commands";
 
 
-
-
-
 const btn = document.getElementById("capture-btn");
 const actionBtn = document.getElementById("action-btn");
 
@@ -21,7 +18,13 @@ actionBtn!.addEventListener('click', execAction);
 async function captureScreenshot() {
     const ctx = await TabCaptureContext.getForActiveTab();
 
-    shareState(ctx, new Subject<any>());
+
+    console.log("Capture screenshot")
+
+    const updateStatus = new Subject<any>();
+    updateStatus.subscribe(msg => console.log(msg));
+
+    shareState(ctx, updateStatus);
 }
 
 function execAction() {
