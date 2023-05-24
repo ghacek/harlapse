@@ -65,12 +65,32 @@ const common = {
           from: '**/*',
           context: 'public',
         },
+        {
+            from: "manifest.json",
+            to: "",
+            context: 'public',
+            transform(content, absoluteFrom) {
+                const now = new Date();
+                const version = now.getFullYear() 
+                        + "." 
+                        + (now.getMonth() * 31 +  now.getDate()) 
+                        + "." 
+                        + (now.getHours() * 60 + now.getMinutes()) 
+                        + "." + now.getSeconds();
+
+                console.log("--------------------------------------");
+                console.log("--  VERSION:  ", version);
+                console.log("--------------------------------------");
+
+                return content.toString().replace("0.0.1", version);
+            },
+          },
       ],
     }),
     // Extract CSS into separate files
     new MiniCssExtractPlugin({
       filename: '[name].css',
-    }),
+    })
   ],
 };
 
