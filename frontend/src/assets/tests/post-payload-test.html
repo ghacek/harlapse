@@ -47,10 +47,188 @@ function xhr_blob_string() {
     xhr.send(blob);
 }
 
-</script>
+function xhr_int8array() {
+    // 
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', postURL, true);
 
-<button onclick="fetch_post_json()">fetch - post JSON str</button>
-<button onclick="xhr_www_form()">XHR - post x-www-form</button>
-<button onclick="xhr_string()">XHR - string</button>
-<button onclick="xhr_json_string()">XHR - json string</button>
-<button onclick="xhr_blob_string()">XHR - blob string</button>
+    xhr.send(new Int8Array([9, 8, 7, 6, 5, 4 , 3, 2, 1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]));
+}
+
+function xhr_dataview() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', postURL, true);
+
+    const buffer = new ArrayBuffer(4);
+    const dataView = new DataView(buffer);
+    dataView.setInt16(0, 323, true /* littleEndian */);
+    dataView.setInt16(2, 434, true /* littleEndian */);
+  // Int16Array uses the platform's endianness.
+
+    xhr.send(dataView);
+}
+
+
+function xhr_formdata_strings() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', postURL, true);
+
+    const formData = new FormData();
+    formData.append("username", "Groucho");
+    formData.append("accountnum", 123456);
+
+    xhr.send(formData);
+}
+
+function xhr_formdata_xml() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', postURL, true);
+
+    const formData = new FormData();
+    
+    const content = '<q id="a"><span id="b">hey!</span></q>'; // the body of the new file…
+    const blob = new Blob([content], { type: "text/xml" });
+    formData.append("webmasterfile", blob);
+
+    formData.append("username", "Groucho");
+
+    xhr.send(formData);
+}
+
+function xhr_file() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', postURL, true);
+
+    const inputEl = document.getElementById('the-file');
+
+    xhr.send(inputEl.files[0]);
+}
+
+
+function xhr_formdata_file() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', postURL, true);
+
+    const formData = new FormData();
+
+    const inputEl = document.getElementById('formdata-file');
+
+    formData.append("selfile", inputEl.files[0]);
+    formData.append("username", "Groucho");
+
+    xhr.send(formData);
+}
+
+function xhr_formdata_files() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', postURL, true);
+
+    const formData = new FormData();
+
+    const inputEl = document.getElementById('formdata-files');
+    const files = inputEl.files;
+
+    for (var i = 0; i < files.length; i++) {
+        formData.append("file" + i, files[i]);
+    }
+
+    xhr.send(formData);
+}
+
+</script>
+<h1>Test cases:</h1>
+<div class="tests">
+    <div class="test">
+        Data set:
+        <pre>{a: 1, b: 2}</pre>
+        <button onclick="fetch_post_json()">fetch - post JSON str</button>
+    </div>
+
+    <div class="test">
+        Data set:
+        <pre>lorem=ipsum&name=binny</pre>
+        <button onclick="xhr_www_form()">XHR - post x-www-form</button>
+    </div>
+
+    <div class="test">
+        Data set:
+        <pre>Hello, world!</pre>
+        <button onclick="xhr_string()">XHR - string</button>
+    </div>
+
+    <div class="test">
+        Data set:
+        <pre>{a: 1, b: 2}</pre>
+        <button onclick="xhr_json_string()">XHR - json string</button>
+    </div>
+
+    <div class="test">
+        Data set:
+        <pre>[9, 8, 7, 6, 5, 4 , 3, 2, 1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]</pre>
+        <button onclick="xhr_int8array()">XHR - int8 array</button>
+    </div>
+
+    <div class="test">
+        Data set:
+        <pre>323 434</pre>
+        <button onclick="xhr_dataview()">XHR - dataview</button>
+    </div>
+
+    <div class="test">
+        Data set:
+        <pre>"username", "Groucho", "accountnum", 123456</pre>
+        <button onclick="xhr_formdata_strings()">XHR - formdata strings</button>
+    </div>
+
+    <div class="test">
+        Data set:
+        <pre>xml + "username", "Groucho"</pre>
+        <button onclick="xhr_formdata_xml()">XHR - formdata xml</button>
+    </div>
+    
+
+    <div class="test">
+        Data set:
+        <input id="the-file" type="file" name="file" required />
+        <button onclick="xhr_file()">XHR - file</button>
+    </div>
+
+    <div class="test">
+        Data set:
+        <input id="formdata-file" type="file" name="file" />
+        <button onclick="xhr_formdata_file()">XHR - formdata file</button>
+    </div>
+
+<div class="test">
+    Data set:
+    <input id="formdata-files" type="file" name="file" multiple />
+    <button onclick="xhr_formdata_files()">XHR - formdata files</button>
+</div>
+</div>
+
+<h1>Errors:</h1>
+<p>This do not work as expected</p>
+<div class="tests">
+    <div class="test">
+        Data set:
+        <pre>Hello, world!</pre>
+        <button onclick="xhr_blob_string()">XHR - blob string</button>
+    </div>
+
+
+</div>
+
+<style> 
+.tests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.test {
+    border: 1px solid black;
+    background: lightgreen;
+    border-radius: 10px;
+    padding: 10px;
+    width: 400px;
+}
+</style>
