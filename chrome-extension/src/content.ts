@@ -1,7 +1,6 @@
 import { registerCommandHandler } from "./content-script/command-handling";
 
-
-console.log("Loggggggg from contents.js")
+console.log("Harlapse - content", chrome.runtime.getManifest().version)
 
 registerCommandHandler();
 

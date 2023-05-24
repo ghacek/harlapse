@@ -8,7 +8,7 @@ import { initNetworkMonitor, networkLogAll } from "./network/monitor";
 // For more information on background script,
 // See https://developer.chrome.com/extensions/background_pages
 
-console.log("background", chrome.action.onClicked);
+console.log("Harlapse - background", chrome.runtime.getManifest().version)
 
 
 initNetworkMonitor();
