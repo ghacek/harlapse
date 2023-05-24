@@ -21,7 +21,8 @@ const EditorAllowedMimeTypes = [
 
 const PayloadAllowedMimeTypes = [
     ...EditorAllowedMimeTypes,
-    "application/x-www-form-urlencoded"
+    "application/x-www-form-urlencoded",
+    "multipart/form-data"
 ];
 
 
@@ -137,6 +138,8 @@ export class HarEntryViewComponent implements OnChanges {
         tabPayload.mimeType = undefined;
         tabPayload.showText = false;
         tabPayload.json = undefined;
+
+        
 
         if (postData) {
             const mimeTypeParts = postData.mimeType.split(";");
