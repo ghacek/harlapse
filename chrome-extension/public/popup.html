@@ -3,10 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <title>Harlapse Chrome popup</title>
+    <link rel="stylesheet" href="styles/bootstrap.min.css" />
+    <link rel="stylesheet" href="fontawesome/css/all.css" />
+    <style>
+        body {
+            width: 250px;
+        }
+
+        .top-bar {
+            background: #b6e8ed;
+            background: #adc5e6;
+            padding: 10px;
+            border-bottom: 2px solid #1a73e8;
+        }
+
+        .fa-camera {
+            margin-right: 5px;
+        }
+
+        .buttons {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            text-align: left;
+        }
+    </style>
+
+    
   </head>
   <body>
-    <button id="capture-btn">Capture Screenshot</button>
-    <button id="action-btn">Action</button>
+    <div class="top-bar">
+        <img src="/assets/logo.svg" height="40">
+    </div>
+
+    <div class="buttons">
+        <button id="capture-btn" class="btn btn-primary"><i class="fa-solid fa-camera"></i> Capture Screenshot</button>
+        <!--button id="action-btn" class="btn btn-secondary">Action</button-->
+    </div>
 
 
     <script src="popup.js"></script>
