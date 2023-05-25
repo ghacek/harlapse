@@ -10,7 +10,7 @@ const config = (env, argv) =>
   merge(common, {
     entry: {
       popup: PATHS.src + '/popup.ts',
-      background: PATHS.src + '/background.ts',
+      service_worker: PATHS.src + '/service-worker/service-worker.ts',
       content: PATHS.src + '/content.ts',
     },
     devtool: argv.mode === 'production' ? false : 'source-map',

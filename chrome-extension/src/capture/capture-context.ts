@@ -1,6 +1,7 @@
-import { BgCmdKey, getNetworkLogCmdName } from "../background-script/command-handlers/commands";
+
 import { CmdKey, getDocumentHtmlCmdName, getPageBasicInfoCmdName } from "../content-script/command-handlers/commands";
 import { PageBasicInfo } from "../content-script/command-handlers/types/page-basic-info";
+import { BgCmdKey, getNetworkLogCmdName } from "../service-worker/command-handlers/commands";
 
 
 

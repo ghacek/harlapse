@@ -2,7 +2,7 @@
 import { Subject } from "rxjs";
 import { shareState } from "./capture/capture";
 import { CaptureContext } from "./capture/capture-context";
-import { BgCmdKey, getNetworkLogCmdName } from "./background-script/command-handlers/commands";
+import { BgCmdKey, getNetworkLogCmdName } from "./service-worker/command-handlers/commands";
 
 
 const btn = document.getElementById("capture-btn");
