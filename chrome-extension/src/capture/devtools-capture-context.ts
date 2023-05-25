@@ -1,10 +1,9 @@
-import { TabIdBaseCaptureContext } from "./capture-context";
+import { CaptureContext } from "./capture-context";
 
-export class DevToolsCaptureContext extends TabIdBaseCaptureContext {
+export class DevToolsCaptureContext extends CaptureContext {
 
-
-    get tabId(): number {
-        return chrome.devtools.inspectedWindow.tabId;
+    constructor() {
+        super(chrome.devtools.inspectedWindow.tabId)
     }
 
     override collectScreenshot(): Promise<Blob> {

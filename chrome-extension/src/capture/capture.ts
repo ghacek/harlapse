@@ -1,9 +1,10 @@
 import { Subject } from "rxjs";
-import { PageBasicInfo, collectBasicInfo } from "../collectors/basic-info-collector";
+import { collectBasicInfo } from "../collectors/basic-info-collector";
 import { collectLogEntries } from "../collectors/console-collector";
 import { collectHtml } from "../collectors/html-collector";
 import { CaptureContext } from "./capture-context";
 import { collectNetworkRequests } from "../collectors/network-collector";
+import { PageBasicInfo } from "../content-script/command-handlers/types/page-basic-info";
 
 const ApiRoot = "http://localhost:8080/api/";
 //const ApiRoot = "http://cutes.io:8081/api/";

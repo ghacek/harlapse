@@ -13,10 +13,6 @@ const cmdHandlers: CmdHandlerMap = {
 
 export function registerBgCommandHandler() {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        console.log(sender.tab ?
-            "from a content script:" + sender.tab.url :
-            "from the extension-4");
-
         if (sender.id !== chrome.runtime.id) {
             return;
         }
@@ -27,9 +23,6 @@ export function registerBgCommandHandler() {
         if (!handler) {
             console.error("CMD handler not found for request ", request);
             return;
-        }
-        else {
-            console.log("CMD handler found for request ", request);
         }
 
         sendResponse(handler(request));

@@ -1,4 +1,5 @@
-import { PageBasicInfo } from "../../collectors/basic-info-collector";
+import { PageBasicInfo } from "./types/page-basic-info";
+
 
 export function getPageBasicInfo() : PageBasicInfo {
     return { 

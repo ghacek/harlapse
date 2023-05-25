@@ -1,7 +1,7 @@
 
 import { Subject } from "rxjs";
 import { shareState } from "./capture/capture";
-import { TabCaptureContext } from "./capture/tab-capture-context";
+import { CaptureContext } from "./capture/capture-context";
 import { BgCmdKey, getNetworkLogCmdName } from "./background-script/command-handlers/commands";
 
 
@@ -16,7 +16,7 @@ console.log("actionBtn", actionBtn);
 actionBtn!.addEventListener('click', execAction);
 
 async function captureScreenshot() {
-    const ctx = await TabCaptureContext.getForActiveTab();
+    const ctx = await CaptureContext.getForActiveTab();
 
 
     console.log("Capture screenshot")
