@@ -1,4 +1,21 @@
 export interface PageBasicInfo {
     title: string,
-    url: string
+    url: string,
+    userAgent: string,
+    language: string,
+    languages: string[],
+    deviceMemory: number,
+    hardwareConcurrency: number,
+    maxTouchPoints: number,
+    timezoneOffset: number,
+    intl: PageIntlInfo
+}
+
+export interface PageIntlInfo {
+    dateTimeFormat: Intl.ResolvedDateTimeFormatOptions,
+    //listFormat: Intl.ResolvedListFormatOptions,
+    numberFormat: Intl.ResolvedNumberFormatOptions
+    pluralRules: Intl.ResolvedPluralRulesOptions,
+    relativeTimeFormat: Intl.ResolvedRelativeTimeFormatOptions,
+    //segmenter: Intl.ResolvedDisplayNamesOptions
 }

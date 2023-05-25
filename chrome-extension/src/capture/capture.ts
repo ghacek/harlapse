@@ -11,7 +11,7 @@ const ApiHarView = "http://localhost:4000/view"; //= ApiRoot + "har";
 
 export function shareState(ctx: CaptureContext ,updateStatus: Subject<string>) {
 
-    updateStatus.next("Capturing state...")
+    updateStatus.next("Capturing state2...")
 
     return Promise.all([ctx.collectScreenshot(), ctx.collectNetworkRequests(), ctx.collectBasicInfo(), collectLogEntries(ctx), ctx.collectHtml()])
         .then((args) => {

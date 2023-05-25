@@ -406,7 +406,7 @@ function convertRequestBodyToPostData(
     }
 
     if (bodyDetails.method === "POST") {
-        console.log("-----YYYYY----- post req", body, bodyDetails);
+        console.log("post req", body, bodyDetails);
     }
 
     if (!body) {
@@ -427,24 +427,22 @@ function convertRequestBodyToPostData(
                 }))
         } as PostData;
 
-        console.log("-----XXXXXX----- parsed post data", body);
+        console.log("post data", body);
 
         return data;
     }
     else if (body.raw) {
         let content = "";
         body.raw.forEach(part => {
-            console.log("POST part", part);
             if (part.bytes) {
                 content += new TextDecoder("utf-8").decode(part.bytes);
             }
             else {
                 content += "{{file content not included}}\n";
             }
-            console.log("POST content", content);
         })
 
-        console.log("-----XXXXXX----- we have raw", body);
+        console.log("we have raw", body);
 
 
         return {

@@ -12,12 +12,14 @@ if (btn) {
     btn.addEventListener('click', () => captureScreenshot());
 }
 
-actionBtn!.addEventListener('click', execAction);
+if (actionBtn) {
+    actionBtn.addEventListener('click', execAction);
+}
 
 async function captureScreenshot() {
     const ctx = await CaptureContext.getForActiveTab();
 
-    console.log("Capture screenshot")
+    console.log("Capture screenshot");
 
     const updateStatus = new Subject<any>();
     updateStatus.subscribe(msg => console.log(msg));
