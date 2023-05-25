@@ -1,4 +1,4 @@
-import { CmdKey, getPageBasicInfoCmdName, getDocumentHtmlCmdName, getHarFromPerformanceCmdName } from "./command-handlers/commands";
+import { ContentCmdKey, getPageBasicInfoCmdName, getDocumentHtmlCmdName, getHarFromPerformanceCmdName } from "./command-handlers/commands";
 import { getDocumentHtml } from "./command-handlers/get-document-html";
 import { getPageBasicInfo } from "./command-handlers/get-page-basic-info";
 import { getHarFromPerformance } from "./command-handlers/get-har-from-performance";
@@ -20,7 +20,7 @@ export function registerCommandHandler() {
             return;
         }
 
-        const cmd = request[CmdKey];
+        const cmd = request[ContentCmdKey];
         const handler = cmdHandlers[cmd];
 
         if (!handler) {

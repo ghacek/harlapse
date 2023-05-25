@@ -1,15 +1,13 @@
 
-import { CmdKey, getDocumentHtmlCmdName, getPageBasicInfoCmdName } from "../content-script/command-handlers/commands";
+import { ContentCmdKey, getDocumentHtmlCmdName, getPageBasicInfoCmdName } from "../content-script/command-handlers/commands";
 import { PageBasicInfo } from "../content-script/command-handlers/types/page-basic-info";
 import { BgCmdKey, getNetworkLogCmdName } from "../service-worker/command-handlers/commands";
-
 
 
 export class CaptureContext {
 
     constructor(private _tabId: number) {
     }
-
 
     get tabId(): number {
         return this._tabId;
@@ -25,7 +23,7 @@ export class CaptureContext {
 
     public sendContentCmd<M = any, R = any>(cmd: string, message?: M) : Promise<R> {
         const msg = Object.assign(
-            { [CmdKey]: cmd },
+            { [ContentCmdKey]: cmd },
             message
         );
 

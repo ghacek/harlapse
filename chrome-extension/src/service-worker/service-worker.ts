@@ -1,6 +1,5 @@
 'use strict';
 
-
 import { initNetworkMonitor } from "../network/monitor";
 import { registerBgCommandHandler } from "./command-handling";
 

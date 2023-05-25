@@ -1,5 +1,5 @@
 
-export const CmdKey = "hlCmd";
+export const ContentCmdKey = "hlCmd";
 
 export const getPageBasicInfoCmdName = "getPageBasicInfo";
 

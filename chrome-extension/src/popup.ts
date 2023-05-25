@@ -12,12 +12,10 @@ if (btn) {
     btn.addEventListener('click', () => captureScreenshot());
 }
 
-console.log("actionBtn", actionBtn);
 actionBtn!.addEventListener('click', execAction);
 
 async function captureScreenshot() {
     const ctx = await CaptureContext.getForActiveTab();
-
 
     console.log("Capture screenshot")
 
