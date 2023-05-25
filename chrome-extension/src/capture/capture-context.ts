@@ -1,5 +1,6 @@
-import { BgCmdKey } from "../background-script/command-handlers/commands";
-import { CmdKey } from "../content-script/command-handlers/commands";
+import { BgCmdKey, getNetworkLogCmdName } from "../background-script/command-handlers/commands";
+import { CmdKey, getDocumentHtmlCmdName, getPageBasicInfoCmdName } from "../content-script/command-handlers/commands";
+import { PageBasicInfo } from "../content-script/command-handlers/types/page-basic-info";
 
 
 
@@ -38,9 +39,21 @@ export class CaptureContext {
         return this.sendBgMessage(msg);
     }
 
-    public collectScreenshot(): Promise<Blob> {
+    public collectScreenshot() : Promise<Blob> {
         return chrome.tabs.captureVisibleTab()
             .then(dataUrl => dataURItoBlob(dataUrl));
+    }
+
+    public collectBasicInfo() : Promise<PageBasicInfo> {
+        return this.sendContentCmd<any, PageBasicInfo>(getPageBasicInfoCmdName);
+    }
+
+    public collectHtml() : Promise<string> {
+        return this.sendContentCmd<any, string>(getDocumentHtmlCmdName);
+    }
+
+    public collectNetworkRequests() {
+        return this.sendBgCmd<any, string>(getNetworkLogCmdName, { tabId: this.tabId });
     }
 
     public static async getForActiveTab() {
