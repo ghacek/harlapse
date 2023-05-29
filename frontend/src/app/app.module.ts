@@ -18,6 +18,7 @@ import { CaptureSuccessfulPageComponent } from './components/capture-successful-
 import { ApiModule } from 'src/api/api.module';
 import { environment } from 'src/environments/environment';
 import { ImageAnnotateComponent } from './components/image-annotate/image-annotate.component';
+import { TimezoneOffsetPipe } from './pipes/timezone-offset.pipe';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { ImageAnnotateComponent } from './components/image-annotate/image-annota
     DrawerComponent,
     FileSizePipe,
     MillisToHrPipe,
+    TimezoneOffsetPipe,
     ConsoleViewComponent,
     IndexPageComponent,
     CaptureSuccessfulPageComponent,

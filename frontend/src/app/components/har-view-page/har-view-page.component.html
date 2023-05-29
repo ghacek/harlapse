@@ -22,6 +22,12 @@
             <div *ngIf="dropInfo.title"><b>Page title:</b> {{dropInfo.pageTitle}}</div>
             <div><b>Created:</b> {{dropInfo.created | date: 'dd.MM.yyyy HH:mm:ss.SSS'}}</div>
             <div *ngIf="dropInfo.description"><b>Description:</b> {{dropInfo.description}}</div>
+
+            <div *ngIf="basicInfo"><b>Display size:</b> {{(basicInfo.screen.width * basicInfo.devicePixelRatio).toFixed(0)}} x {{(basicInfo.screen.height * basicInfo.devicePixelRatio).toFixed(0)}}</div>
+            <div *ngIf="basicInfo"><b>Viewport size:</b> {{basicInfo.screen.availWidth}} x {{basicInfo.screen.availHeight}}</div>
+            <div *ngIf="basicInfo"><b>Scaling:</b> {{basicInfo.devicePixelRatio | percent }} </div>
+            <div *ngIf="basicInfo"><b>Language:</b> {{basicInfo.language }} </div>
+            <div *ngIf="basicInfo"><b>Timezone:</b> {{basicInfo.intl.dateTimeFormat.timeZone}} ( {{ basicInfo.timezoneOffset | timezoneOffset }} ) </div>
         </div>
         <div class="block"></div>
     </div>
