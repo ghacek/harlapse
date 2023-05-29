@@ -13,7 +13,6 @@ export function getPageBasicInfo() : PageBasicInfo {
         maxTouchPoints: navigator.maxTouchPoints,
 
         timezoneOffset: new Date().getTimezoneOffset(),
-
         intl: {
             dateTimeFormat: Intl.DateTimeFormat().resolvedOptions(),
             //listFormat: new Intl.ListFormat().resolvedOptions(),
@@ -21,6 +20,14 @@ export function getPageBasicInfo() : PageBasicInfo {
             pluralRules: new Intl.PluralRules().resolvedOptions(),
             relativeTimeFormat: new Intl.RelativeTimeFormat().resolvedOptions(),
             //segmenter: new Intl.Segmenter().resolvedOptions()
+        },
+
+        devicePixelRatio: window.devicePixelRatio,
+        screen: {
+            width: window.screen.width,
+            height: window.screen.height,
+            availWidth: window.screen.availWidth,
+            availHeight: window.screen.availHeight
         }
     };
 

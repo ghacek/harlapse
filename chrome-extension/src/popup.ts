@@ -3,6 +3,7 @@ import { Subject } from "rxjs";
 import { shareState } from "./capture/capture";
 import { CaptureContext } from "./capture/capture-context";
 import { BgCmdKey, getNetworkLogCmdName } from "./service-worker/command-handlers/commands";
+import { getPageBasicInfo } from "./content-script/command-handlers/get-page-basic-info";
 
 
 const btn = document.getElementById("capture-btn");
@@ -27,13 +28,19 @@ async function captureScreenshot() {
     shareState(ctx, updateStatus);
 }
 
-function execAction() {
+async function execAction() {
     console.log("execAction()");
 
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        var currentTabId = tabs[0].id;
+    
+    const ctx = await CaptureContext.getForActiveTab();
+    const bi = await ctx.collectBasicInfo();
 
-        console.log("extab",  currentTabId);
-        chrome.runtime.sendMessage({ [BgCmdKey]: getNetworkLogCmdName });
-    });
+    console.log("bi", bi);
+
+    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    //     var currentTabId = tabs[0].id;
+
+    //     console.log("extab",  currentTabId);
+    //     chrome.runtime.sendMessage({ [BgCmdKey]: getNetworkLogCmdName });
+    // });
 }

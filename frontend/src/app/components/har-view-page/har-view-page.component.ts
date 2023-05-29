@@ -73,6 +73,7 @@ export class HarViewPageComponent {
 
     capturedHtml?: string;
     annotationsUrl?: string;
+    basicInfo?: any;
 
 
     constructor(
@@ -87,6 +88,7 @@ export class HarViewPageComponent {
           if (ref) {
             this.id = ref;
             this.loadDropInfo(ref);
+            this.loadBasicInfo(ref);
             this.loadHar(ref);
             this.loadConsole(ref);
             this.loadHtml(ref);
@@ -142,6 +144,13 @@ export class HarViewPageComponent {
                 if (dropInfo.hasAnnotations) {
                     this.annotationsUrl = apiAnnotationSvgUrl(ref);
                 }
+            });
+    }
+
+    private loadBasicInfo(ref: string) {
+        this.snapshotController.getSnapshotBasicInfo({ ref })
+            .subscribe(x => {
+                this.basicInfo = x;
             });
     }
 

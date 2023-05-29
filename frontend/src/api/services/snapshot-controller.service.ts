@@ -38,6 +38,7 @@ export class SnapshotControllerService extends BaseService {
     body?: {
 'title'?: string;
 'url'?: string;
+'basic-info'?: Blob;
 'ss'?: Blob;
 'har'?: Blob;
 'console'?: Blob;
@@ -75,6 +76,7 @@ export class SnapshotControllerService extends BaseService {
     body?: {
 'title'?: string;
 'url'?: string;
+'basic-info'?: Blob;
 'ss'?: Blob;
 'har'?: Blob;
 'console'?: Blob;
@@ -296,6 +298,64 @@ export class SnapshotControllerService extends BaseService {
 
     return this.getSnapshotAnnotationsSvg$Response(params,context).pipe(
       map((r: StrictHttpResponse<Blob>) => r.body as Blob)
+    );
+  }
+
+  /**
+   * Path part for operation getSnapshotBasicInfo
+   */
+  static readonly GetSnapshotBasicInfoPath = '/api/snapshot/{ref}/basic-info';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getSnapshotBasicInfo()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSnapshotBasicInfo$Response(params: {
+    ref: string;
+  },
+  context?: HttpContext
+
+): Observable<StrictHttpResponse<{
+}>> {
+
+    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.GetSnapshotBasicInfoPath, 'get');
+    if (params) {
+      rb.path('ref', params.ref, {});
+    }
+
+    return this.http.request(rb.build({
+      responseType: 'json',
+      accept: 'application/json',
+      context: context
+    })).pipe(
+      filter((r: any) => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<{
+        }>;
+      })
+    );
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getSnapshotBasicInfo$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSnapshotBasicInfo(params: {
+    ref: string;
+  },
+  context?: HttpContext
+
+): Observable<{
+}> {
+
+    return this.getSnapshotBasicInfo$Response(params,context).pipe(
+      map((r: StrictHttpResponse<{
+}>) => r.body as {
+})
     );
   }
 

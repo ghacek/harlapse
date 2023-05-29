@@ -19,6 +19,9 @@ paths:
                   type: string
                 url:
                   type: string
+                basic-info:
+                  format: binary
+                  type: string
                 ss:
                   format: binary
                   type: string
@@ -106,6 +109,23 @@ paths:
               schema:
                 format: binary
                 type: string
+  /api/snapshot/{ref}/basic-info:
+    get:
+      tags:
+      - Snapshot Controller
+      operationId: getSnapshotBasicInfo
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
   /api/snapshot/{ref}/console:
     get:
       tags:

@@ -17,6 +17,13 @@
 
   <script src="https://cdn.lr-ingest.com/LogRocket.min.js" crossorigin="anonymous"></script>
   <script>window.LogRocket && window.LogRocket.init('zuf6ny/harbin');</script>
+  <script>
+    var logRocketIdentity = localStorage.getItem("lrIdentity");
+    if (logRocketIdentity && LogRocket) {
+        console.log("LogRocket.identify", logRocketIdentity);
+        LogRocket.identify(logRocketIdentity);
+    }
+  </script>
 </head>
 <body>
   <app-root></app-root>

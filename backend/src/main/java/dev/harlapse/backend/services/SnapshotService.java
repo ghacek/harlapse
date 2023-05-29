@@ -25,6 +25,7 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 public class SnapshotService {
 
+    private static final String BASIC_INFO_SUFFIX = "-basic-info.json";
     private static final String HAR_FILE_SUFFIX = "-har.json";
     private static final String SCREENSHOT_SUFFIX = "-ss.png";
     private static final String CONSOLE_SUFFIX = "-console.json";
@@ -40,12 +41,13 @@ public class SnapshotService {
     SnapshotRepository snapshotRepo;
 
     @Transactional
-    public Snapshot createDrop(String pageTitle, String pageUrl, InputStream screenshot, InputStream harFile, InputStream console, InputStream html) throws IOException {
+    public Snapshot createDrop(String pageTitle, String pageUrl, InputStream basicInfo, InputStream screenshot, InputStream harFile, InputStream console, InputStream html) throws IOException {
         final String ref = generateRef();
         final Snapshot drop = new Snapshot(ref, pageTitle, pageUrl);
 
         snapshotRepo.persist(drop);
 
+        storeUploadFile(basicInfo , ref, BASIC_INFO_SUFFIX);
         storeUploadFile(screenshot, ref, SCREENSHOT_SUFFIX);
         storeUploadFile(harFile   , ref, HAR_FILE_SUFFIX);
         storeUploadFile(console   , ref, CONSOLE_SUFFIX);
@@ -56,6 +58,10 @@ public class SnapshotService {
 
     private String generateRef() {
         return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public InputStream getBasicInfoContent(String dropRef) throws FileNotFoundException {
+        return new FileInputStream(new File(dropDir, dropRef + BASIC_INFO_SUFFIX));
     }
 
     public InputStream getHarContent(String dropRef) throws FileNotFoundException {

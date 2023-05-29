@@ -49,6 +49,19 @@ public class SnapshotController {
         return drop;
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{ref}/basic-info")
+    @APIResponse(
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(type = SchemaType.OBJECT)
+        )
+    )
+    public InputStream getSnapshotBasicInfo(@PathParam("ref") String dropRef) throws FileNotFoundException {
+        return dropService.getBasicInfoContent(dropRef);
+    }
+
     /** Returns network activity of the snapshot */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -117,17 +130,19 @@ public class SnapshotController {
     public NewHarResponse createNewSnapshot(
             @RestForm String title,
             @RestForm String url,
-            @RestForm("ss") InputStream screenshot, 
-            @RestForm("har") InputStream harFile, 
-            @RestForm        InputStream console, 
-            @RestForm        InputStream html) throws IOException {
+            @RestForm("basic-info") InputStream basicInfo, 
+            @RestForm("ss")         InputStream screenshot, 
+            @RestForm("har")        InputStream harFile, 
+            @RestForm               InputStream console, 
+            @RestForm               InputStream html) throws IOException {
 
-        final Snapshot drop = dropService.createDrop(title, url, screenshot, harFile, console, html);
+        final Snapshot drop = dropService.createDrop(title, url, basicInfo, screenshot, harFile, console, html);
 
+        try { basicInfo .close(); } catch (IOException e) { e.printStackTrace(); }
         try { screenshot.close(); } catch (IOException e) { e.printStackTrace(); }
-        try { harFile.close();    } catch (IOException e) { e.printStackTrace(); }
-        try { console.close();    } catch (IOException e) { e.printStackTrace(); }
-        try { html.close();       } catch (IOException e) { e.printStackTrace(); }
+        try { harFile   .close(); } catch (IOException e) { e.printStackTrace(); }
+        try { console   .close(); } catch (IOException e) { e.printStackTrace(); }
+        try { html      .close(); } catch (IOException e) { e.printStackTrace(); }
         
         return new NewHarResponse(drop.getRef());
     }

@@ -36,12 +36,14 @@ export function shareState(ctx: CaptureContext ,updateStatus: Subject<string>) {
 function uploadCapture(har: any, screenshot: Blob, basicInfo: PageBasicInfo, log: any[] | undefined, html: string) {
     const data = new FormData();
 
+    const basicInfoBlob = new Blob([JSON.stringify(basicInfo)], { type: 'application/json' });
     const harBlob = new Blob([JSON.stringify(har)], { type: 'application/json' });
     const consoleBlob = new Blob([JSON.stringify(log)], { type: 'application/json' });
     const htmlBlob = new Blob([html], { type: 'text/html' });
 
     data.append("title", basicInfo.title);
     data.append("url", basicInfo.url);
+    data.append("basic-info", basicInfoBlob);
     data.append("har", harBlob);
     data.append("ss", screenshot);
     data.append("console", consoleBlob);
