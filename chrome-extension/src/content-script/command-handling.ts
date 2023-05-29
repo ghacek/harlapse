@@ -31,7 +31,16 @@ export function registerCommandHandler() {
             console.log("CMD handler found for request ", request);
         }
 
-        sendResponse(handler(request));
+        const result = handler(request);
+
+        if (result instanceof Promise) {
+            result.then(sendResponse)
+                .catch(console.error);
+            return true;
+        } 
+        else {
+            sendResponse(result);
+        }
     });
 }
 

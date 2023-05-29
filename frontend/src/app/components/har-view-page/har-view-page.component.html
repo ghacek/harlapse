@@ -28,6 +28,8 @@
             <div *ngIf="basicInfo"><b>Scaling:</b> {{basicInfo.devicePixelRatio | percent }} </div>
             <div *ngIf="basicInfo"><b>Language:</b> {{basicInfo.language }} </div>
             <div *ngIf="basicInfo"><b>Timezone:</b> {{basicInfo.intl.dateTimeFormat.timeZone}} ( {{ basicInfo.timezoneOffset | timezoneOffset }} ) </div>
+            <div *ngIf="basicInfo"><b>Operating system:</b> {{basicInfo.os}} </div>
+            <div *ngIf="basicInfo"><b>Browser:</b> {{basicInfo.browser}} </div>
         </div>
         <div class="block"></div>
     </div>

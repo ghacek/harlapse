@@ -4,6 +4,10 @@
     "target": "es2021",
     "module": "commonjs",
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "types": [
+        "./node_modules/@types/chrome",
+        "./node_modules/user-agent-data-types"
+    ]
   }
 }

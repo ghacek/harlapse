@@ -9,6 +9,9 @@ export interface PageBasicInfo {
     maxTouchPoints: number,
     timezoneOffset: number,
     intl: PageIntlInfo
+
+    browser: string,
+    os: string
 }
 
 export interface PageIntlInfo {
