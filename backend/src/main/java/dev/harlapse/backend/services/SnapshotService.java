@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.time.Duration;
 import java.util.UUID;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -14,12 +16,22 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 
+import dev.harlapse.backend.api.models.CreateSnapshotResult;
 import dev.harlapse.backend.db.entities.Snapshot;
 import dev.harlapse.backend.db.entities.repository.SnapshotRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import jakarta.transaction.Transactional;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 
 @ApplicationScoped
@@ -38,22 +50,41 @@ public class SnapshotService {
     private String dropDir;
 
     @Inject
+    @ConfigProperty(name = "harlapse.storage.bucket.endpoint")
+    private URI storageBucketEndpoint;
+
+    @Inject
+    @ConfigProperty(name = "harlapse.storage.bucket.name")
+    private String storageBucketName;
+
+    @Inject
+    @ConfigProperty(name = "harlapse.storage.bucket.accessKeyId")
+    private String storageBucketAccessKeyId;
+
+    @Inject
+    @ConfigProperty(name = "harlapse.storage.bucket.secretAccessKey")
+    private String storageBucketSecretAccessKey;
+
+    @Inject
     SnapshotRepository snapshotRepo;
 
     @Transactional
-    public Snapshot createDrop(String pageTitle, String pageUrl, InputStream basicInfo, InputStream screenshot, InputStream harFile, InputStream console, InputStream html) throws IOException {
+    public CreateSnapshotResult createSnapshot(String pageTitle, String pageUrl) throws IOException {
         final String ref = generateRef();
         final Snapshot drop = new Snapshot(ref, pageTitle, pageUrl);
 
         snapshotRepo.persist(drop);
 
-        storeUploadFile(basicInfo , ref, BASIC_INFO_SUFFIX);
-        storeUploadFile(screenshot, ref, SCREENSHOT_SUFFIX);
-        storeUploadFile(harFile   , ref, HAR_FILE_SUFFIX);
-        storeUploadFile(console   , ref, CONSOLE_SUFFIX);
-        storeUploadFile(html      , ref, HTML_SUFFIX);
+        final S3Presigner presigner = createS3Presigner();
 
-        return drop;
+        return new CreateSnapshotResult(
+            ref,
+            presigneObjectPut(presigner, ref, BASIC_INFO_SUFFIX),
+            presigneObjectPut(presigner, ref, SCREENSHOT_SUFFIX),
+            presigneObjectPut(presigner, ref, HAR_FILE_SUFFIX),
+            presigneObjectPut(presigner, ref, CONSOLE_SUFFIX),
+            presigneObjectPut(presigner, ref, HTML_SUFFIX)
+        );
     }
 
     private String generateRef() {
@@ -111,5 +142,36 @@ public class SnapshotService {
         } finally {
             os.close();
         }
+    }
+
+    public String presigneObjectPut(S3Presigner presigner, String snapshotRef, String objectName) {
+        final PutObjectRequest request = PutObjectRequest.builder()
+            .bucket(storageBucketName)
+            .key(snapshotRef + "/" + objectName)
+            .build();
+
+        final PutObjectPresignRequest getObjectPresignRequest = PutObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofMinutes(60))
+            .putObjectRequest(request)
+            .build();
+
+        PresignedPutObjectRequest presignedGetObjectRequest = presigner.presignPutObject(getObjectPresignRequest);
+        
+        return presignedGetObjectRequest.url().toString();
+    }
+
+    private S3Presigner createS3Presigner() {
+        return S3Presigner.builder()
+            .credentialsProvider(
+                StaticCredentialsProvider.create(
+                    AwsBasicCredentials.create(
+                        storageBucketAccessKeyId,
+                        storageBucketSecretAccessKey
+                    )
+                )
+            )
+            .endpointOverride(storageBucketEndpoint)
+            .region(Region.of("auto"))
+            .build();
     }
 }

@@ -10,6 +10,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.jboss.resteasy.reactive.RestForm;
 
+import dev.harlapse.backend.api.models.CreateSnapshotResult;
 import dev.harlapse.backend.api.models.NewHarResponse;
 import dev.harlapse.backend.db.entities.Snapshot;
 import dev.harlapse.backend.db.entities.repository.SnapshotRepository;
@@ -127,24 +128,13 @@ public class SnapshotController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/")
-    public NewHarResponse createNewSnapshot(
+    public CreateSnapshotResult createNewSnapshot(
             @RestForm String title,
-            @RestForm String url,
-            @RestForm("basic-info") InputStream basicInfo, 
-            @RestForm("ss")         InputStream screenshot, 
-            @RestForm("har")        InputStream harFile, 
-            @RestForm               InputStream console, 
-            @RestForm               InputStream html) throws IOException {
+            @RestForm String url) throws IOException {
 
-        final Snapshot drop = dropService.createDrop(title, url, basicInfo, screenshot, harFile, console, html);
-
-        try { basicInfo .close(); } catch (IOException e) { e.printStackTrace(); }
-        try { screenshot.close(); } catch (IOException e) { e.printStackTrace(); }
-        try { harFile   .close(); } catch (IOException e) { e.printStackTrace(); }
-        try { console   .close(); } catch (IOException e) { e.printStackTrace(); }
-        try { html      .close(); } catch (IOException e) { e.printStackTrace(); }
+        final CreateSnapshotResult result = dropService.createSnapshot(title, url);
         
-        return new NewHarResponse(drop.getRef());
+        return result;
     }
 
     
