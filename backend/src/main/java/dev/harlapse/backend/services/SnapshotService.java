@@ -39,13 +39,14 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 @ApplicationScoped
 public class SnapshotService {
 
-    private static final String BASIC_INFO_SUFFIX = "-basic-info.json";
-    private static final String HAR_FILE_SUFFIX = "-har.json";
-    private static final String SCREENSHOT_SUFFIX = "-ss.png";
-    private static final String CONSOLE_SUFFIX = "-console.json";
+    private static final String BASIC_INFO_FILE_NAME = "bi.json";
+    private static final String HAR_FILE_NAME = "har.json";
+    private static final String SCREENSHOT_FILE_NAME = "ss.png";
+    private static final String CONSOLE_FILE_NAME = "console.json";
+    private static final String HTML_FILE_NAME = "doc.html";
+
     private static final String ANNOTATIONS_CONFIG = "-ann.json";
     private static final String ANNOTATIONS_SVG = "-ann.svg";
-    private static final String HTML_SUFFIX = ".html";
 
     @Inject
     @ConfigProperty(name = "harlapse.drop-dir")
@@ -81,11 +82,11 @@ public class SnapshotService {
 
         return new CreateSnapshotResult(
             ref,
-            presigneObjectPut(presigner, ref, BASIC_INFO_SUFFIX),
-            presigneObjectPut(presigner, ref, SCREENSHOT_SUFFIX),
-            presigneObjectPut(presigner, ref, HAR_FILE_SUFFIX),
-            presigneObjectPut(presigner, ref, CONSOLE_SUFFIX),
-            presigneObjectPut(presigner, ref, HTML_SUFFIX)
+            presigneObjectPut(presigner, ref, BASIC_INFO_FILE_NAME),
+            presigneObjectPut(presigner, ref, SCREENSHOT_FILE_NAME),
+            presigneObjectPut(presigner, ref, HAR_FILE_NAME),
+            presigneObjectPut(presigner, ref, CONSOLE_FILE_NAME),
+            presigneObjectPut(presigner, ref, HTML_FILE_NAME)
         );
     }
 
@@ -101,11 +102,11 @@ public class SnapshotService {
             snapshot.getTitle(),
             snapshot.getDescription(),
             snapshot.getCreated(),
-            presigneObjectGet(presigner, ref, BASIC_INFO_SUFFIX),
-            presigneObjectGet(presigner, ref, SCREENSHOT_SUFFIX),
-            presigneObjectGet(presigner, ref, HAR_FILE_SUFFIX),
-            presigneObjectGet(presigner, ref, CONSOLE_SUFFIX),
-            presigneObjectGet(presigner, ref, HTML_SUFFIX),
+            presigneObjectGet(presigner, ref, BASIC_INFO_FILE_NAME),
+            presigneObjectGet(presigner, ref, SCREENSHOT_FILE_NAME),
+            presigneObjectGet(presigner, ref, HAR_FILE_NAME),
+            presigneObjectGet(presigner, ref, CONSOLE_FILE_NAME),
+            presigneObjectGet(presigner, ref, HTML_FILE_NAME),
             snapshot.isHasAnnotations() ? presigneObjectGet(presigner, ref, ANNOTATIONS_SVG) : null
         );
     }

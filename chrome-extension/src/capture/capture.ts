@@ -1,8 +1,9 @@
-import { ListBucketsCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Subject } from "rxjs";
 import { collectLogEntries } from "../collectors/console-collector";
 import { PageBasicInfo } from "../content-script/command-handlers/types/page-basic-info";
 import { CaptureContext } from "./capture-context";
+import { Api } from "../api/Api";
+import { CreateSnapshotResult } from "../api/data-contracts";
 
 const ApiRoot = "http://localhost:8080/api/";
 //const ApiRoot = "http://cutes.io:8081/api/";
@@ -26,9 +27,9 @@ export function shareState(ctx: CaptureContext, updateStatus: Subject<string>) {
 
             return uploadCapture(har, ss, basicInfo, log, html)
                 .then((resp) => {
-                    chrome.tabs.create({ url: ApiHarView + "/" + resp.id + "/captured" });
+                    chrome.tabs.create({ url: ApiHarView + "/" + resp.ref + "/captured" });
                 })
-                .then((resp) => updateStatus.next("Capture finished!"))
+                .then(() => updateStatus.next("Capture finished!"))
                 .catch((err) => {
                     updateStatus.error("Upload failed!")
                     console.error(err);
@@ -46,19 +47,20 @@ function uploadCapture(har: any, screenshot: Blob, basicInfo: PageBasicInfo, log
     data.append("title", basicInfo.title);
     data.append("url", basicInfo.url);
 
-    return fetch(ApiHarUpload, {
-        method: 'POST',
-        body: data
-    })
-    .then((resp) => resp.json())
-    .then((createResult) => Promise.all([
-        createResult,
-        fetch(createResult.uploadBasicInfoLink , { method: "PUT", body: basicInfoStr, headers: { "Content-Type": "application/json" } }),
-        fetch(createResult.uploadScreenshotLink, { method: "PUT", body: screenshot  , headers: { "Content-Type": "image/png"        } }),
-        fetch(createResult.uploadHarLink       , { method: "PUT", body: harStr      , headers: { "Content-Type": "application/json" } }),
-        fetch(createResult.uploadConsoleLink   , { method: "PUT", body: consoleStr  , headers: { "Content-Type": "application/json" } }),
-        fetch(createResult.uploadHtmlLink      , { method: "PUT", body: html        , headers: { "Content-Type": "text/html"        } })
-    ]))
-    .then(x => x[0]); 
+    return new Api({ baseUrl: "http://localhost:8080/" })
+        .createNewSnapshot({
+            title: basicInfo.title,
+            url: basicInfo.url
+        })
+        .then(resp => <Promise<CreateSnapshotResult>> resp.json())
+        .then(createResult => Promise.all([
+            createResult,
+            fetch(createResult.uploadBasicInfoLink! , { method: "PUT", body: basicInfoStr, headers: { "Content-Type": "application/json" } }),
+            fetch(createResult.uploadScreenshotLink!, { method: "PUT", body: screenshot  , headers: { "Content-Type": "image/png"        } }),
+            fetch(createResult.uploadHarLink!       , { method: "PUT", body: harStr      , headers: { "Content-Type": "application/json" } }),
+            fetch(createResult.uploadConsoleLink!   , { method: "PUT", body: consoleStr  , headers: { "Content-Type": "application/json" } }),
+            fetch(createResult.uploadHtmlLink!      , { method: "PUT", body: html        , headers: { "Content-Type": "text/html"        } })
+        ]))
+        .then(x => x[0]); 
 }
 

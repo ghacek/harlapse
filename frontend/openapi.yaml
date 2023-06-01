@@ -19,40 +19,13 @@ paths:
                   type: string
                 url:
                   type: string
-                basic-info:
-                  format: binary
-                  type: string
-                ss:
-                  format: binary
-                  type: string
-                har:
-                  format: binary
-                  type: string
-                console:
-                  format: binary
-                  type: string
-                html:
-                  format: binary
-                  type: string
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewHarResponse'
-  /api/snapshot/hello:
-    get:
-      tags:
-      - Snapshot Controller
-      operationId: hello
-      responses:
-        "200":
-          description: OK
-          content:
-            text/plain:
-              schema:
-                type: string
+                $ref: '#/components/schemas/CreateSnapshotResult'
   /api/snapshot/{ref}:
     get:
       tags:
@@ -109,40 +82,6 @@ paths:
               schema:
                 format: binary
                 type: string
-  /api/snapshot/{ref}/basic-info:
-    get:
-      tags:
-      - Snapshot Controller
-      operationId: getSnapshotBasicInfo
-      parameters:
-      - name: ref
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          content:
-            application/json:
-              schema:
-                type: object
-  /api/snapshot/{ref}/console:
-    get:
-      tags:
-      - Snapshot Controller
-      operationId: getSnapshotConsoleLog
-      parameters:
-      - name: ref
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          content:
-            application/json:
-              schema:
-                type: object
   /api/snapshot/{ref}/finalize-capture:
     post:
       tags:
@@ -173,70 +112,27 @@ paths:
       responses:
         "201":
           description: Created
-  /api/snapshot/{ref}/html:
-    get:
-      tags:
-      - Snapshot Controller
-      operationId: getSnapshotHtml
-      parameters:
-      - name: ref
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          content:
-            text/html:
-              schema:
-                type: string
-  /api/snapshot/{ref}/network:
-    get:
-      tags:
-      - Snapshot Controller
-      operationId: getSnapshotNetwork
-      parameters:
-      - name: ref
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          content:
-            application/json:
-              schema:
-                type: object
-  /api/snapshot/{ref}/screenshot:
-    get:
-      tags:
-      - Snapshot Controller
-      operationId: getSnapshotScreenshot
-      parameters:
-      - name: ref
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            image/png:
-              schema:
-                format: binary
-                type: string
 components:
   schemas:
+    CreateSnapshotResult:
+      type: object
+      properties:
+        ref:
+          type: string
+        uploadBasicInfoLink:
+          type: string
+        uploadScreenshotLink:
+          type: string
+        uploadHarLink:
+          type: string
+        uploadConsoleLink:
+          type: string
+        uploadHtmlLink:
+          type: string
     Date:
       format: date
       type: string
       example: 2022-03-10
-    NewHarResponse:
-      type: object
-      properties:
-        id:
-          type: string
     Snapshot:
       type: object
       properties:
