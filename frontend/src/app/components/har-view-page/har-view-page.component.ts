@@ -1,13 +1,12 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Log as HarLog } from 'har-format';
 import { Entry, Page } from 'har-format';
-import { DrawerComponent } from '../drawer/drawer.component';
-import { environment } from 'src/environments/environment';
+import { firstValueFrom } from 'rxjs';
 import { SnapshotControllerService } from 'src/api/services';
-import { Snapshot } from 'src/api/models';
-import { apiAnnotationSvgUrl } from 'src/app/util/api-util';
+import { environment } from 'src/environments/environment';
+import { DrawerComponent } from '../drawer/drawer.component';
+import { SnapshotInfo } from 'src/api/models';
 
 
 export interface PageView extends Page {
@@ -67,7 +66,7 @@ export class HarViewPageComponent {
     /** Difference between startTime and endTimeMilis in milliseconds. */
     harDuration: number = 0;
 
-    dropInfo?: Snapshot;
+    dropInfo?: SnapshotInfo;
 
     consoleLog?: any[];
 
@@ -87,11 +86,7 @@ export class HarViewPageComponent {
 
           if (ref) {
             this.id = ref;
-            this.loadDropInfo(ref);
-            this.loadBasicInfo(ref);
-            this.loadHar(ref);
-            this.loadConsole(ref);
-            this.loadHtml(ref);
+            this.loadSnapshotInfo(ref);
           }
         });
     }
@@ -135,44 +130,48 @@ export class HarViewPageComponent {
         return url;
     }
 
-    private loadDropInfo(ref: string) {
-        this.snapshotController.getShanpshotInfo({ ref })
-            .subscribe(dropInfo => {
-                console.log("dropInfo", dropInfo)
-                this.dropInfo = dropInfo;
+    private loadSnapshotInfo(ref: string) {
+        firstValueFrom(this.snapshotController.getShanpshotInfo({ ref }))
+            .then(snapshotInfo => {
+                console.log("snapshotInfo", snapshotInfo)
+                this.dropInfo = snapshotInfo;
 
-                if (dropInfo.hasAnnotations) {
-                    this.annotationsUrl = apiAnnotationSvgUrl(ref);
-                }
-            });
+                //if (snapshotInfo.hasAnnotations) {
+                //    this.annotationsUrl = apiAnnotationSvgUrl(ref);
+                //}
+
+                return snapshotInfo;
+            })
+            .then(x => Promise.all([
+                this.loadBasicInfo(x.basicInfoLink!),
+                this.loadHar(x.harLink!),
+                this.loadConsole(x.consoleLink!),
+                this.loadHtml(x.htmlLink!),
+            ]));
     }
 
-    private loadBasicInfo(ref: string) {
-        this.snapshotController.getSnapshotBasicInfo({ ref })
-            .subscribe(x => {
-                this.basicInfo = x;
-            });
+    private loadBasicInfo(link: string) {
+        return fetch(link)
+            .then(x => x.json())
+            .then(x => this.basicInfo = x);
     }
 
-    private loadHar(ref: string) {
-        this.snapshotController.getSnapshotNetwork({ ref })
-            .subscribe(har => {
-                this.setHar(<HarLog>har);
-            });
+    private loadHar(link: string) {
+        return fetch(link)
+            .then(x => x.json())
+            .then(x => this.setHar(<HarLog>x));
     }
 
-    private loadConsole(ref: string) {
-        this.snapshotController.getSnapshotConsoleLog({ ref })
-            .subscribe(log => {
-                this.consoleLog = <any>log;
-            });
+    private loadConsole(link: string) {
+        return fetch(link)
+            .then(x => x.json())
+            .then(x => this.consoleLog = x);
     }
 
-    private loadHtml(ref: string) {
-        this.snapshotController.getSnapshotHtml({ ref })
-            .subscribe(html => {
-                this.capturedHtml = html;
-            });
+    private loadHtml(link: string) {
+        return fetch(link)
+            .then(x => x.text())
+            .then(x => this.capturedHtml = x);
     }
 
     private setHar(har: HarLog) {

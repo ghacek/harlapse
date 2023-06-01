@@ -1,8 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SnapshotControllerService } from 'src/api/services';
-import { apiScreenshotUrl } from 'src/app/util/api-util';
 import { ImageAnnotateComponent } from '../image-annotate/image-annotate.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   templateUrl: './capture-successful-page.component.html',
@@ -30,9 +30,16 @@ export class CaptureSuccessfulPageComponent {
         this.route.params.subscribe(params => {
           const ref = params['ref'];
 
+          firstValueFrom(this.snapshotController.getShanpshotInfo({ ref }))
+            .then(snapshotInfo => {
+                //this.snapshotInfo = snapshotInfo;
+
+                this.screenshotUrl = snapshotInfo.screenshotLink;
+                this.backgroundUrl = "url(" + this.screenshotUrl + ")";
+            })
+
           this.ref = ref;
-          this.screenshotUrl = apiScreenshotUrl(ref);
-          this.backgroundUrl = "url(" + this.screenshotUrl + ")";
+
         });
     }
 

@@ -4,15 +4,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.jboss.resteasy.reactive.RestForm;
 
 import dev.harlapse.backend.api.models.CreateSnapshotResult;
-import dev.harlapse.backend.api.models.NewHarResponse;
-import dev.harlapse.backend.db.entities.Snapshot;
+import dev.harlapse.backend.api.models.SnapshotInfo;
 import dev.harlapse.backend.db.entities.repository.SnapshotRepository;
 import dev.harlapse.backend.services.SnapshotService;
 import jakarta.inject.Inject;
@@ -32,31 +27,29 @@ public class SnapshotController {
     SnapshotRepository dropRepo;
 
     @Inject
-    private SnapshotService dropService;
+    private SnapshotService snapshotService;
 
 
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{ref}")
-    public Snapshot getShanpshotInfo(@PathParam("ref") String dropRef) {
-        final Snapshot drop = dropRepo.findByRef(dropRef);
-
-        return drop;
+    public SnapshotInfo getShanpshotInfo(@PathParam("ref") String ref) {
+        return snapshotService.getSnapshotInfo(ref);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{ref}/annotations-config")
     public InputStream getSnapshotAnnotationsConfig(@PathParam("ref") String dropRef) throws FileNotFoundException {
-        return dropService.getAnnotationsConfig(dropRef);
+        return snapshotService.getAnnotationsConfig(dropRef);
     }
 
     @GET
     @Produces("image/svg+xml")
     @Path("/{ref}/annotations-svg")
     public InputStream getSnapshotAnnotationsSvg(@PathParam("ref") String dropRef) throws FileNotFoundException {
-        return dropService.getAnnotationsSvg(dropRef);
+        return snapshotService.getAnnotationsSvg(dropRef);
     }
 
 
@@ -69,7 +62,7 @@ public class SnapshotController {
             @RestForm String title,
             @RestForm String url) throws IOException {
 
-        return dropService.createSnapshot(title, url);
+        return snapshotService.createSnapshot(title, url);
     }
 
     
@@ -83,7 +76,7 @@ public class SnapshotController {
             @RestForm("annotations-config") InputStream isConfig,
             @RestForm("annotations-svg") InputStream isSvg) throws IOException {
 
-        dropService.finalizeCapture(dropRef, title, description, isConfig, isSvg);
+        snapshotService.finalizeCapture(dropRef, title, description, isConfig, isSvg);
 
         try { if (isConfig != null) isConfig.close();    } catch (IOException e) { e.printStackTrace(); }
         try { if (isSvg != null) isSvg.close();    } catch (IOException e) { e.printStackTrace(); }

@@ -43,7 +43,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Snapshot'
+                $ref: '#/components/schemas/SnapshotInfo'
   /api/snapshot/{ref}/annotations-config:
     get:
       tags:
@@ -133,12 +133,9 @@ components:
       format: date
       type: string
       example: 2022-03-10
-    Snapshot:
+    SnapshotInfo:
       type: object
       properties:
-        id:
-          format: int64
-          type: integer
         ref:
           type: string
         pageTitle:
@@ -149,10 +146,20 @@ components:
           type: string
         description:
           type: string
-        hasAnnotations:
-          type: boolean
         created:
           $ref: '#/components/schemas/Date'
+        basicInfoLink:
+          type: string
+        screenshotLink:
+          type: string
+        harLink:
+          type: string
+        consoleLink:
+          type: string
+        htmlLink:
+          type: string
+        annotationsSvgLink:
+          type: string
   securitySchemes:
     SecurityScheme:
       type: http

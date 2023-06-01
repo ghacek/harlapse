@@ -9,8 +9,8 @@ import { RequestBuilder } from '../request-builder';
 import { Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 
-import { NewHarResponse } from '../models/new-har-response';
-import { Snapshot } from '../models/snapshot';
+import { CreateSnapshotResult } from '../models/create-snapshot-result';
+import { SnapshotInfo } from '../models/snapshot-info';
 
 @Injectable({
   providedIn: 'root',
@@ -38,16 +38,11 @@ export class SnapshotControllerService extends BaseService {
     body?: {
 'title'?: string;
 'url'?: string;
-'basic-info'?: Blob;
-'ss'?: Blob;
-'har'?: Blob;
-'console'?: Blob;
-'html'?: Blob;
 }
   },
   context?: HttpContext
 
-): Observable<StrictHttpResponse<NewHarResponse>> {
+): Observable<StrictHttpResponse<CreateSnapshotResult>> {
 
     const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.CreateNewSnapshotPath, 'post');
     if (params) {
@@ -61,7 +56,7 @@ export class SnapshotControllerService extends BaseService {
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<NewHarResponse>;
+        return r as StrictHttpResponse<CreateSnapshotResult>;
       })
     );
   }
@@ -76,69 +71,14 @@ export class SnapshotControllerService extends BaseService {
     body?: {
 'title'?: string;
 'url'?: string;
-'basic-info'?: Blob;
-'ss'?: Blob;
-'har'?: Blob;
-'console'?: Blob;
-'html'?: Blob;
 }
   },
   context?: HttpContext
 
-): Observable<NewHarResponse> {
+): Observable<CreateSnapshotResult> {
 
     return this.createNewSnapshot$Response(params,context).pipe(
-      map((r: StrictHttpResponse<NewHarResponse>) => r.body as NewHarResponse)
-    );
-  }
-
-  /**
-   * Path part for operation hello
-   */
-  static readonly HelloPath = '/api/snapshot/hello';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `hello()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  hello$Response(params?: {
-  },
-  context?: HttpContext
-
-): Observable<StrictHttpResponse<string>> {
-
-    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.HelloPath, 'get');
-    if (params) {
-    }
-
-    return this.http.request(rb.build({
-      responseType: 'text',
-      accept: 'text/plain',
-      context: context
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<string>;
-      })
-    );
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `hello$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  hello(params?: {
-  },
-  context?: HttpContext
-
-): Observable<string> {
-
-    return this.hello$Response(params,context).pipe(
-      map((r: StrictHttpResponse<string>) => r.body as string)
+      map((r: StrictHttpResponse<CreateSnapshotResult>) => r.body as CreateSnapshotResult)
     );
   }
 
@@ -158,7 +98,7 @@ export class SnapshotControllerService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<StrictHttpResponse<Snapshot>> {
+): Observable<StrictHttpResponse<SnapshotInfo>> {
 
     const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.GetShanpshotInfoPath, 'get');
     if (params) {
@@ -172,7 +112,7 @@ export class SnapshotControllerService extends BaseService {
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Snapshot>;
+        return r as StrictHttpResponse<SnapshotInfo>;
       })
     );
   }
@@ -188,10 +128,10 @@ export class SnapshotControllerService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<Snapshot> {
+): Observable<SnapshotInfo> {
 
     return this.getShanpshotInfo$Response(params,context).pipe(
-      map((r: StrictHttpResponse<Snapshot>) => r.body as Snapshot)
+      map((r: StrictHttpResponse<SnapshotInfo>) => r.body as SnapshotInfo)
     );
   }
 
@@ -302,122 +242,6 @@ export class SnapshotControllerService extends BaseService {
   }
 
   /**
-   * Path part for operation getSnapshotBasicInfo
-   */
-  static readonly GetSnapshotBasicInfoPath = '/api/snapshot/{ref}/basic-info';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getSnapshotBasicInfo()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSnapshotBasicInfo$Response(params: {
-    ref: string;
-  },
-  context?: HttpContext
-
-): Observable<StrictHttpResponse<{
-}>> {
-
-    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.GetSnapshotBasicInfoPath, 'get');
-    if (params) {
-      rb.path('ref', params.ref, {});
-    }
-
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/json',
-      context: context
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<{
-        }>;
-      })
-    );
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getSnapshotBasicInfo$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSnapshotBasicInfo(params: {
-    ref: string;
-  },
-  context?: HttpContext
-
-): Observable<{
-}> {
-
-    return this.getSnapshotBasicInfo$Response(params,context).pipe(
-      map((r: StrictHttpResponse<{
-}>) => r.body as {
-})
-    );
-  }
-
-  /**
-   * Path part for operation getSnapshotConsoleLog
-   */
-  static readonly GetSnapshotConsoleLogPath = '/api/snapshot/{ref}/console';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getSnapshotConsoleLog()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSnapshotConsoleLog$Response(params: {
-    ref: string;
-  },
-  context?: HttpContext
-
-): Observable<StrictHttpResponse<{
-}>> {
-
-    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.GetSnapshotConsoleLogPath, 'get');
-    if (params) {
-      rb.path('ref', params.ref, {});
-    }
-
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/json',
-      context: context
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<{
-        }>;
-      })
-    );
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getSnapshotConsoleLog$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSnapshotConsoleLog(params: {
-    ref: string;
-  },
-  context?: HttpContext
-
-): Observable<{
-}> {
-
-    return this.getSnapshotConsoleLog$Response(params,context).pipe(
-      map((r: StrictHttpResponse<{
-}>) => r.body as {
-})
-    );
-  }
-
-  /**
    * Path part for operation finalizeSnapshotCapture
    */
   static readonly FinalizeSnapshotCapturePath = '/api/snapshot/{ref}/finalize-capture';
@@ -480,170 +304,6 @@ export class SnapshotControllerService extends BaseService {
 
     return this.finalizeSnapshotCapture$Response(params,context).pipe(
       map((r: StrictHttpResponse<void>) => r.body as void)
-    );
-  }
-
-  /**
-   * Path part for operation getSnapshotHtml
-   */
-  static readonly GetSnapshotHtmlPath = '/api/snapshot/{ref}/html';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getSnapshotHtml()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSnapshotHtml$Response(params: {
-    ref: string;
-  },
-  context?: HttpContext
-
-): Observable<StrictHttpResponse<string>> {
-
-    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.GetSnapshotHtmlPath, 'get');
-    if (params) {
-      rb.path('ref', params.ref, {});
-    }
-
-    return this.http.request(rb.build({
-      responseType: 'text',
-      accept: 'text/html',
-      context: context
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<string>;
-      })
-    );
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getSnapshotHtml$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSnapshotHtml(params: {
-    ref: string;
-  },
-  context?: HttpContext
-
-): Observable<string> {
-
-    return this.getSnapshotHtml$Response(params,context).pipe(
-      map((r: StrictHttpResponse<string>) => r.body as string)
-    );
-  }
-
-  /**
-   * Path part for operation getSnapshotNetwork
-   */
-  static readonly GetSnapshotNetworkPath = '/api/snapshot/{ref}/network';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getSnapshotNetwork()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSnapshotNetwork$Response(params: {
-    ref: string;
-  },
-  context?: HttpContext
-
-): Observable<StrictHttpResponse<{
-}>> {
-
-    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.GetSnapshotNetworkPath, 'get');
-    if (params) {
-      rb.path('ref', params.ref, {});
-    }
-
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/json',
-      context: context
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<{
-        }>;
-      })
-    );
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getSnapshotNetwork$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSnapshotNetwork(params: {
-    ref: string;
-  },
-  context?: HttpContext
-
-): Observable<{
-}> {
-
-    return this.getSnapshotNetwork$Response(params,context).pipe(
-      map((r: StrictHttpResponse<{
-}>) => r.body as {
-})
-    );
-  }
-
-  /**
-   * Path part for operation getSnapshotScreenshot
-   */
-  static readonly GetSnapshotScreenshotPath = '/api/snapshot/{ref}/screenshot';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getSnapshotScreenshot()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSnapshotScreenshot$Response(params: {
-    ref: string;
-  },
-  context?: HttpContext
-
-): Observable<StrictHttpResponse<Blob>> {
-
-    const rb = new RequestBuilder(this.rootUrl, SnapshotControllerService.GetSnapshotScreenshotPath, 'get');
-    if (params) {
-      rb.path('ref', params.ref, {});
-    }
-
-    return this.http.request(rb.build({
-      responseType: 'blob',
-      accept: 'image/png',
-      context: context
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Blob>;
-      })
-    );
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getSnapshotScreenshot$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSnapshotScreenshot(params: {
-    ref: string;
-  },
-  context?: HttpContext
-
-): Observable<Blob> {
-
-    return this.getSnapshotScreenshot$Response(params,context).pipe(
-      map((r: StrictHttpResponse<Blob>) => r.body as Blob)
     );
   }
 

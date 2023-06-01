@@ -13,7 +13,7 @@
 
     <div class="top-blocks">
         <div class="block ss-block">
-            <img class="screenshot" src="{{apiRootUrl}}/api/snapshot/{{id}}/screenshot">
+            <img class="screenshot" [src]="dropInfo.screenshotLink">
             <img *ngIf="annotationsUrl" class="annotations" [src]="annotationsUrl">
 
             <div class="expand" (click)="doShowScreenshotFullscreen()">&#x26F6;</div>
@@ -146,7 +146,7 @@
                 <button class="dark" (click)="showScreenshotFullscreen = false">X</button>
             </div>
             <div class="canvas">
-                <img class="screenshot" src="{{apiRootUrl}}/api/snapshot/{{id}}/screenshot">
+                <img class="screenshot" [src]="dropInfo.screenshotLink">
                 <img *ngIf="annotationsUrl && showAnnotations" class="annotations" [src]="annotationsUrl">
             </div>
         </div>

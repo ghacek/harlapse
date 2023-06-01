@@ -1,13 +1,17 @@
 /* tslint:disable */
 /* eslint-disable */
 import { Date } from './date';
-export interface Snapshot {
+export interface SnapshotInfo {
+  annotationsSvgLink?: string;
+  basicInfoLink?: string;
+  consoleLink?: string;
   created?: Date;
   description?: string;
-  hasAnnotations?: boolean;
-  id?: number;
+  harLink?: string;
+  htmlLink?: string;
   pageTitle?: string;
   pageUrl?: string;
   ref?: string;
+  screenshotLink?: string;
   title?: string;
 }
