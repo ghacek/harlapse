@@ -17,6 +17,7 @@ import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 
 import dev.harlapse.backend.api.models.CreateSnapshotResult;
+import dev.harlapse.backend.api.models.SnapshotInfo;
 import dev.harlapse.backend.db.entities.Snapshot;
 import dev.harlapse.backend.db.entities.repository.SnapshotRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,6 +27,7 @@ import jakarta.transaction.Transactional;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
@@ -87,24 +89,29 @@ public class SnapshotService {
         );
     }
 
+    public SnapshotInfo getSnapshotInfo(String ref) {
+        final Snapshot snapshot = snapshotRepo.findByRef(ref);
+
+        final S3Presigner presigner = createS3Presigner();
+
+        return new SnapshotInfo(
+            ref, 
+            snapshot.getPageTitle(),
+            snapshot.getPageUrl(),
+            snapshot.getTitle(),
+            snapshot.getDescription(),
+            snapshot.getCreated(),
+            presigneObjectGet(presigner, ref, BASIC_INFO_SUFFIX),
+            presigneObjectGet(presigner, ref, SCREENSHOT_SUFFIX),
+            presigneObjectGet(presigner, ref, HAR_FILE_SUFFIX),
+            presigneObjectGet(presigner, ref, CONSOLE_SUFFIX),
+            presigneObjectGet(presigner, ref, HTML_SUFFIX),
+            snapshot.isHasAnnotations() ? presigneObjectGet(presigner, ref, ANNOTATIONS_SVG) : null
+        );
+    }
+
     private String generateRef() {
         return UUID.randomUUID().toString().replace("-", "");
-    }
-
-    public InputStream getBasicInfoContent(String dropRef) throws FileNotFoundException {
-        return new FileInputStream(new File(dropDir, dropRef + BASIC_INFO_SUFFIX));
-    }
-
-    public InputStream getHarContent(String dropRef) throws FileNotFoundException {
-        return new FileInputStream(new File(dropDir, dropRef + HAR_FILE_SUFFIX));
-    }
-
-    public InputStream getScreenshotContent(String dropRef) throws FileNotFoundException {
-        return new FileInputStream(new File(dropDir, dropRef + SCREENSHOT_SUFFIX));
-    }
-
-    public InputStream getConsoleContent(String dropRef) throws FileNotFoundException {
-        return new FileInputStream(new File(dropDir, dropRef + CONSOLE_SUFFIX));
     }
 
     public InputStream getAnnotationsConfig(String dropRef) throws FileNotFoundException {
@@ -113,9 +120,6 @@ public class SnapshotService {
 
     public InputStream getAnnotationsSvg(String dropRef) throws FileNotFoundException {
         return new FileInputStream(new File(dropDir, dropRef + ANNOTATIONS_SVG));
-    }
-    public InputStream getHtml(String dropRef) throws FileNotFoundException {
-        return new FileInputStream(new File(dropDir, dropRef + HTML_SUFFIX));
     }
 
     @Transactional
@@ -144,20 +148,36 @@ public class SnapshotService {
         }
     }
 
+    public String presigneObjectGet(S3Presigner presigner, String snapshotRef, String objectName) {
+        final GetObjectRequest request = GetObjectRequest.builder()
+            .bucket(storageBucketName)
+            .key(snapshotRef + "/" + objectName)
+            .build();
+
+        final GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofMinutes(60))
+            .getObjectRequest(request)
+            .build();
+
+        final PresignedGetObjectRequest presigned = presigner.presignGetObject(presignRequest);
+        
+        return presigned.url().toString();
+    }
+
     public String presigneObjectPut(S3Presigner presigner, String snapshotRef, String objectName) {
         final PutObjectRequest request = PutObjectRequest.builder()
             .bucket(storageBucketName)
             .key(snapshotRef + "/" + objectName)
             .build();
 
-        final PutObjectPresignRequest getObjectPresignRequest = PutObjectPresignRequest.builder()
-            .signatureDuration(Duration.ofMinutes(60))
+        final PutObjectPresignRequest resignRequest = PutObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofMinutes(5))
             .putObjectRequest(request)
             .build();
 
-        PresignedPutObjectRequest presignedGetObjectRequest = presigner.presignPutObject(getObjectPresignRequest);
+        final PresignedPutObjectRequest presigned = presigner.presignPutObject(resignRequest);
         
-        return presignedGetObjectRequest.url().toString();
+        return presigned.url().toString();
     }
 
     private S3Presigner createS3Presigner() {

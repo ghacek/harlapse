@@ -12,6 +12,4 @@ public class CreateSnapshotResult {
     private String uploadHarLink;
     private String uploadConsoleLink;
     private String uploadHtmlLink;
-
-    
 }

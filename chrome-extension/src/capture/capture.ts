@@ -25,12 +25,14 @@ export function shareState(ctx: CaptureContext, updateStatus: Subject<string>) {
             updateStatus.next("Uploading state...");
 
             return uploadCapture(har, ss, basicInfo, log, html)
-                //.then((resp) => resp.json())
                 .then((resp) => {
-                    //chrome.tabs.create({ url: ApiHarView + "/" + resp.id + "/captured" });
+                    chrome.tabs.create({ url: ApiHarView + "/" + resp.id + "/captured" });
                 })
                 .then((resp) => updateStatus.next("Capture finished!"))
-                .catch(() => updateStatus.error("Upload failed!"));
+                .catch((err) => {
+                    updateStatus.error("Upload failed!")
+                    console.error(err);
+                });
         });
 }
 
@@ -50,11 +52,13 @@ function uploadCapture(har: any, screenshot: Blob, basicInfo: PageBasicInfo, log
     })
     .then((resp) => resp.json())
     .then((createResult) => Promise.all([
+        createResult,
         fetch(createResult.uploadBasicInfoLink , { method: "PUT", body: basicInfoStr, headers: { "Content-Type": "application/json" } }),
         fetch(createResult.uploadScreenshotLink, { method: "PUT", body: screenshot  , headers: { "Content-Type": "image/png"        } }),
         fetch(createResult.uploadHarLink       , { method: "PUT", body: harStr      , headers: { "Content-Type": "application/json" } }),
         fetch(createResult.uploadConsoleLink   , { method: "PUT", body: consoleStr  , headers: { "Content-Type": "application/json" } }),
         fetch(createResult.uploadHtmlLink      , { method: "PUT", body: html        , headers: { "Content-Type": "text/html"        } })
-    ])); 
+    ]))
+    .then(x => x[0]); 
 }
 

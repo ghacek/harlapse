@@ -34,12 +34,7 @@ public class SnapshotController {
     @Inject
     private SnapshotService dropService;
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("/hello")
-    public String hello() {
-        return "Hello from RESTEasy Reactive";
-    }
+
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -48,40 +43,6 @@ public class SnapshotController {
         final Snapshot drop = dropRepo.findByRef(dropRef);
 
         return drop;
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{ref}/basic-info")
-    @APIResponse(
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(type = SchemaType.OBJECT)
-        )
-    )
-    public InputStream getSnapshotBasicInfo(@PathParam("ref") String dropRef) throws FileNotFoundException {
-        return dropService.getBasicInfoContent(dropRef);
-    }
-
-    /** Returns network activity of the snapshot */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{ref}/network")
-    @APIResponse(
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(type = SchemaType.OBJECT)
-        )
-    )
-    public InputStream getSnapshotNetwork(@PathParam("ref") String dropRef) throws FileNotFoundException {
-        return dropService.getHarContent(dropRef);
-    }
-
-    @GET
-    @Produces("image/png")
-    @Path("/{ref}/screenshot")
-    public InputStream getSnapshotScreenshot(@PathParam("ref") String dropRef) throws FileNotFoundException {
-        return dropService.getScreenshotContent(dropRef);
     }
 
     @GET
@@ -98,31 +59,7 @@ public class SnapshotController {
         return dropService.getAnnotationsSvg(dropRef);
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{ref}/console")
-    @APIResponse(
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(type = SchemaType.OBJECT)
-        )
-    )
-    public InputStream getSnapshotConsoleLog(@PathParam("ref") String dropRef) throws FileNotFoundException {
-        return dropService.getConsoleContent(dropRef);
-    }
 
-    @GET
-    @Produces(MediaType.TEXT_HTML)
-    @Path("/{ref}/html")
-    @APIResponse(
-        content = @Content(
-            mediaType = "text/html",
-            schema = @Schema(type = SchemaType.STRING)
-        )
-    )
-    public InputStream getSnapshotHtml(@PathParam("ref") String dropRef) throws FileNotFoundException {
-        return dropService.getHtml(dropRef);
-    }
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -132,9 +69,7 @@ public class SnapshotController {
             @RestForm String title,
             @RestForm String url) throws IOException {
 
-        final CreateSnapshotResult result = dropService.createSnapshot(title, url);
-        
-        return result;
+        return dropService.createSnapshot(title, url);
     }
 
     
