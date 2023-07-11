@@ -1,7 +1,18 @@
 import { QueryString, Header, Cookie, PostData } from 'har-format';
+import { createLokiLogger } from '../util/grafana-loki-logging';
 
 // TODO handle onTabReplaced event
 //    If a navigation was triggered via Chrome Instant or Instant Pages, a completely loaded page is swapped into the current tab. In that case, an onTabReplaced event is fired.
+
+
+const ignoreUrls = [
+    "https://api-iam.intercom.io/messenger/web/events",
+    "https://rs.grafana.com/v1/track"
+];
+
+// TODO ignore chrome-extension://
+
+const logger = createLokiLogger("network-monitor");
 
 interface LogEntry {
     requestId: string
@@ -42,8 +53,25 @@ export function initNetworkMonitor() {
     );
 }
 
+function shouldIgnore(details: {url: string, tabId: number}) {
+    if (details.tabId <= 0) {
+        return true;
+    }
+
+    const isInIgnoreList = ignoreUrls.some(url => details.url.startsWith(url));
+    if (isInIgnoreList) {
+        return true;
+    }
+
+    return false;
+}
+
 function onBeforeNavigate(details: chrome.webNavigation.WebNavigationParentedCallbackDetails) {
-    console.log("webNavigation.onBeforeNavigate", details);
+    if (shouldIgnore(details)) {
+        return;
+    }
+    logger("webNavigation.onBeforeNavigate", details.tabId, details.url);
+    //console.log("webNavigation.onBeforeNavigate", details);
 
     const isTopFrame = (details.frameId === 0);
 
@@ -74,11 +102,12 @@ function onCommittedNavigate(details: chrome.webNavigation.WebNavigationTransiti
 
 
 function onBeforeRequest(details: chrome.webRequest.WebRequestBodyDetails) {
-    if (details.tabId <= 0) {
+    if (shouldIgnore(details)) {
         return;
     }
 
-    console.log("webRequest.onBeforeRequest", details);
+    logger("webRequest.onBeforeRequest", details.tabId, details.url);
+    //console.log("webRequest.onBeforeRequest", details);
 
     let tab: LogEntry[] = networkLog[details.tabId];
     if (!tab) {
@@ -93,8 +122,11 @@ function onBeforeRequest(details: chrome.webRequest.WebRequestBodyDetails) {
 }
 
 function onSendHeaders(details: chrome.webRequest.WebRequestHeadersDetails) {
-    let request = getRequest(details.tabId, details.requestId);
+    if (shouldIgnore(details)) {
+        return;
+    }
 
+    let request = getRequest(details.tabId, details.requestId);
     if (!request) {
         //console.debug("Ignoring onSendHeaders because request not initialized", details);
         return;
@@ -107,8 +139,11 @@ function onSendHeaders(details: chrome.webRequest.WebRequestHeadersDetails) {
 
 
 function onCompleted(details: chrome.webRequest.WebResponseCacheDetails) {
-    let request = getRequest(details.tabId, details.requestId);
+    if (shouldIgnore(details)) {
+        return;
+    }
 
+    let request = getRequest(details.tabId, details.requestId);
     if (!request) {
         //console.debug("Ignoring onCompleted because request not initialized", details);
         return;
@@ -120,10 +155,6 @@ function onCompleted(details: chrome.webRequest.WebResponseCacheDetails) {
 }
 
 function getRequest(tabId: number, requestId: string) {
-    if (tabId <= 0) {
-        return;
-    }
-
     const tab = networkLog[tabId];
     if (!tab) {
         return;
