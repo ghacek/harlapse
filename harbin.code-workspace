@@ -4,13 +4,13 @@
             "path": "./chrome-extension"
         },
         {
-            "path": "./server"
-        },
-        {
             "path": "frontend"
         },
         {
             "path": "backend"
+        },
+        {
+            "path": "server"
         }
     ],
     "settings": {
