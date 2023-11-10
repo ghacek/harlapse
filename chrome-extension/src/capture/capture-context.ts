@@ -1,5 +1,5 @@
 
-import { ContentCmdKey, getDocumentHtmlCmdName, getPageBasicInfoCmdName } from "../content-script/command-handlers/commands";
+import { ContentCmdKey, getConsoleLogCmdName, getDocumentHtmlCmdName, getPageBasicInfoCmdName } from "../content-script/command-handlers/commands";
 import { PageBasicInfo } from "../content-script/command-handlers/types/page-basic-info";
 import { BgCmdKey, getNetworkLogCmdName } from "../service-worker/command-handlers/commands";
 
@@ -53,6 +53,10 @@ export class CaptureContext {
 
     public collectNetworkRequests() {
         return this.sendBgCmd<any, string>(getNetworkLogCmdName, { tabId: this.tabId });
+    }
+
+    public collectConsoleLog() : Promise<any> {
+        return this.sendContentCmd<any, any>(getConsoleLogCmdName);
     }
 
     public static async getForActiveTab() {

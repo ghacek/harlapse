@@ -33,9 +33,9 @@ async function execAction() {
 
     
     const ctx = await CaptureContext.getForActiveTab();
-    const bi = await ctx.collectBasicInfo();
+    const log = await ctx.collectConsoleLog();
 
-    console.log("bi", bi);
+    console.log("log", log);
 
     // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     //     var currentTabId = tabs[0].id;

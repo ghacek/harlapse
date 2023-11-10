@@ -1,5 +1,5 @@
 import { Subject } from "rxjs";
-import { collectLogEntries } from "../collectors/console-collector";
+import { collectLogEntries } from "../collectors/debugger-console-collector";
 import { PageBasicInfo } from "../content-script/command-handlers/types/page-basic-info";
 import { CaptureContext } from "./capture-context";
 import { Api } from "../api/Api";
@@ -15,7 +15,7 @@ export function shareState(ctx: CaptureContext, updateStatus: Subject<string>) {
 
     updateStatus.next("Capturing state...")
 
-    return Promise.all([ctx.collectScreenshot(), ctx.collectNetworkRequests(), ctx.collectBasicInfo(), collectLogEntries(ctx), ctx.collectHtml()])
+    return Promise.all([ctx.collectScreenshot(), ctx.collectNetworkRequests(), ctx.collectBasicInfo(), ctx.collectConsoleLog(), ctx.collectHtml()])
         .then((args) => {
             const ss = args[0];
             const har = args[1];

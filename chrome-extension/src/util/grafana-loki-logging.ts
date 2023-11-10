@@ -40,14 +40,16 @@ export function setupLokiConsoleLogging() {
     });
 }
 
-export function createLokiLogger(category: string, labels?: Record<string, string>) {
+export function createLokiLogger(category: string, consoleLog: boolean = true, labels?: Record<string, string>) {
     const labelsWithCategory = Object.assign(
         { category },
         labels
     );
 
     return (...args: any[]) => {
-        console.log(...args);
+        if (consoleLog) {
+            console.log(...args);
+        }
 
         lokiLog(
             labelsWithCategory, 

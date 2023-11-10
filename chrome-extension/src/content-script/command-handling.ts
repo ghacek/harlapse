@@ -1,7 +1,8 @@
-import { ContentCmdKey, getPageBasicInfoCmdName, getDocumentHtmlCmdName, getHarFromPerformanceCmdName } from "./command-handlers/commands";
+import { ContentCmdKey, getConsoleLogCmdName, getDocumentHtmlCmdName, getHarFromPerformanceCmdName, getPageBasicInfoCmdName } from "./command-handlers/commands";
+import { getConsoleLog } from "./command-handlers/get-console-log";
 import { getDocumentHtml } from "./command-handlers/get-document-html";
-import { getPageBasicInfo } from "./command-handlers/get-page-basic-info";
 import { getHarFromPerformance } from "./command-handlers/get-har-from-performance";
+import { getPageBasicInfo } from "./command-handlers/get-page-basic-info";
 
 type CmdHandler = (request: object) => any;
 
@@ -10,7 +11,8 @@ type CmdHandlerMap = { [cmd: string]: CmdHandler };
 const cmdHandlers: CmdHandlerMap = {
     [getPageBasicInfoCmdName     ]: getPageBasicInfo,
     [getDocumentHtmlCmdName      ]: getDocumentHtml,
-    [getHarFromPerformanceCmdName]: getHarFromPerformance
+    [getHarFromPerformanceCmdName]: getHarFromPerformance,
+    [getConsoleLogCmdName        ]: getConsoleLog
 };
 
 
@@ -43,5 +45,3 @@ export function registerCommandHandler() {
         }
     });
 }
-
-

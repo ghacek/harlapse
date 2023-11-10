@@ -28,7 +28,9 @@ export interface EntryView extends Entry {
     offsetTime: number,
 
     /** If true, details will be displayed in the UI.  */
-    detailsOpened?: boolean
+    detailsOpened?: boolean;
+
+    
 }
 
 @Component({

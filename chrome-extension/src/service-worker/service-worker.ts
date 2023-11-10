@@ -7,15 +7,8 @@ const logger = createLokiLogger("root");
 logger("Harlapse - background", chrome.runtime.getManifest().version);
 
 
-
-
 initNetworkMonitor();
 registerBgCommandHandler();
-
-chrome.runtime.onSuspend.addListener(
-    () => logger("Suspending")
-);
-
 
 // Making sure that the background script is always running.
 // Suspension timeout is delayed by calling chrome API every 20 seconds.
